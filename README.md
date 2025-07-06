@@ -79,16 +79,17 @@ Whatsapp Ekran Resimleri:
 ## Sprint Retrospective:
 İyi Gidenler:
 - Hızlı fikir birliği ve ekip çalışması
-- Ürüne kara verilmesi.
-- Arayüz tasarımı
-  
+- Proje fikri üzerinde ekip kısa sürede anlaştı ve hızlıca aksiyona geçildi.
+- Kullanıcı deneyimi hızlıca netleştirildi ve prototip ekranlar üretildi.
+
 Gelişmesi Gerekenler:
 - Yazılım aşamasında gerideyiz.
-- Ekip zamanlaması düzgün planlanmadı, Sprint 2'de netleştirilecek
+- Bazı görevler planlanan sürede tamamlanamadı. Özellikle teknik entegrasyon ve UI tarafında zaman tahmini gözden geçirilmeli
+- Ekip içi geri bildirimler bazen gecikti. UI/Prompt/Frontend arasında daha hızlı dönüş sağlanmalı.
+- Daily Scrum rutinlerine her gün düzenli katılım sağlanamadı. Bunun aksaması planlamayı zorlaştırabiliyor.
 
 İleriye Dönük Planlar:
 - Belirlenen görev dağılımı ve bireysel sorumluluklar doğrultusunda proje süreci yapılandırılacak; her adımın planlanan şekilde ilerleyip ilerlemediği düzenli olarak gözlemlenecek ve gerekli güncellemeler yapılacaktır.
-
-- Yapay zeka destekli mülakat simülasyonunun temel işleyişini test edebilmek amacıyla, ilk fonksiyonel prototiplerin tasarımı, entegrasyonu ve senaryolar üzerinde denemeleri yapılmak üzere hazırlık süreci başlatılacaktır.
+- Yapay zeka destekli mülakat simülasyonunun temel işleyişini test edebilmek amacıyla, ilk fonksiyonel prototiplerin tasarımı, entegrasyonu ve senaryolar üzerinde  denemeleri yapılmak üzere hazırlık süreci başlatılacaktır.
 
  
