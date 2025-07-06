@@ -32,7 +32,7 @@ Kullanıcılar, her mülakat sonrası detaylı geri bildirim alarak güçlü ve 
 
 > Kişiselleştirme
 
-🗂 Detaylı Raporlama ve Dışa Aktarım
+> Detaylı Raporlama ve Dışa Aktarım
 ## Hedef Kitle :
 - Üniversite Öğrencileri & Yeni Mezunlar:İlk iş/staj başvurusu yapacak, mülakat deneyimi az olan genç adaylar
 - Kariyer Değiştiren Profesyoneller:Pozisyon ya da sektör değiştirmek isteyen, güncelleme ihtiyacı duyan çalışanlar
