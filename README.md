@@ -4,9 +4,9 @@ AI202
 
 ## Takim Üyeleri :
 - Emine Demirbaş (Developer-Aktif)
-- Edanur Terzi(Developer-Aktif)
+- Edanur Terzi (Developer-Aktif)
 - Muhammad Abdulqadir Adem (Developer-Aktif)
-- Sevde gül Şahin(Product Owner-Aktif)
+- Sevde Gül Şahin (Product Owner-Aktif)
 - Rümeysa Çelik (Scrum Master-Aktif)
 ## Uygulama İsmi : 
 Interwievly
