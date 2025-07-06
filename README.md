@@ -83,7 +83,7 @@ Whatsapp Ekran Resimleri:
 - Kullanıcı deneyimi hızlıca netleştirildi ve prototip ekranlar üretildi.
 
 Gelişmesi Gerekenler:
-- Yazılım aşamasında geride kalındı.
+- Yazılım aşamasında beklenen ilerleme kaydedilemedi.
 - Bazı görevler planlanan sürede tamamlanamadı. Özellikle teknik entegrasyon ve UI tarafında zaman tahmini gözden geçirilmeli.
 - Ekip içi geri bildirimler bazen gecikti. UI/Prompt/Frontend arasında daha hızlı dönüş sağlanmalı.
 - Daily Scrum rutinlerine her gün düzenli katılım sağlanamadı. Bunun aksaması planlamayı zorlaştırabilir.
