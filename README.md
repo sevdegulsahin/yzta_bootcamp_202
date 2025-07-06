@@ -1,4 +1,4 @@
-# yzta_bootcamp
+# yzta_bootcamp_team_202
 ## Takim İsmi :
 AI202 
 
