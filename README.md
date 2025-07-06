@@ -70,10 +70,10 @@ Whatsapp Ekran Resimleri:
 - Takım üyelerine görev dağılımları yapılmıştır. Herkesin sorumluluk alanları net bir şekilde belirlenmiştir.
   
 ## Sprint Review Katılımcıları:
-- Emine Demirbaş Developer)
-- Edanur Terzi(Developer)
+- Emine Demirbaş (Developer)
+- Edanur Terzi (Developer)
 - Muhammad Abdulqadir Adem (Developer)
-- Sevde gül Şahin(Product Owner)
+- Sevde Gül Şahin (Product Owner)
 - Rümeysa Çelik (Scrum Master)
 
 ## Sprint Retrospective:
