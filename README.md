@@ -20,17 +20,17 @@ Interwievly
 
 Kullanıcılar, her mülakat sonrası detaylı geri bildirim alarak güçlü ve zayıf yönlerini görebilir; böylece sürekli gelişim sağlayabilir. Uygulama, aynı zamanda rekabetçi bir ortam yaratarak kullanıcıların yüzde kaçlık dilimde olduğunu gösterir.
 ## Ürün Özellikleri :
-🧠 Yapay Zeka Destekli Mülakatlar
+> Yapay Zeka Destekli Mülakatlar
 
-🎯 Performans Değerlendirme ve Puanlama Sistemi
+> Performans Değerlendirme ve Puanlama Sistemi
 
-📈 Gelişim Takibi Paneli
+> Gelişim Takibi Paneli
 
-🏆 Yüzdelik Dilim ve Kıyaslama
+> Yüzdelik Dilim ve Kıyaslama
 
-🧪 Gerçek Zamanlı Deneme Mülakatları
+> Gerçek Zamanlı Deneme Mülakatları
 
-🔐 Kişiselleştirme
+> Kişiselleştirme
 
 🗂 Detaylı Raporlama ve Dışa Aktarım
 ## Hedef Kitle :
@@ -83,13 +83,13 @@ Whatsapp Ekran Resimleri:
 - Kullanıcı deneyimi hızlıca netleştirildi ve prototip ekranlar üretildi.
 
 Gelişmesi Gerekenler:
-- Yazılım aşamasında gerideyiz.
-- Bazı görevler planlanan sürede tamamlanamadı. Özellikle teknik entegrasyon ve UI tarafında zaman tahmini gözden geçirilmeli
+- Yazılım aşamasında geride kalındı.
+- Bazı görevler planlanan sürede tamamlanamadı. Özellikle teknik entegrasyon ve UI tarafında zaman tahmini gözden geçirilmeli.
 - Ekip içi geri bildirimler bazen gecikti. UI/Prompt/Frontend arasında daha hızlı dönüş sağlanmalı.
-- Daily Scrum rutinlerine her gün düzenli katılım sağlanamadı. Bunun aksaması planlamayı zorlaştırabiliyor.
+- Daily Scrum rutinlerine her gün düzenli katılım sağlanamadı. Bunun aksaması planlamayı zorlaştırabilir.
 
 İleriye Dönük Planlar:
 - Belirlenen görev dağılımı ve bireysel sorumluluklar doğrultusunda proje süreci yapılandırılacak; her adımın planlanan şekilde ilerleyip ilerlemediği düzenli olarak gözlemlenecek ve gerekli güncellemeler yapılacaktır.
-- Yapay zeka destekli mülakat simülasyonunun temel işleyişini test edebilmek amacıyla, ilk fonksiyonel prototiplerin tasarımı, entegrasyonu ve senaryolar üzerinde  denemeleri yapılmak üzere hazırlık süreci başlatılacaktır.
+- Yapay zeka destekli mülakat simülasyonunun temel işleyişini test edebilmek amacıyla, ilk fonksiyonel prototiplerin tasarımı, entegrasyonu ve senaryolar üzerinde denemeleri yapılmak üzere hazırlık süreci başlatılacaktır.
 
  
