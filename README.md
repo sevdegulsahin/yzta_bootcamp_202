@@ -1,8 +1,8 @@
 # yzta_bootcamp_team_202
-## Takim İsmi :
+## Takım İsmi :
 AI202 
 
-## Takim Üyeleri :
+## Takım Üyeleri :
 - Emine Demirbaş (Developer-Aktif)
 - Edanur Terzi (Developer-Aktif)
 - Muhammad Abdulqadir Adem (Developer-Aktif)
