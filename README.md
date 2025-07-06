@@ -20,7 +20,7 @@ Interwievly
 
 Kullanıcılar, her mülakat sonrası detaylı geri bildirim alarak güçlü ve zayıf yönlerini görebilir; böylece sürekli gelişim sağlayabilir. Uygulama, aynı zamanda rekabetçi bir ortam yaratarak kullanıcıların yüzde kaçlık dilimde olduğunu gösterir.
 ## Ürün Özellikleri :
->🧠 Yapay Zeka Destekli Mülakatlar
+🧠 Yapay Zeka Destekli Mülakatlar
 
 🎯 Performans Değerlendirme ve Puanlama Sistemi
 
