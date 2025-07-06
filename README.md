@@ -64,9 +64,9 @@ Whatsapp Ekran Resimleri:
 
 ## Sprint Review :
 - Ekip olarak yapılaran görüşmelerde uygulamanın teması ve özelliklerine karar verilmiştir.
-- Proje fikri olarak İnterviewly  seçildi
-- UI akış tasarımı yapıldı ve Figma'ya aktarıldı
-- Kullanılacak yazılım ve tasarım araçları belirlenmiştir. Arayüz tasarımında Figma, Kodlama dili olarak Phyton kullanılacaktır.
+- Proje fikri olarak Interviewly seçildi.
+- UI akış tasarımı yapıldı ve Figma'ya aktarıldı.
+- Kullanılacak yazılım ve tasarım araçları belirlenmiştir. Arayüz tasarımında Figma, kodlama dili olarak Phyton kullanılacaktır.
 - Takım üyelerine görev dağılımları yapılmıştır. Herkesin sorumluluk alanları net bir şekilde belirlenmiştir.
   
 ## Sprint Review Katılımcıları:
@@ -78,7 +78,7 @@ Whatsapp Ekran Resimleri:
 
 ## Sprint Retrospective:
 İyi Gidenler:
-- Hızlı fikir birliği ve ekip çalışması
+- Hızlı fikir birliği ve ekip çalışması.
 - Proje fikri üzerinde ekip kısa sürede anlaştı ve hızlıca aksiyona geçildi.
 - Kullanıcı deneyimi hızlıca netleştirildi ve prototip ekranlar üretildi.
 
