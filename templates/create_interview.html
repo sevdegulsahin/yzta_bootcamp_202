@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Yeni Mülakat Oluştur{% endblock %}
+
+{% block content %}
+<div class="create-interview-container">
+    <h2>Yeni Bir Mülakat Oluşturun</h2>
+    <p>Becerilerinizi geliştirmek ve özgüveninizi artırmak için yapay zeka destekli mülakat pratikleri yapın.</p>
+
+    <form method="POST" action="{{ url_for('create_interview') }}">
+        <div class="form-group-create">
+            <label for="category">Kategori Seçiniz:</label>
+            <select id="category" name="category" required>
+                <option value="">-- Lütfen Bir Kategori Seçin --</option>
+                <option value="frontend">Frontend Geliştirme</option>
+                <option value="backend">Backend Geliştirme</option>
+                <option value="mobile">Mobil Geliştirme</option>
+                <option value="devops">DevOps</option>
+                <option value="data_science">Veri Bilimi</option>
+                <option value="general">Genel Mülakat</option>
+            </select>
+        </div>
+
+        {# Eğer dropdown dışında farklı ayarlar varsa buraya eklenebilir #}
+
+        <button type="submit" class="btn-start-interview">Mülakatı Başlat</button>
+    </form>
+</div>
+{% endblock %}

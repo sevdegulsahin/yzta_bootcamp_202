@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mülakat Uygulaması{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="{{ url_for('index') }}"> {/* Logonun ana sayfaya link olması iyi olur */}
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+                </a>
+            </div>
+            <div class="app-name">MülakatAPP</div>
+            <nav>
+                <!-- Header'daki diğer navigasyon öğeleri -->
+                <a href="{{ url_for('index') }}">Anasayfa</a>
+                <a href="{{ url_for('create_interview') }}">Yeni Mülakat</a> {# Bu rotayı app.py'ye eklemeliyiz #}
+                <a href="{{ url_for('profile', username='me') }}">Profilim</a> {# Oturum açmış kullanıcıya göre ayarlanmalı #}
+                <!-- Login/Logout mantığı buraya gelecek -->
+                {% if user %} {# Eğer kullanıcı oturum açtıysa #}
+                    <a href="{{ url_for('logout') }}">Çıkış Yap</a>
+                {% else %} {# Oturum açmadıysa #}
+                    <a href="{{ url_for('login') }}">Oturum Aç</a>
+                    <a href="{{ url_for('register') }}" class="btn-nav-register">Kayıt Ol</a> {# Buton gibi görünen link #}
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2023 MülakatAPP. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

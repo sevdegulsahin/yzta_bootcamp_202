@@ -1,0 +1,504 @@
+/* Varsayılan Sıfırlama (Opsiyonel ama iyi bir başlangıç) */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif; /* Daha iyi bir font seçimi için Google Fonts kullanılabilir */
+    margin: 0;
+    padding: 0;
+    background-color: #1a2421; /* Ana koyu renk */
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Header Stilleri */
+header {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 15px 0; /* Biraz daha dolgun bir header */
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Hafif gölge */
+}
+
+header .logo img {
+    height: 40px; /* Logoyu biraz küçültelim */
+}
+
+header .app-name {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #5db075; /* Yeşil vurgu */
+    margin-left: 15px; /* Logoya yakınlık */
+}
+
+header nav {
+    display: flex;
+    align-items: center;
+}
+
+header nav a {
+    color: #cccccc;
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+header nav a:hover {
+    color: #5db075; /* Hoverda yeşil */
+}
+
+/* Hero Section Stilleri (Ana Sayfa) */
+.hero-section {
+    background-image: url('../img/background.jpg'); /* Logonuz ve arka plan resmini ekleyin */
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    padding-top: 80px; /* Header yüksekliği kadar boşluk */
+    box-sizing: border-box;
+}
+
+.hero-section .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.hero-section .content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-section h1 {
+    font-size: 3.5em;
+    margin-bottom: 15px;
+    color: #e0e0e0;
+    font-weight: bold;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+}
+
+.hero-section p {
+    font-size: 1.2em;
+    color: #cccccc;
+    margin-bottom: 30px;
+}
+
+.buttons .btn {
+    display: inline-block;
+    padding: 15px 30px;
+    margin: 0 10px;
+    text-decoration: none;
+    border-radius: 30px;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent; /* Varsayılan border */
+}
+
+.btn-primary {
+    background-color: #5db075; /* Yeşil */
+    color: #1a2421; /* Koyu metin rengi */
+    border-color: #5db075;
+}
+
+.btn-primary:hover {
+    background-color: #4CAF50; /* Daha koyu yeşil */
+    color: #ffffff;
+    border-color: #4CAF50;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: #ffffff;
+    border-color: #ffffff;
+}
+
+.btn-secondary:hover {
+    background-color: #ffffff;
+    color: #1a2421;
+    border-color: #ffffff;
+}
+
+/* Login ve Register Container Stilleri */
+.auth-container { /* Hem login hem de register için ortak bir container */
+    width: 100%;
+    max-width: 400px;
+    margin: 100px auto; /* Header'dan sonra biraz boşluk */
+    padding: 30px;
+    background-color: #2a3a35; /* Koyu yeşil tonu */
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    text-align: center;
+}
+
+.auth-container h2 {
+    color: #5db075;
+    margin-bottom: 25px;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #cccccc;
+    font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #44554d;
+    border-radius: 5px;
+    background-color: #1a2421; /* Input arka planı */
+    color: #ffffff;
+    box-sizing: border-box;
+    font-size: 1em; /* Input font boyutu */
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus {
+    border-color: #5db075; /* Odaklanınca yeşil border */
+    outline: none;
+}
+
+.btn-submit { /* Login ve Register'daki submit butonları */
+    width: 100%;
+    padding: 12px;
+    background-color: #5db075;
+    color: #1a2421;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+    background-color: #4CAF50;
+}
+
+.auth-container p {
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #bdc3c7;
+}
+
+.auth-container a {
+    color: #5db075;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.auth-container a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    background-color: #721c24; /* Kırmızı hata rengi */
+    color: #ffffff; /* Beyaz metin */
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+/* Profil Sayfası Stilleri */
+.profile-section {
+    display: flex;
+    flex-wrap: wrap; /* Ekran küçüldüğünde alt alta gelsin */
+    gap: 30px; /* Öğeler arasındaki boşluk */
+    padding-top: 120px; /* Header'dan dolayı boşluk */
+    margin-bottom: 50px;
+}
+
+.profile-sidebar {
+    flex: 1; /* Sol taraftaki menü */
+    min-width: 200px; /* Minimum genişlik */
+    background-color: #2a3a35;
+    padding: 20px;
+    border-radius: 8px;
+    height: fit-content; /* İçeriğe göre yükseklik */
+}
+
+.profile-sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.profile-sidebar li {
+    margin-bottom: 15px;
+}
+
+.profile-sidebar a {
+    color: #cccccc;
+    text-decoration: none;
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+}
+
+.profile-sidebar a:hover {
+    color: #5db075;
+}
+
+.profile-sidebar .active a { /* Seçili menü öğesi */
+    color: #5db075;
+    font-weight: bold;
+}
+
+.profile-content {
+    flex: 3; /* Sağ taraftaki ana içerik */
+    min-width: 300px;
+    background-color: #2a3a35;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #44554d; /* Alt çizgi */
+}
+
+.profile-avatar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%; /* Yuvarlak avatar */
+    margin-right: 30px;
+    object-fit: cover; /* Resmin taşmasını engelle */
+}
+
+.profile-info h3 {
+    font-size: 2em;
+    color: #ffffff;
+    margin: 0;
+}
+
+.profile-info p {
+    font-size: 1.1em;
+    color: #5db075; /* Rol rengi */
+    margin: 5px 0 0 0;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.score-card {
+    background-color: #1a2421; /* Biraz daha koyu */
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #44554d;
+    width: 45%; /* İki kart için */
+}
+
+.score-card h4 {
+    font-size: 1.2em;
+    color: #cccccc;
+    margin-bottom: 10px;
+}
+
+.score-card h2 {
+    font-size: 2.5em;
+    color: #5db075;
+    font-weight: bold;
+    margin: 0;
+}
+
+.charts-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.chart-container {
+    flex: 1; /* Grafiklerin eşit genişlikte olması için */
+    min-width: 300px;
+    background-color: #2a3a35;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+.chart-container h4 {
+    font-size: 1.4em;
+    color: #ffffff;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Grafik Stil (Placeholder) */
+.chart-placeholder {
+    width: 100%;
+    height: 300px; /* Grafik alanı yüksekliği */
+    background-color: #1a2421; /* Grafik arka planı */
+    border-radius: 5px;
+    border: 1px solid #44554d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #7f8c8d; /* Gri renk */
+    font-style: italic;
+}
+
+/* Diğer Sayfalar İçin Stiller (Create Interview vb.) */
+.create-interview-container {
+    width: 100%;
+    max-width: 700px;
+    margin: 100px auto;
+    padding: 40px;
+    background-color: #2a3a35;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    text-align: center;
+}
+
+.create-interview-container h2 {
+    color: #5db075;
+    margin-bottom: 30px;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.form-group-create { /* Create interview sayfası için farklı class */
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.form-group-create label {
+    display: block;
+    margin-bottom: 10px;
+    color: #cccccc;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.form-group-create select { /* Dropdown kutusu */
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #44554d;
+    border-radius: 5px;
+    background-color: #1a2421;
+    color: #ffffff;
+    box-sizing: border-box;
+    font-size: 1em;
+    cursor: pointer; /* Fareyi üzerine getirince işaretçi değişsin */
+}
+
+.form-group-create select:focus {
+    border-color: #5db075;
+    outline: none;
+}
+
+.btn-start-interview { /* Mülakatı başlat butonu */
+    padding: 15px 40px;
+    background-color: #5db075;
+    color: #1a2421;
+    border: none;
+    border-radius: 30px; /* Yuvarlak buton */
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: inline-block; /* Inline-block yaparak boyutlandırılabilir yapalım */
+    margin-top: 20px;
+}
+
+.btn-start-interview:hover {
+    background-color: #4CAF50;
+}
+
+
+/* Soru Sayfası Stilleri */
+.question-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 100px auto;
+    text-align: center;
+}
+
+.question-progress {
+    font-size: 0.9em;
+    color: #bdc3c7;
+    margin-bottom: 15px;
+}
+
+.question-text {
+    font-size: 2em;
+    color: #ffffff;
+    margin-bottom: 40px;
+    line-height: 1.4;
+}
+
+.answer-textarea {
+    width: 100%;
+    height: 200px; /* Cevap kutusu yüksekliği */
+    padding: 20px;
+    border: 1px solid #44554d;
+    border-radius: 8px;
+    background-color: #1a2421;
+    color: #ffffff;
+    box-sizing: border-box;
+    font-size: 1.1em;
+    resize: vertical; /* Boyutlandırmayı sadece dikey yap */
+}
+
+.answer-textarea:focus {
+    border-color: #5db075;
+    outline: none;
+}
+
+.btn-next { /* İleri butonu */
+    padding: 12px 30px;
+    background-color: #5db075;
+    color: #1a2421;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 30px;
+}
+
+.btn-next:hover {
+    background-color: #4CAF50;
+}

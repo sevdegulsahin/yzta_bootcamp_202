@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Mülakat Simülasyonuna Hoş Geldiniz{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="overlay"></div>
+    <div class="content">
+        <h1>Mülakat Simülasyonuna Hoş Geldiniz!</h1>
+        <p>Gerçek Mülakat Deneyimi</p>
+        <div class="buttons">
+            <a href="{{ url_for('login') }}" class="btn btn-primary">OTURUM AÇ</a>
+            <a href="{{ url_for('register') }}" class="btn btn-secondary">ÜCRETSİZ KAYIT OL</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

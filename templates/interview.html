@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mülakat Simülasyonu</title>
+    <style>
+        #chat-box { border: 1px solid #ccc; padding: 10px; max-height: 400px; overflow-y: auto; }
+        .user { color: blue; }
+        .model { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Mülakat Simülasyonu</h1>
+    <div id="chat-box">
+        {% for message in chat_history %}
+            <p class="{{ message.role }}"><strong>{{ message.role|capitalize }}:</strong> {{ message.content }}</p>
+        {% endfor %}
+    </div>
+    <form method="POST">
+        <input type="text" name="user_input" required placeholder="Cevabınızı yazın...">
+        <button type="submit">Gönder</button>
+    </form>
+</body>
+</html>
