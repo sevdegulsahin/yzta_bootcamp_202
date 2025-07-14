@@ -1,11 +1,58 @@
-<!-- templates/interview_question.html -->
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-    <title>Mülakat Sorusu</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ category | capitalize }} Mülakat Sorusu #{{ question_num }}</title>
+    <!-- CSS dosyalarınızı buraya ekleyebilirsiniz -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Basit stil eklemeleri */
+        body { font-family: sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .question-box { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px; background-color: #f9f9f9;}
+        .question-text { font-size: 1.1em; font-weight: bold; margin-bottom: 10px; }
+        .question-meta { font-size: 0.9em; color: #555; }
+        .answer-form textarea { width: 100%; height: 100px; margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .answer-form button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .answer-form button:hover { background-color: #0056b3; }
+        .nav-links a { margin-right: 15px; text-decoration: none; color: #007bff; }
+        .nav-links a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
-    <h1>{{ category }} kategorisinden bir mülakat sorusu</h1>
-    <p>{{ question }}</p>
+    <div class="container">
+        <h1>{{ category | capitalize }} Mülakatı</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('interview') }}">Mülakat Sohbeti</a>
+            <a href="{{ url_for('create_interview') }}">Yeni Mülakat Oluştur</a>
+            <a href="{{ url_for('reset_interview') }}">Oturumu Sıfırla</a>
+        </div>
+        <hr>
+
+        <div class="question-box">
+            <div class="question-meta">Soru {{ question_num }} / {{ total_questions }}</div>
+            <div class="question-text">{{ question_text | safe }}</div> <!-- | safe, HTML kodları varsa düzgün göstermesini sağlar -->
+        </div>
+
+        <div class="answer-form">
+            <p>Cevabınızı buraya yazın:</p>
+            <!-- Bu form gönderildiğinde ne olacak? Belki sohbet sayfasına dönmeli -->
+            <form action="{{ url_for('interview') }}" method="post">
+                <textarea name="user_input" placeholder="Cevabınız..." required></textarea><br>
+                <button type="submit">Cevabı Gönder (ve Sohbeti Devam Ettir)</button>
+            </form>
+        </div>
+
+        <!-- Geri dönmek veya başka bir işlem yapmak için linkler -->
+        <div class="nav-links">
+            {% if question_num < total_questions %}
+                <a href="{{ url_for('interview_question_route', category=category, question_num=question_num + 1) }}">Sonraki Soru</a>
+            {% else %}
+                <a href="{{ url_for('interview') }}">Mülakatı Tamamla (Sohbet Odasına Git)</a>
+            {% endif %}
+            <a href="{{ url_for('create_interview') }}">Başka Bir Mülakat Oluştur</a>
+        </div>
+    </div>
 </body>
 </html>

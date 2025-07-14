@@ -3,51 +3,35 @@ from supabase import create_client, Client
 import logging
 from dotenv import load_dotenv
 import os
+import openai # OpenAI kütüphanesini import ettik
+from openai import OpenAI # Yeni sürüm için OpenAI sınıfını import ettik
+from openai import RateLimitError # Kota hatasını yakalamak için
 
-load_dotenv()  # .env dosyasını YÜKLE önce
-
-import google.generativeai as genai
-
-api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    raise RuntimeError("GEMINI_API_KEY ortam değişkeni ayarlı değil!")
-
-genai.configure(api_key=api_key)
-
-# Modeli başlat
-model = genai.GenerativeModel("gemini-1.5-pro")
-
-
-
-# Modeli başlat
- # "models/" ÖN EKİ OLMADAN
- # DİKKAT: başında `models/` var
-
-from flask import render_template, request, session, redirect, url_for
-
-def generate_interview_question(prompt):
-    try:
-        model = genai.GenerativeModel("gemini-1.5-pro")
-
-        response = model.generate_content(prompt)
-        return response.text.strip()
-    except Exception as e:
-        logging.error(f"YZ ile mülakat sorusu üretilemedi: {e}")
-        return "Şu anda yapay zeka destekli soru üretilemiyor."
-
+# --- Ortam Değişkenlerini Yükleme ve Ayarlar ---
+load_dotenv()
 
 # Loglama ayarları
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# .env dosyasından ortam değişkenlerini yükle
-load_dotenv()
+# OpenAI API Anahtarı ve Client Oluşturma
+openai_api_key = os.getenv("OPENAI_API_KEY")
+openai_client = None # Başlangıçta None
+if not openai_api_key:
+    logging.error("HATA: OPENAI_API_KEY ortam değişkeni ayarlanmamış.")
+else:
+    try:
+        # OpenAI client'ını başlatıyoruz. OpenAI 1.0.0 ve sonrası sürümler için geçerli
+        openai_client = OpenAI(api_key=openai_api_key)
+        logging.info("OpenAI API başarıyla başlatıldı.")
+    except Exception as e:
+        logging.error(f"OpenAI API başlatılamadı: {e}")
 
 # Supabase bağlantı bilgileri
 SUPABASE_URL = os.environ.get('SUPABASE_URL')
 SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY')
 
 # Supabase client'ını global olarak tanımla ve başlat
-supabase: Client = None
+supabase: Client | None = None
 if not SUPABASE_URL or not SUPABASE_ANON_KEY:
     logging.error("HATA: Supabase URL veya Anon Key ortam değişkenleri ayarlanmamış.")
     logging.error("Lütfen projenizin kök dizininde .env dosyasını oluşturun ve içine şu satırları ekleyin:")
@@ -60,14 +44,62 @@ else:
     except Exception as e:
         logging.error(f"Supabase bağlantısı kurulamadı: {e}")
 
+# Flask Uygulaması Başlatma
 app = Flask(__name__)
-# Flask'ın oturum yönetimi için gizli anahtarı gereklidir.
-# Güvenlik için güçlü ve rastgele bir anahtar kullanılmalı ve .env'den alınmalıdır.
 app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'varsayilan_cok_gizli_bir_anahtar_degistirmeli')
 if app.config['SECRET_KEY'] == 'varsayilan_cok_gizli_bir_anahtar_degistirmeli':
     logging.warning("FLASK_SECRET_KEY ortam değişkeni ayarlanmamış. Güvenlik için derhal değiştirin!")
 
-# --- Rotasyonlar ---
+# --- Yardımcı Fonksiyonlar ---
+def generate_openai_response(messages_history):
+    """OpenAI modelinden (örn. gpt-3.5-turbo) yanıt üretir."""
+    if not openai_client:
+        logging.error("OpenAI client başlatılamadığı için yanıt üretilemiyor.")
+        return "Üzgünüm, şu anda yanıt üretemiyorum (OpenAI client başlatılamadı)."
+    try:
+        # OpenAI API çağrısı (openai>=1.0.0 sürümü için güncellendi)
+        response = openai_client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=messages_history,
+            max_tokens=300,
+            temperature=0.7,
+        )
+        # Yanıtın içeriğini alırken .content attribute'u kullanılıyor
+        return response.choices[0].message.content.strip()
+    except RateLimitError as e: # Kota aşımı hatasını yakala
+        logging.error(f"OpenAI Kota Aşıldı: {e}")
+        return "Üzgünüm, şu anda hizmetimiz yoğun veya kota limitinizi aştınız. Lütfen biraz bekleyip tekrar deneyin."
+    except Exception as e:
+        logging.error(f"OpenAI yanıtı üretilemedi: {e}")
+        return "Üzgünüm, şu anda bir yanıt üretemiyorum."
+
+def generate_single_openai_question(prompt):
+    """Tek bir soru üretmek için OpenAI'yi kullanır."""
+    if not openai_client:
+        logging.error("OpenAI client başlatılamadığı için soru üretilemiyor.")
+        return "Şu anda yapay zeka destekli soru üretilemiyor (OpenAI client başlatılamadı)."
+    try:
+        # OpenAI API çağrısı (openai>=1.0.0 sürümü için güncellendi)
+        response = openai_client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Sen bir teknik mülakat sorusu üreten asistansın. Sadece soruyu ver, ek açıklama yapma."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=300,
+            temperature=0.7,
+        )
+        # Yanıtın içeriğini alırken .content attribute'u kullanılıyor
+        return response.choices[0].message.content.strip()
+    except RateLimitError as e: # Kota aşımı hatasını yakala
+        logging.error(f"OpenAI Kota Aşıldı (Soru Üretimi): {e}")
+        return "Üzgünüm, şu anda hizmetimiz yoğun veya kota limitinizi aştınız. Lütfen biraz bekleyip tekrar deneyin."
+    except Exception as e:
+        logging.error(f"YZ ile mülakat sorusu üretilemedi: {e}")
+        return "Şu anda yapay zeka destekli soru üretilemiyor."
+
+
+# --- Rotalar ---
 ALLOWED_CATEGORIES = [
     "frontend",
     "backend",
@@ -77,59 +109,75 @@ ALLOWED_CATEGORIES = [
     "general"
 ]
 
-# Ana Sayfa Rotası
 @app.route('/interview', methods=['GET', 'POST'])
 def interview():
+    """Mülakat simülasyonu ana sayfası."""
+    # Eğer oturumda chat_history yoksa, varsayılan başlangıç mesajlarını ayarla
     if 'chat_history' not in session:
-        session['chat_history'] = [{"role": "model", "content": "Merhaba! Mülakat simülasyonuna hoş geldiniz. Bana biraz kendinizden bahseder misiniz?"}]
+        session['chat_history'] = [
+            {"role": "system", "content": "Sen bir iş görüşmesi yapan uzman bir mülakatçı gibisin. Adaya nazikçe ve profesyonelce yaklaş."},
+            {"role": "assistant", "content": "Merhaba! Mülakat simülasyonuna hoş geldiniz. Bana biraz kendinizden bahseder misiniz?"}
+        ]
 
+    # POST isteği (kullanıcı mesaj gönderdiğinde)
     if request.method == 'POST':
         user_input = request.form.get('user_input')
-        session['chat_history'].append({"role": "user", "content": user_input})
+        if user_input: # Eğer boş mesaj gönderilmediyse
+            # Kullanıcının girdisini oturuma ekle
+            session['chat_history'].append({"role": "user", "content": user_input})
 
-        # Sohbeti Gemini formatına çevir
-        chat_list = []
-        for m in session['chat_history']:
-            if m['role'] == 'user':
-                chat_list.append({'role': 'user', 'parts': [m['content']]})
-            else:
-                chat_list.append({'role': 'model', 'parts': [m['content']]})
+            # OpenAI'den yanıt al
+            ai_reply = generate_openai_response(session['chat_history'])
 
-        chat = model.start_chat(history=chat_list)
+            # Yapay zekanın yanıtını oturuma ekle
+            session['chat_history'].append({"role": "assistant", "content": ai_reply})
+            session.modified = True # Oturumu güncellemek için önemli
 
-        gemini_response = chat.send_message(user_input)
-        ai_reply = gemini_response.text
-        session['chat_history'].append({"role": "model", "content": ai_reply})
+        else:
+             # Boş mesaj gönderildiyse, sayfayı yeniden yönlendir (değişiklik yok)
+             return redirect(url_for('interview'))
 
-    return render_template('interview.html', chat_history=session['chat_history'])
+    # GET isteği veya POST sonrası sayfayı render et
+    return render_template('interview.html', chat_history=session.get('chat_history', []))
+
 
 @app.route('/interview/reset')
 def reset_interview():
-    session.pop('chat_history', None)
-    return redirect(url_for('interview'))
+    """Mülakat oturumunu sıfırlar."""
+    session.pop('chat_history', None) # Oturumdaki mülakat geçmişini sil
+    logging.info("Mülakat oturumu sıfırlandı.")
+    return redirect(url_for('interview')) # Mülakat sayfasına geri yönlendir
 
+# Belirli bir kategori ve soru numarası için soru üretme rotası
 @app.route('/interview/<category>/<int:question_num>')
-def interview_question(category, question_num):
+def interview_question_route(category, question_num):
+    """Belirli bir kategoriye ait rastgele mülakat sorusu üretir."""
     user_id = session.get('user_id')
+    # Eğer kullanıcı giriş yapmamışsa, giriş sayfasına yönlendir
     if not user_id:
         logging.warning("Mülakat sorusu sayfasına erişim denemesi, oturum yok.")
         return redirect(url_for('login'))
 
-    ALLOWED_CATEGORIES = ["frontend", "backend", "mobile", "devops", "data_science", "general"]
+    # Geçerli kategoriyi kontrol et
     if category not in ALLOWED_CATEGORIES:
         logging.error(f"Geçersiz mülakat kategorisi istendi: {category}")
         return render_template('error.html', message="Geçersiz mülakat kategorisi."), 404
 
     try:
-        # Sorulacak promptu oluştur
-        prompt = f"{category} kategorisinde bir mülakat yapıyoruz. Bana {question_num}. soruyu ver."
+        # OpenAI için prompt oluştur
+        prompt = f"'{category}' alanında bir iş mülakatı için {question_num}. soru olarak sormak üzere düşündürücü ve teknik bir soru üret."
 
-        # Gemini API'den soruyu al
-        ai_question = generate_interview_question(prompt)
+        # OpenAI API'den soruyu al
+        ai_question = generate_single_openai_question(prompt)
 
+        # Eğer soru üretilemediyse hata mesajı göster
+        if "Üzgünüm" in ai_question or "üretilemiyor" in ai_question:
+            return render_template('error.html', message=ai_question)
+
+        # Soruyu gösteren şablona yönlendir (interview_question.html)
         return render_template('interview_question.html',
                                question_num=question_num,
-                               total_questions=5,
+                               total_questions=5, # Toplam soru sayısını varsayılan olarak 5 alıyoruz, bunu değiştirebilirsiniz
                                question_text=ai_question,
                                category=category)
     except Exception as e:
@@ -139,20 +187,20 @@ def interview_question(category, question_num):
 
 @app.route('/')
 def index():
+    """Ana sayfa rotası."""
+    # Kullanıcı giriş yapmışsa, profiline yönlendir
     if 'user_id' in session:
         profile = session.get('user_profile')
         if profile and 'name' in profile:
             return redirect(url_for('profile', username=profile['name']))
         else:
-            # Profil bilgisi yoksa session'ı temizle ve tekrar giriş iste
+            # Profil bilgisi yoksa oturumu temizle ve giriş yapmasını iste
             session.clear()
             return redirect(url_for('login'))
+    # Giriş yapmamışsa ana sayfa şablonunu göster
     return render_template('index.html')
 
 
-
-# Login Sayfası Rotası
-# Login Sayfası Rotası
 # Login Sayfası Rotası
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -161,26 +209,25 @@ def login():
         password = request.form.get('password')
         logging.info(f"Login POST isteği alındı: E-posta={email}")
 
+        # Gerekli alanların doldurulup doldurulmadığını kontrol et
         if not email or not password:
             error_message = "Lütfen e-posta ve şifrenizi girin."
             return render_template('login.html', error=error_message)
 
+        # Supabase bağlantısı kontrolü
         if not supabase:
             error_message = "Sunucu hatası: Supabase bağlantısı kurulamadı."
             return render_template('login.html', error=error_message)
 
         try:
-            response = supabase.auth.sign_in_with_password({
-                "email": email,
-                "password": password
-            })
-
-            logging.info(f"Supabase sign_in_with_password response: {response}")
+            # Supabase ile kullanıcı girişi yap
+            response = supabase.auth.sign_in_with_password({"email": email, "password": password})
 
             user_id = None
             user_email = None
             user_profile = None
 
+            # Giriş başarılıysa user bilgilerini al
             if response and hasattr(response, 'user') and response.user:
                 user_id = response.user.id
                 user_email = response.user.email
@@ -190,259 +237,251 @@ def login():
                 logging.warning("Oturum açma başarısız. Kullanıcı nesnesi bulunamadı.")
                 return render_template('login.html', error=error_message)
 
+            # Kullanıcı ID'si alındıysa, profil bilgilerini Supabase'den çek
             if user_id:
-                # ⭐ execute() sonucu bir nesne döner, .data ile asıl veriye ulaşılır
                 profile_data_response = supabase.table("users").select("*").eq("auth_id", user_id).execute()
-                profile_data = profile_data_response.data  # ⭐ DÜZENLENDİ
+                profile_data = profile_data_response.data
 
-                if profile_data and len(profile_data) > 0 and isinstance(profile_data[0], dict):
+                # Profil verisi varsa, user_profile'ı güncelle
+                if profile_data and isinstance(profile_data, list) and len(profile_data) > 0 and isinstance(profile_data[0], dict):
                     user_profile = profile_data[0]
                     logging.info(f"Profil bilgileri başarıyla çekildi. User ID: {user_id}")
                 else:
                     logging.warning(f"Profil bilgileri çekilemedi veya eksik. Supabase yanıtı: {profile_data}")
-                    user_profile = None
+                    user_profile = None # Profil yoksa None olarak bırak
 
+                # Oturum değişkenlerini ayarla
                 session['user_id'] = user_id
                 session['user_email'] = user_email
                 session['user_profile'] = user_profile
 
-                if user_profile and 'name' in user_profile:
-                    display_name = user_profile.get('name', 'Kullanici')
-                else:
-                    display_name = user_email.split('@')[0].capitalize() if user_email else 'Kullanici'
-
+                # Profildeki isme göre yönlendir, yoksa email'den türetilmiş bir isim kullan
+                display_name = user_profile.get('name', user_email.split('@')[0].capitalize() if user_email else 'Kullanici')
                 return redirect(url_for('profile', username=display_name))
 
             else:
+                # Kullanıcı ID alınamadıysa hata mesajı göster
                 error_message = "Kullanıcı bilgileri alınamadı. Lütfen tekrar deneyin."
                 return render_template('login.html', error=error_message)
 
         except Exception as e:
+            # Giriş sırasında oluşan hataları yakala ve logla
             logging.error(f"Supabase oturum açma hatası: {e}")
             error_str = str(e)
-
+            # Hata mesajlarına göre daha spesifik geri bildirimler ver
             if "invalid login credentials" in error_str or "invalid grant" in error_str:
                 error_message = "Hatalı e-posta veya şifre. Lütfen tekrar deneyin."
             else:
                 error_message = f"Giriş sırasında bir hata oluştu: {e}"
             return render_template('login.html', error=error_message)
 
+    # GET isteği için login şablonunu göster
     return render_template('login.html')
 
 
-# Diğer tüm rotasyonlar olduğu gibi kalacak...
-
-# --- Diğer tüm rotasyonlar olduğu gibi kalacak ---
-# ... (register, profile, index vb. rotalar) ...
-
-
-
-# Register Sayfası Rotası
 # Register Sayfası Rotası
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        # Formdan kullanıcı bilgilerini al
         name = request.form.get('name')
         email = request.form.get('email')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
 
+        # Alanların doldurulmasını kontrol et
         if not name or not email or not password or not confirm_password:
             error_message = "Lütfen tüm alanları doldurun."
             return render_template('register.html', error=error_message)
 
+        # Şifrelerin eşleşip eşleşmediğini kontrol et
         if password != confirm_password:
             error_message = "Şifreler uyuşmuyor."
             return render_template('register.html', error=error_message)
 
+        # Supabase bağlantısını kontrol et
         if not supabase:
             error_message = "Sunucu hatası: Supabase bağlantısı kurulamadı."
             return render_template('register.html', error=error_message)
 
         try:
-            # 1. Kullanıcıyı Supabase Authentication ile kaydetme
-            # sign_up fonksiyonunun dönüş yapısını kontrol edelim
-            response = supabase.auth.sign_up({
-                "email": email,
-                "password": password
-            })
-
-            logging.info(f"Supabase sign_up response: {response}") # Yanıtın yapısını görmek için
+            # 1. Kullanıcıyı Supabase Authentication ile kaydet
+            response = supabase.auth.sign_up({"email": email, "password": password})
 
             user_id = None
             user_email_from_response = None
 
-            # Yanıtın yapısını kontrol et (User nesnesi, tuple, veya dict olabilir)
-            if hasattr(response, 'user') and response.user:
-                # Eğer yanıtın doğrudan bir 'user' özelliği varsa (User nesnesi gibi)
+            # Kayıt başarılıysa kullanıcı bilgilerini al
+            if response and hasattr(response, 'user') and response.user:
                 user_id = response.user.id
                 user_email_from_response = response.user.email
-                logging.info(f"Supabase Auth kaydı başarılı (User nesnesi formatında). User ID: {user_id}")
-            elif isinstance(response, dict) and response.get('user'):
-                # Eğer yanıt bir dict ise ve içinde 'user' anahtarı varsa
-                user_id = response['user']['id']
-                user_email_from_response = response['user']['email']
-                logging.info(f"Supabase Auth kaydı başarılı (dict formatında). User ID: {user_id}")
-            elif isinstance(response, tuple) and len(response) > 0 and isinstance(response[0], dict) and response[0].get('user'):
-                # Eğer yanıt bir tuple ise ve ilk elemanı dict ise ve içinde 'user' anahtarı varsa
-                user_data_from_tuple = response[0]
-                user_id = user_data_from_tuple['user']['id']
-                user_email_from_response = user_data_from_tuple['user']['email']
-                logging.info(f"Supabase Auth kaydı başarılı (tuple formatında). User ID: {user_id}")
+                logging.info(f"Supabase Auth kaydı başarılı. User ID: {user_id}")
             else:
-                # Bilinmeyen bir formatta veya user bilgisi yoksa
-                logging.warning(f"Supabase Auth kaydı başarısız (beklenmedik yanıt formatı veya user bilgisi yok). Response: {response}")
+                # Kayıt başarısızsa hata mesajı göster
+                logging.warning(f"Supabase Auth kaydı başarısız veya beklenmedik yanıt. Response: {response}")
                 error_message = "Kayıt sırasında bir sorun oluştu. Lütfen bilgilerinizi kontrol edin."
                 return render_template('register.html', error=error_message)
 
-            # user_id başarıyla alındıysa devam et
+            # Kullanıcı ID alındıysa, ek bilgileri kendi 'users' tablosuna kaydet
             if user_id:
-                # 2. Ek kullanıcı bilgilerini kendi 'users' tablonuza kaydetme
-                user_profile_data = {
-                    "auth_id": user_id,
-                    "name": name,
-                    "email": email
-                }
-
-                # Supabase'in table().insert() methodu ile veriyi ekle
+                user_profile_data = {"auth_id": user_id, "name": name, "email": email}
+                # Supabase'e veri ekle
                 insert_response, _ = supabase.table("users").insert(user_profile_data).execute()
 
+                # Ekleme başarılıysa kullanıcıyı login sayfasına yönlendir
                 if insert_response and len(insert_response) > 0 and insert_response[0]:
                     logging.info("Kullanıcı bilgileri veritabanına eklendi.")
                     return redirect(url_for('login'))
                 else:
+                    # Veritabanına ekleme başarısız olursa hata mesajı göster ve Auth'dan kullanıcıyı sil
                     error_message = "Kullanıcı bilgileri veritabanına kaydedilirken bir sorun oluştu. Lütfen tekrar deneyin."
                     logging.error(f"Hata: Kullanıcı bilgileri veritabanına eklenemedi. Response: {insert_response}")
-                    # Hata durumunda Auth'dan kullanıcıyı silme denemesi (SDK'ya göre değişir)
                     try:
-                        # delete_res = supabase.auth.delete_user(user_id)
-                        pass
+                        supabase.auth.delete_user(user_id) # Hata durumunda kullanıcıyı sil
+                        logging.info(f"Hata sonrası silinen kullanıcı (Auth ID): {user_id}")
                     except Exception as auth_del_e:
                         logging.error(f"Hata sonrası Auth kullanıcısı silinemedi: {auth_del_e}")
                     return render_template('register.html', error=error_message)
             else:
-                # user_id alınamadıysa
+                # Kullanıcı ID alınamadıysa hata mesajı göster
                 error_message = "Kayıt sırasında bir sorun oluştu (Kullanıcı bilgisi alınamadı). Lütfen tekrar deneyin."
                 return render_template('register.html', error=error_message)
 
         except Exception as e:
+            # Kayıt sırasında oluşan hataları yakala ve logla
             error_str = str(e)
             logging.error(f"Supabase kayıt hatası: {error_str}")
-
-            if "duplicate key value violates unique constraint" in error_str or \
-               "User already registered" in error_str or \
-               "duplicate email" in error_str:
+            # Hata mesajlarına göre kullanıcıya özel geri bildirimler
+            if "duplicate key value violates unique constraint" in error_str or "User already registered" in error_str or "duplicate email" in error_str:
                  error_message = "Bu e-posta adresiyle zaten bir hesap mevcut."
             elif "Password should be at least 8 characters long" in error_str:
                  error_message = "Şifre en az 8 karakter uzunluğunda olmalı."
             else:
                  error_message = f"Kayıt sırasında bir hata oluştu: {e}"
-
             return render_template('register.html', error=error_message)
 
+    # GET isteği için register şablonunu göster
     return render_template('register.html')
 
 # Profile Sayfası Rotası
 @app.route('/profile/<username>')
 def profile(username):
     user_id = session.get('user_id')
-    if not user_id or not supabase:
-        logging.warning("Profil sayfasına erişim denemesi, oturum yok veya Supabase bağlantısı yok.")
+    # Kullanıcı giriş yapmamışsa giriş sayfasına yönlendir
+    if not user_id:
+        logging.warning("Profil sayfasına erişim denemesi, oturum yok.")
         return redirect(url_for('login'))
 
     user_profile = session.get('user_profile')
-    
-    # Supabase'den profili çekme mantığını biraz daha güvenli hale getirelim
-    # Session'daki profil bilgisi hatalıysa veya yoksa, tekrar çekmeye çalışalım
+
+    # Oturumdaki profil bilgisi eksikse veya hatalıysa Supabase'den tekrar çek
     if not isinstance(user_profile, dict) or not user_profile or user_profile.get("auth_id") != user_id:
         logging.warning(f"Session'daki profil bilgisi hatalı veya eksik. User ID: {user_id}. Supabase'den tekrar çekiliyor...")
         try:
-            profile_data_response, _ = supabase.table("users").select("*").eq("auth_id", user_id).execute()
-            if profile_data_response and len(profile_data_response) > 0 and isinstance(profile_data_response[0], dict):
-                user_profile = profile_data_response[0] # Doğru dict formatında geldi
-                session['user_profile'] = user_profile # Session'ı güncelle
-                logging.info(f"Profil bilgileri Supabase'den yeniden çekildi ve session'a kaydedildi. User ID: {user_id}")
-            else:
-                logging.error(f"Profil bilgileri Supabase'den tekrar çekilemedi. User ID: {user_id}, Response: {profile_data_response}")
-                user_profile = None # Hata durumunda None yap
-        except Exception as e:
-            logging.error(f"Profil verisi Supabase'den çekilirken hata: {e}")
-            user_profile = None # Hata durumunda None yap
+            # Supabase'den kullanıcı profilini çek
+            profile_data_response = supabase.table("users").select("*").eq("auth_id", user_id).execute()
+            profile_data = profile_data_response.data
 
-    # Şimdi user_profile'ın doğru olup olmadığını kontrol edelim
-    if user_profile and isinstance(user_profile, dict): # Eğer user_profile bir dict ise
-        display_name = user_profile.get('name', username.capitalize()) # Name'i çek, yoksa URL'den gelen username'i kullan
-        
+            # Profil verisi varsa, oturumu güncelle
+            if profile_data and isinstance(profile_data, list) and len(profile_data) > 0 and isinstance(profile_data[0], dict):
+                user_profile = profile_data[0]
+                session['user_profile'] = user_profile
+                logging.info(f"Profil bilgileri Supabase'den yeniden çekildi. User ID: {user_id}")
+            else:
+                # Profil verisi çekilemezse hata logla ve user_profile'ı None yap
+                logging.error(f"Profil bilgileri Supabase'den tekrar çekilemedi. User ID: {user_id}, Response: {profile_data}")
+                user_profile = None
+        except Exception as e:
+            # Veri çekme sırasında hata olursa logla ve user_profile'ı None yap
+            logging.error(f"Profil verisi Supabase'den çekilirken hata: {e}")
+            user_profile = None
+
+    # Profil bilgileri başarıyla çekildiyse, şablonu render et
+    if user_profile and isinstance(user_profile, dict):
+        # Gösterilecek adı belirle (profildeki isim veya URL'den alınan isim)
+        display_name = user_profile.get('name', username.capitalize())
+        # Şablona gönderilecek verileri hazırla
         user_data_for_template = {
             'name': display_name,
-            'role': user_profile.get('role', 'Rol Bilgisi Yok'),
-            'score': user_profile.get('score', 'N/A'), # 'N/A' veya başka bir varsayılan değer
-            'progress_data': [
-                {'item': 'Item 1', 'value': 20},
-                {'item': 'Item 2', 'value': 40},
-                {'item': 'Item 3', 'value': 55},
-                {'item': 'Item 4', 'value': 70},
-                {'item': 'Item 5', 'value': 100},
+            'role': user_profile.get('role', 'Rol Bilgisi Yok'), # Örnek alanlar
+            'score': user_profile.get('score', 'N/A'),
+            'progress_data': [ # Örnek ilerleme grafiği verileri
+                {'item': 'Frontend Bilgisi', 'value': user_profile.get('frontend_score', 0)},
+                {'item': 'Backend Bilgisi', 'value': user_profile.get('backend_score', 0)},
+                {'item': 'Mobile Bilgisi', 'value': user_profile.get('mobile_score', 0)},
             ]
         }
         return render_template('profile.html', user=user_data_for_template)
     else:
-        # User_profile hala dict değilse veya None ise (yani profil bilgisi alınamadıysa)
+        # Profil bilgisi alınamadıysa oturumu temizle ve ana sayfaya yönlendir
         logging.warning(f"Profil bilgileri yüklenemedi. Kullanıcıyı ana sayfaya yönlendiriliyor. User ID: {user_id}")
-        # Oturumu temizleyip ana sayfaya yönlendir
-        session.pop('user_id', None)
-        session.pop('user_profile', None)
+        session.clear()
         return redirect(url_for('index'))
 
-# Diğer tüm rotasyonlar olduğu gibi kalacak...
 
-# Create Interview Sayfası Rotası
+# Yeni Mülakat Oluşturma Sayfası Rotası
 @app.route('/create_interview', methods=['GET', 'POST'])
 def create_interview():
     user_id = session.get('user_id')
+    # Kullanıcı giriş yapmamışsa giriş sayfasına yönlendir
     if not user_id:
         logging.warning("Create Interview sayfasına erişim denemesi, oturum yok.")
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        category = request.form.get('category')
+        category = request.form.get('category') # Seçilen kategori
         logging.info(f"Yeni mülakat oluşturma isteği: Kategori = {category}")
         if category:
-            return redirect(url_for('interview_question', question_num=1, category=category))
+            # Kategori seçildiyse, mülakatı başlatmak için ilk soruya yönlendir
+            return redirect(url_for('interview_question_route', question_num=1, category=category))
         else:
+            # Kategori seçilmediyse hata mesajı göster
             error_message = "Lütfen bir mülakat kategorisi seçin."
-            return render_template('create_interview.html', error=error_message)
+            return render_template('create_interview.html', error=error_message, categories=ALLOWED_CATEGORIES)
 
-    return render_template('create_interview.html')
+    # GET isteği için create_interview şablonunu göster
+    return render_template('create_interview.html', categories=ALLOWED_CATEGORIES)
 
-# Mülakat Soru Sayfası Rotası
 
 # Logout Rotası
 @app.route('/logout')
 def logout():
-    session.pop('user_id', None)
-    session.pop('user_profile', None)
+    """Kullanıcının oturumunu kapatır."""
+    session.pop('user_id', None) # User ID'yi oturumdan kaldır
+    session.pop('user_profile', None) # Profil bilgilerini oturumdan kaldır
+    session.pop('chat_history', None) # Mülakat geçmişini de temizle
     logging.info("Kullanıcı çıkış yaptı.")
-    return redirect(url_for('index'))
+    return redirect(url_for('login')) # Çıkış sonrası login sayfasına yönlendir
 
 # Geçmiş Mülakatlarım Rotası (Placeholder)
 @app.route('/my_interviews')
 def my_interviews():
     user_id = session.get('user_id')
+    # Kullanıcı giriş yapmamışsa giriş sayfasına yönlendir
     if not user_id:
         return redirect(url_for('login'))
     logging.info("Geçmiş Mülakatlarım sayfasına erişildi.")
-    return render_template('my_interviews.html')
+    # Bu sayfada kullanıcının geçmiş mülakatlarını Supabase'den çekip listelemek gerekir.
+    # Şimdilik sadece bir placeholder mesajı döndürelim.
+    return render_template('my_interviews.html', user_id=user_id)
 
 # Hata Sayfası (Opsiyonel)
 @app.route('/error')
 def error_page():
-    # message parametresiyle hata mesajı gönderilebilir.
+    """Genel hata mesajı gösterir."""
+    # message parametresiyle gönderilen hata mesajını şablona aktar
     return render_template('error.html', message="Beklenmedik bir hata oluştu.")
 
-# Uygulamayı çalıştırmak için
+# Uygulamayı çalıştırmak için ana blok
 if __name__ == '__main__':
+    # Geliştirme ortamında gizli anahtarın ayarlanmadığına dair uyarı
     if app.config['SECRET_KEY'] == 'varsayilan_cok_gizli_bir_anahtar_degistirmeli':
         logging.warning("FLASK_SECRET_KEY ortam değişkeni ayarlanmamış. Güvenlik için derhal değiştirin!")
+    # API anahtarlarının eksikliği durumunda uyarılar
+    if not openai_api_key:
+        logging.error("OPENAI_API_KEY ayarlı değil, OpenAI özellikleri çalışmayacaktır.")
+    if not SUPABASE_URL or not SUPABASE_ANON_KEY:
+        logging.error("Supabase URL veya Anon Key ayarlı değil, Supabase özellikleri çalışmayacaktır.")
 
+    # Flask uygulamasını çalıştır (debug=True geliştirme için kullanışlıdır)
     app.run(debug=True)
