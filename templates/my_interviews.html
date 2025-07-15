@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Geçmiş Mülakatlarım{% endblock %}
+
+{% block content %}
+<div class="my-interviews-container">
+    <h2>Geçmiş Mülakatlarım</h2>
+
+    {% if mülakatlar %}
+        <div class="interview-list">
+            {% for mülakat in mülakatlar %}
+                <div class="interview-item{% if loop.last %} last-item{% endif %}">
+                    <div class="interview-header">
+                        {# Mülakatın hangi sayısal sırada olduğunu göstermek için loop.index kullanıldı #}
+                        <h3>Mülakat {{ loop.index }} - {{ mülakat.category | capitalize if mülakat.category else 'Genel' }}</h3>
+                        {# Tarih bilgisini daha okunabilir formatta göstermek için .split() kullanıldı #}
+                        <p class="date">Tarih: {{ mülakat.generated_at.split('T')[0] }}</p>
+                        <p class="type">Soru Tipi: {{ mülakat.question_type | capitalize if mülakat.question_type else 'Bilinmiyor' }}</p>
+                    </div>
+                    <div class="interview-body">
+                        <p><strong>Soru:</strong> {{ mülakat.question_text }}</p>
+
+                        {% if mülakat.answers %}
+                            <h4>Verdiğiniz Cevap(lar):</h4>
+                            <ul class="answer-list">
+                                {% for answer in mülakat.answers %}
+                                    <li class="answer-item">
+                                        <p><strong>Cevabınız:</strong> {{ answer.user_answer }}</p>
+                                        {# AI yanıtı veya seçilen seçenekler şimdilik gösterilmiyor, ancak isterseniz eklenebilir #}
+                                        
+                                        {# Değerlendirme sonucu #}
+                                        <p>
+                                            <strong>Sonuç:</strong> 
+                                            {% if answer.is_correct is none %}
+                                                {# Açık uçlu sorular için AI değerlendirmesi henüz yapılmadığı varsayılır #}
+                                                AI Değerlendirmesinde 
+                                            {% elif answer.is_correct %}
+                                                Doğru
+                                            {% else %}
+                                                Yanlış
+                                            {% endif %}
+                                        </p>
+                                        {# Cevaplama tarihini YYYY-MM-DD formatında göster #}
+                                        <p class="answer-date">Yanıtlandı: {{ answer.answered_at.split('T')[0] }}</p>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>Bu mülakat için henüz bir cevap kaydedilmemiş.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        {# Eğer hiçbir mülakat bulunamazsa gösterilecek mesaj #}
+        <p>Henüz tamamladığınız bir mülakat bulunmamaktadır.</p>
+    {% endif %}
+
+    <div class="action-buttons">
+        <a href="{{ url_for('create_interview') }}" class="btn btn-primary">Yeni Mülakat Başlat</a>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Ana Sayfa</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .my-interviews-container {
+        text-align: center;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        max-width: 800px; /* İçeriğin daha iyi görünmesi için genişlik ayarlandı */
+        margin: 50px auto;
+        color: #333;
+    }
+    .my-interviews-container h2, .my-interviews-container h3, .my-interviews-container h4 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+    }
+    .my-interviews-container p {
+        color: #555;
+        font-size: 1.1rem;
+        margin: 8px 0;
+    }
+    .interview-list {
+        margin-top: 30px;
+        text-align: left; /* İçeriği sola hizalamak için */
+    }
+    .interview-item {
+        background-color: #f9f9f9;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        transition: transform 0.2s ease-in-out;
+    }
+    .interview-item:hover {
+        transform: translateY(-3px); /* Fare üzerine gelince hafif bir yükselme efekti */
+    }
+    .interview-header {
+        border-bottom: 1px dashed #ccc;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+    }
+    .interview-header h3 {
+        margin: 0;
+        font-size: 1.4rem;
+    }
+    .interview-header .date, .interview-header .type {
+        font-size: 0.9rem;
+        color: #777;
+        margin-top: 5px;
+    }
+    .interview-body p {
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+    .answer-list {
+        list-style: none; /* Madde işaretlerini kaldır */
+        padding: 0;
+        margin-top: 15px;
+    }
+    .answer-item {
+        background-color: #fff; /* Cevapların kendi arka planı */
+        border: 1px solid #eee;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 10px; /* Cevaplar arasında boşluk */
+    }
+    .answer-item p {
+        margin: 5px 0;
+        font-size: 0.95rem;
+    }
+    .answer-item .answer-date {
+        font-size: 0.85rem;
+        color: #888;
+        text-align: right; /* Tarihi sağa hizalamak için */
+        margin-top: 8px;
+    }
+    .action-buttons {
+        margin-top: 40px;
+    }
+    .btn {
+        padding: 12px 25px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+        margin: 0 10px;
+        display: inline-block;
+    }
+    .btn-primary {
+        background-color: #3498db;
+        color: white;
+        border: 1px solid #3498db;
+    }
+    .btn-primary:hover {
+        background-color: #2980b9;
+    }
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+        border: 1px solid #6c757d;
+    }
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+</style>
+{% endblock %}

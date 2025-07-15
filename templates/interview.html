@@ -1,23 +1,128 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Mülakat Simülasyonu</title>
     <style>
-        #chat-box { border: 1px solid #ccc; padding: 10px; max-height: 400px; overflow-y: auto; }
-        .user { color: blue; }
-        .model { color: green; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        h1 {
+            background-color: #2c3e50;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        #chat-box {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: white;
+            margin: 20px auto;
+            max-width: 700px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .message {
+            max-width: 75%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            font-size: 1rem;
+        }
+        .user {
+            background-color: #3498db;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 0;
+            text-align: right;
+        }
+        .model {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            margin-right: auto;
+            border-bottom-left-radius: 0;
+            text-align: left;
+        }
+        form {
+            display: flex;
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+            gap: 10px;
+            padding: 0 20px;
+        }
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 12px 16px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 6px #3498db;
+        }
+        button {
+            background-color: #2ecc71;
+            border: none;
+            color: white;
+            padding: 0 25px;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #27ae60;
+        }
+        @media (max-width: 768px) {
+            #chat-box, form {
+                margin: 15px;
+                max-width: 100%;
+            }
+            .message {
+                max-width: 85%;
+            }
+        }
     </style>
 </head>
 <body>
     <h1>Mülakat Simülasyonu</h1>
-    <div id="chat-box">
+    <div id="chat-box" aria-live="polite" aria-relevant="additions">
         {% for message in chat_history %}
-            <p class="{{ message.role }}"><strong>{{ message.role|capitalize }}:</strong> {{ message.content }}</p>
+            <p class="message {{ message.role }}"><strong>{{ message.role|capitalize }}:</strong> {{ message.content }}</p>
         {% endfor %}
     </div>
-    <form method="POST">
+
+    <form method="POST" action="">
         <input type="text" name="user_input" required placeholder="Cevabınızı yazın...">
-        <button type="submit">Gönder</button>
+        <button type="submit" aria-label="Mesaj Gönder">Gönder</button>
     </form>
+
+    <script>
+        // Sayfa yüklendiğinde chat-box en altına scroll et
+        window.onload = () => {
+            const chatBox = document.getElementById('chat-box');
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+    </script>
 </body>
 </html>
