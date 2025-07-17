@@ -7,19 +7,22 @@
   /* İçerik kutusuna sadece üst boşluk ekleyelim ki header üstüne binmesin */
   .content-container {
     max-width: 700px;
-    margin: 120px auto 40px auto; /* 80px üst boşluk (header yüksekliği kadar) */
+    margin: 120px auto 40px auto;
+    /* 80px üst boşluk (header yüksekliği kadar) */
     padding: 20px;
     background: #fff;
     border-radius: 10px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #333;
   }
+
   .question-meta {
     font-size: 0.9rem;
     color: #666;
     margin-bottom: 10px;
   }
+
   .question-text {
     font-size: 1.3rem;
     font-weight: 600;
@@ -29,6 +32,7 @@
     line-height: 1.5;
     margin-bottom: 25px;
   }
+
   textarea {
     width: 100%;
     min-height: 120px;
@@ -39,10 +43,12 @@
     border: 1px solid #ccc;
     transition: border-color 0.3s ease;
   }
+
   textarea:focus {
     border-color: #3498db;
     outline: none;
   }
+
   button {
     margin-top: 15px;
     padding: 12px 25px;
@@ -54,9 +60,11 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
+
   button:hover {
     background-color: #2980b9;
   }
+
   .nav-links {
     margin-top: 30px;
     display: flex;
@@ -64,6 +72,7 @@
     flex-wrap: wrap;
     justify-content: center;
   }
+
   .nav-links a {
     padding: 10px 18px;
     background-color: #6c757d;
@@ -75,29 +84,33 @@
     min-width: 140px;
     text-align: center;
   }
+
   .nav-links a:hover {
     background-color: #5a6268;
   }
 </style>
 
 <div class="content-container">
-  <div class="question-meta">Soru {{ question_num }} / {{ total_questions }} | Kategori: {{ category | capitalize }}</div>
+  <div class="question-meta">Soru {{ question_num }} / {{ total_questions }} | Kategori: {{ category | capitalize }}
+  </div>
   <div class="question-text">{{ question_text | safe }}</div>
 
-  <form action="{{ url_for('interview') }}" method="post">
+  <form action="{{ url_for('interview.interview') }}" method="post">
     <label for="user_input" style="font-weight:600; margin-bottom:8px; display:block;">Cevabınızı buraya yazın:</label>
     <textarea id="user_input" name="user_input" placeholder="Cevabınız..." required></textarea>
     <button type="submit">Cevabı Gönder (Sohbeti Devam Ettir)</button>
   </form>
 
   <div class="nav-links">
-    {% if question_num < total_questions %}
-      <a href="{{ url_for('interview_question_route', category=category, question_num=question_num + 1) }}">Sonraki Soru</a>
-    {% else %}
-      <a href="{{ url_for('interview') }}">Mülakatı Tamamla</a>
-    {% endif %}
-    <a href="{{ url_for('create_interview') }}">Başka Bir Mülakat Oluştur</a>
-    <a href="{{ url_for('interview') }}">Sohbet Odasına Dön</a>
+    {% if question_num < total_questions %} <a
+      href="{{ url_for('interview.interview_question_route', category=category, question_num=question_num + 1) }}">
+      Sonraki
+      Soru</a>
+      {% else %}
+      <a href="{{ url_for('interview.interview') }}">Mülakatı Tamamla</a>
+      {% endif %}
+      <a href="{{ url_for('interview.create_interview') }}">Başka Bir Mülakat Oluştur</a>
+      <a href="{{ url_for('interview.interview') }}">Sohbet Odasına Dön</a>
   </div>
 </div>
 {% endblock %}

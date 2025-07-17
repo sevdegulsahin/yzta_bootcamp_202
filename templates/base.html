@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    
+
     <title>{% block title %}Mülakat Uygulaması{% endblock %}</title>
-    
+
     {# Dinamik meta etiketleri için blok #}
     {% block meta %}
     <meta name="description" content="Yapay zeka destekli mülakat uygulaması.">
     {% endblock %}
-    
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
-    
+
     {# Sayfaya özel stil eklemek için blok #}
     {% block styles %}{% endblock %}
 </head>
+
 <body>
     <header>
         <div class="container header-container">
             <div class="logo">
-                <a href="{{ url_for('index') }}" aria-label="Anasayfa">
+                <a href="{{ url_for('main.index') }}" aria-label="Anasayfa">
                     <img src="{{ url_for('static', filename='img/logo.png') }}" alt="MülakatAPP Logo" />
                 </a>
             </div>
@@ -30,29 +32,29 @@
             <nav aria-label="Ana Navigasyon">
                 <ul class="nav-list">
                     <li class="nav-item {% if active_page == 'index' %}active{% endif %}">
-                        <a href="{{ url_for('index') }}">Anasayfa</a>
+                        <a href="{{ url_for('main.index') }}">Anasayfa</a>
                     </li>
                     {% if user %}
-                        <li class="nav-item {% if active_page == 'create_interview' %}active{% endif %}">
-                            <a href="{{ url_for('create_interview') }}">Yeni Mülakat</a>
-                        </li>
-                        <li class="nav-item {% if active_page == 'profile' %}active{% endif %}">
-                            <a href="{{ url_for('profile', username=user.username) }}">Profilim</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url_for('logout') }}">Çıkış Yap</a>
-                        </li>
+                    <li class="nav-item {% if active_page == 'create_interview' %}active{% endif %}">
+                        <a href="{{ url_for('interview.create_interview') }}">Yeni Mülakat</a>
+                    </li>
+                    <li class="nav-item {% if active_page == 'profile' %}active{% endif %}">
+                        <a href="{{ url_for('profile.profile', username=user.username) }}">Profilim</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('auth.logout') }}">Çıkış Yap</a>
+                    </li>
                     {% else %}
-                        <li class="nav-item {% if active_page == 'login' %}active{% endif %}">
-                            <a href="{{ url_for('login') }}">Oturum Aç</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url_for('register') }}">Kayıt Ol</a>
-                        </li>
+                    <li class="nav-item {% if active_page == 'login' %}active{% endif %}">
+                        <a href="{{ url_for('auth.login') }}">Oturum Aç</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('auth.register') }}">Kayıt Ol</a>
+                    </li>
                     {% endif %}
                 </ul>
             </nav>
-            
+
         </div>
     </header>
 
@@ -69,8 +71,9 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    
+
     {# Sayfaya özel script eklemek için blok #}
     {% block scripts %}{% endblock %}
 </body>
+
 </html>

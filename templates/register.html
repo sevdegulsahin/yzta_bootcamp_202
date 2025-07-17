@@ -5,7 +5,7 @@
 {% block content %}
 <div class="auth-container"> {# register-container yerine auth-container kullanıyoruz #}
     <h2>Bir Hesap Oluştur</h2>
-    <form method="POST" action="{{ url_for('register') }}">
+    <form method="POST" action="{{ url_for('auth.register') }}">
         <div class="form-group">
             <label for="name">Ad Soyad</label>
             <input type="text" id="name" name="name" required value="{{ request.form.get('name', '') }}">
@@ -23,10 +23,10 @@
             <input type="password" id="confirm_password" name="confirm_password" required>
         </div>
         {% if error %}
-            <div class="error-message">{{ error }}</div>
+        <div class="error-message">{{ error }}</div>
         {% endif %}
         <button type="submit" class="btn-submit">Kayıt Ol</button>
     </form>
-    <p>Zaten hesabın var mı? <a href="{{ url_for('login') }}">Giriş Yap</a></p>
+    <p>Zaten hesabın var mı? <a href="{{ url_for('auth.login') }}">Giriş Yap</a></p>
 </div>
 {% endblock %}

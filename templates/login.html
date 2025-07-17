@@ -5,20 +5,21 @@
 {% block content %}
 <div class="auth-container"> {# login-container yerine auth-container kullanıyoruz #}
     <h2>Tekrar Hoş Geldin</h2>
-    <form method="POST" action="{{ url_for('login') }}">
+    <form method="POST" action="{{ url_for('auth.login') }}">
         <div class="form-group">
             <label for="email">E-Posta Adresi</label>
-            <input type="email" id="email" name="email" required value="{{ request.form.get('email', '') }}"> {# Girdiği değeri kaybetmemesi için #}
+            <input type="email" id="email" name="email" required value="{{ request.form.get('email', '') }}"> {# Girdiği
+            değeri kaybetmemesi için #}
         </div>
         <div class="form-group">
             <label for="password">Şifre</label>
             <input type="password" id="password" name="password" required>
         </div>
         {% if error %}
-            <div class="error-message">{{ error }}</div>
+        <div class="error-message">{{ error }}</div>
         {% endif %}
         <button type="submit" class="btn-submit">Giriş Yap</button>
     </form>
-    <p>Hesabın yok mu? <a href="{{ url_for('register') }}">Giriş Yap</a></p>
+    <p>Hesabın yok mu? <a href="{{ url_for('auth.register') }}">Giriş Yap</a></p>
 </div>
 {% endblock %}

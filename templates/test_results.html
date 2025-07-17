@@ -7,10 +7,10 @@
     <h2>Test Sonuçlarınız</h2>
 
     {% if username %}
-        <p>Merhaba, <strong>{{ username }}</strong>!</p>
+    <p>Merhaba, <strong>{{ username }}</strong>!</p>
     {% endif %}
     {% if category %}
-        <p>Test Alanı: <strong>{{ category | capitalize }}</strong></p>
+    <p>Test Alanı: <strong>{{ category | capitalize }}</strong></p>
     {% endif %}
 
     <div class="summary-box">
@@ -18,35 +18,35 @@
         <p>Toplam Sorulan Soru Sayısı: <strong>{{ total_questions_asked }}</strong></p>
         {# Eğer bu bir açık uçlu test ise, sayısal sonuçlar yerine değerlendirilecek ibaresi gösterilir #}
         {% if is_open_ended_test %}
-            <p>Doğru Cevap Sayısı: <strong>{{ correct_answers_count }}</strong></p>
-            <p>Puanınız: <strong>{{ score }}</strong></p>
+        <p>Doğru Cevap Sayısı: <strong>{{ correct_answers_count }}</strong></p>
+        <p>Puanınız: <strong>{{ score }}</strong></p>
         {% else %}
-            {# İleride eklenebilecek farklı test türleri için buraya elif blokları eklenebilir #}
-            <p>Cevaplarınız AI tarafından değerlendirilecektir.</p>
+        {# İleride eklenebilecek farklı test türleri için buraya elif blokları eklenebilir #}
+        <p>Cevaplarınız AI tarafından değerlendirilecektir.</p>
         {% endif %}
     </div>
 
     {# Detaylı cevapları göstermek için #}
     {% if detailed_answers %}
-        <div class="detailed-answers-section">
-            <h3>Detaylı Cevaplarınız</h3>
-            {% for answer in detailed_answers %}
-                <div class="answer-item">
-                    <p><strong>Soru:</strong> {{ answer.question_text }}</p>
-                    <p><strong>Cevabınız:</strong> {{ answer.user_response }}</p>
-                    {# Sadece is_correct bilgisi varsa ve boş değilse gösterilir (açık uçlu testlerde bu None olacak) #}
-                    {% if answer.is_correct is not none %} 
-                        <p><strong>Sonuç:</strong> {% if answer.is_correct %}Doğru{% else %}Yanlış{% endif %}</p>
-                    {% endif %}
-                </div>
-            {% endfor %}
+    <div class="detailed-answers-section">
+        <h3>Detaylı Cevaplarınız</h3>
+        {% for answer in detailed_answers %}
+        <div class="answer-item">
+            <p><strong>Soru:</strong> {{ answer.question_text }}</p>
+            <p><strong>Cevabınız:</strong> {{ answer.user_response }}</p>
+            {# Sadece is_correct bilgisi varsa ve boş değilse gösterilir (açık uçlu testlerde bu None olacak) #}
+            {% if answer.is_correct is not none %}
+            <p><strong>Sonuç:</strong> {% if answer.is_correct %}Doğru{% else %}Yanlış{% endif %}</p>
+            {% endif %}
         </div>
+        {% endfor %}
+    </div>
     {% endif %}
 
     <div class="action-buttons">
-        <a href="{{ url_for('create_interview') }}" class="btn btn-primary">Yeni Test Oluştur</a>
+        <a href="{{ url_for('interview.create_interview') }}" class="btn btn-primary">Yeni Test Oluştur</a>
         <a href="{{ url_for('my_interviews') }}" class="btn btn-secondary">Geçmiş Mülakatlarım</a>
-        <a href="{{ url_for('index') }}" class="btn btn-secondary">Ana Sayfa</a>
+        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Ana Sayfa</a>
     </div>
 </div>
 {% endblock %}
@@ -58,18 +58,22 @@
         background-color: #fff;
         padding: 30px;
         border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         max-width: 700px;
         margin: 50px auto;
     }
-    .test-results-container h2, .test-results-container h3 {
+
+    .test-results-container h2,
+    .test-results-container h3 {
         color: #2c3e50;
     }
+
     .test-results-container p {
         color: #555;
         font-size: 1.1rem;
         margin: 10px 0;
     }
+
     .summary-box {
         margin-top: 30px;
         padding: 20px;
@@ -77,6 +81,7 @@
         border-radius: 8px;
         border: 1px solid #e0e0e0;
     }
+
     .detailed-answers-section {
         margin-top: 30px;
         text-align: left;
@@ -85,23 +90,28 @@
         border-radius: 8px;
         border: 1px solid #e0e0e0;
     }
+
     .answer-item {
         margin-bottom: 20px;
         padding-bottom: 15px;
         border-bottom: 1px dashed #eee;
     }
+
     .answer-item:last-child {
         border-bottom: none;
         margin-bottom: 0;
         padding-bottom: 0;
     }
+
     .answer-item p {
         margin: 5px 0;
         font-size: 1rem;
     }
+
     .action-buttons {
         margin-top: 40px;
     }
+
     .btn {
         padding: 12px 25px;
         border-radius: 8px;
@@ -111,19 +121,23 @@
         margin: 0 10px;
         display: inline-block;
     }
+
     .btn-primary {
         background-color: #3498db;
         color: white;
         border: 1px solid #3498db;
     }
+
     .btn-primary:hover {
         background-color: #2980b9;
     }
+
     .btn-secondary {
         background-color: #6c757d;
         color: white;
         border: 1px solid #6c757d;
     }
+
     .btn-secondary:hover {
         background-color: #5a6268;
     }

@@ -8,16 +8,19 @@
     <p>Hangi tür mülakat yapmak istediğinizi ve modunu seçin.</p>
 
     {% if error %}
-        <p class="error-message">{{ error }}</p>
+    <p class="error-message">{{ error }}</p>
     {% endif %}
 
-    <form method="POST" action="{{ url_for('create_interview') }}">
+    <form method="POST" action="{{ url_for('interview.create_interview') }}">
         <div class="form-group-create">
             <label for="interview_type">Mülakat Türü:</label>
             <select id="interview_type" name="interview_type" required onchange="handleInterviewTypeChange(this.value)">
-                <option value="" disabled {% if not selected_interview_type %}selected{% endif %}>-- Mülakat Türü Seçin --</option>
-                <option value="assistant" {% if selected_interview_type == 'assistant' %}selected{% endif %}>Asistan (Chatbot) ile Mülakat</option>
-                <option value="written_test" {% if selected_interview_type == 'written_test' %}selected{% endif %}>Yazılı Test</option>
+                <option value="" disabled {% if not selected_interview_type %}selected{% endif %}>-- Mülakat Türü Seçin
+                    --</option>
+                <option value="assistant" {% if selected_interview_type=='assistant' %}selected{% endif %}>Asistan
+                    (Chatbot) ile Mülakat</option>
+                <option value="written_test" {% if selected_interview_type=='written_test' %}selected{% endif %}>Yazılı
+                    Test</option>
             </select>
         </div>
 
@@ -26,18 +29,21 @@
                 <label for="mode_choice">Mülakat Modu:</label>
                 <select id="mode_choice" name="mode_choice" required onchange="handleModeChoiceChange(this.value)">
                     <option value="" disabled {% if not selected_mode %}selected{% endif %}>-- Mod Seçin --</option>
-                    <option value="general" {% if selected_mode == 'general' %}selected{% endif %}>Genel Yetenek</option>
-                    <option value="technical" {% if selected_mode == 'technical' %}selected{% endif %}>Teknik</option>
+                    <option value="general" {% if selected_mode=='general' %}selected{% endif %}>Genel Yetenek</option>
+                    <option value="technical" {% if selected_mode=='technical' %}selected{% endif %}>Teknik</option>
                 </select>
             </div>
 
-            <div id="technical-area-options" style="display: {% if selected_interview_type and selected_mode == 'technical' %}block{% else %}none{% endif %};">
+            <div id="technical-area-options"
+                style="display: {% if selected_interview_type and selected_mode == 'technical' %}block{% else %}none{% endif %};">
                 <div class="form-group-create">
                     <label for="technical_area">Teknik Alan Seçin:</label>
                     <select id="technical_area" name="technical_area">
-                        <option value="" disabled {% if not selected_technical_area %}selected{% endif %}>-- Alan Seçin --</option>
+                        <option value="" disabled {% if not selected_technical_area %}selected{% endif %}>-- Alan Seçin
+                            --</option>
                         {% for cat in categories %}
-                            <option value="{{ cat }}" {% if selected_technical_area == cat %}selected{% endif %}>{{ cat|capitalize|replace('_', ' ') }}</option>
+                        <option value="{{ cat }}" {% if selected_technical_area==cat %}selected{% endif %}>{{
+                            cat|capitalize|replace('_', ' ') }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -91,7 +97,7 @@
             technicalAreaOptionsDiv.style.display = 'block';
             // Teknik alan seçimi zorunlu olduğu için değeri boş bırakmamalıyız
             if (!technicalAreaSelect.value) {
-                 // technicalAreaSelect.value = ''; // Varsayılan olarak boş bırakalım veya ilk alanı seçelim
+                // technicalAreaSelect.value = ''; // Varsayılan olarak boş bırakalım veya ilk alanı seçelim
             }
         } else {
             technicalAreaOptionsDiv.style.display = 'none';
@@ -129,29 +135,34 @@
         padding: 30px;
         background: #fff;
         border-radius: 12px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
         text-align: center;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+
     .create-interview-container h2 {
         margin-bottom: 15px;
         color: #2c3e50;
     }
+
     .create-interview-container p {
         color: #666;
         margin-bottom: 30px;
         font-size: 1.1rem;
     }
+
     .form-group-create {
         margin-bottom: 25px;
         text-align: left;
     }
+
     .form-group-create label {
         display: block;
         margin-bottom: 10px;
         font-weight: 600;
         color: #333;
     }
+
     .form-group-create select {
         width: 100%;
         padding: 12px 15px;
@@ -162,10 +173,12 @@
         transition: border-color 0.3s ease;
         cursor: pointer;
     }
+
     .form-group-create select:focus {
         outline: none;
         border-color: #3498db;
     }
+
     .btn-start-interview {
         background-color: #3498db;
         color: white;
@@ -178,9 +191,11 @@
         font-weight: 600;
         width: 100%;
     }
+
     .btn-start-interview:hover {
         background-color: #2980b9;
     }
+
     .error-message {
         color: #e74c3c;
         background-color: #fbeaea;

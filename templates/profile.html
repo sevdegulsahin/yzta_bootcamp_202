@@ -6,15 +6,18 @@
 <div class="profile-section">
     <div class="profile-sidebar">
         <ul>
-            <li><a href="{{ url_for('profile', username='me') }}" class="active">Profilim</a></li> {# 'me' yerine gerçek kullanıcı adı/id #}
-            <li><a href="{{ url_for('create_interview') }}">Yeni Mülakat Oluştur</a></li>
+            <li><a href="{{ url_for('profile.profile', username='me') }}" class="active">Profilim</a></li> {# 'me'
+            yerine gerçek
+            kullanıcı adı/id #}
+            <li><a href="{{ url_for('interview.create_interview') }}">Yeni Mülakat Oluştur</a></li>
             <li><a href="#">Geçmiş Mülakatlarım</a></li> {# Bu rotayı app.py'ye ekleyeceğiz #}
         </ul>
     </div>
     <div class="profile-content">
         <div class="profile-header">
             <div class="profile-avatar">
-                <img src="{{ url_for('static', filename='img/default_avatar.png') }}" alt="Avatar"> {# Varsayılan bir avatar resmi kullanabiliriz #}
+                <img src="{{ url_for('static', filename='img/default_avatar.png') }}" alt="Avatar"> {# Varsayılan bir
+                avatar resmi kullanabiliriz #}
             </div>
             <div class="profile-info">
                 <h3>{{ user.get('name', 'Kullanıcı Adı Yok') }}</h3>
