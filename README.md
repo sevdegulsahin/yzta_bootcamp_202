@@ -104,6 +104,10 @@ Whatsapp ve Toplantı Ekran Resimleri:
 [Whatsapp Link](https://docs.google.com/document/d/1Itl9e3Bnk0AnX2bn9Z2tXaNUmT2573JbjN7VhwM3hgA/edit?usp=sharing)
 
 **Sprint board update**: Sprint board screenshotları:
+<img width="1265" height="637" alt="image" src="https://github.com/user-attachments/assets/77430ae3-108e-4af2-8cec-0ecd019b2da9" />
+![image](<img width="1294" height="587" alt="image" src="https://github.com/user-attachments/assets/02eaf690-b89c-48ff-a2a6-66fccb240750" />
+)
+
 
 ## Ürün Durumu:
 ![image](<img width="793" height="343" alt="Ürün durumu 2" src="https://github.com/user-attachments/assets/03a44158-5419-478a-ac98-8d14eee8cff0" />)
