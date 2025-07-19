@@ -11,7 +11,7 @@ AI202
 ## Uygulama İsmi : 
 Interwievly
 ## Product Backlog URL:
-[Miro Backlog Board](https://miro.com/app/board/uXjVIhcq9zs=/)
+[Miro Backlog Board](https://miro.com/app/board/uXjVIhcq9zs=/?share_link_id=138027384658)
 - Product backlog 3 sprintten oluşmaktadır. 
 - Product backlog oluşturulurken INVEST metoduna göre oluşturulmuştur.
 ## Ürün Açıklaması:
