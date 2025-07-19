@@ -104,14 +104,24 @@ Whatsapp ve Toplantı Ekran Resimleri:
 [Whatsapp Link](https://docs.google.com/document/d/1Itl9e3Bnk0AnX2bn9Z2tXaNUmT2573JbjN7VhwM3hgA/edit?usp=sharing)
 
 **Sprint board update**: Sprint board screenshotları:
-<img width="1265" height="637" alt="image" src="https://github.com/user-attachments/assets/77430ae3-108e-4af2-8cec-0ecd019b2da9" />
+<img width="1147" height="576" alt="image" src="https://github.com/user-attachments/assets/119d6ede-7dff-4941-aac2-9fcff15f89ee" />
 <img width="1294" height="587" alt="image" src="https://github.com/user-attachments/assets/02eaf690-b89c-48ff-a2a6-66fccb240750" />
 <img width="1294" height="587" alt="image" src="https://github.com/user-attachments/assets/0ea92478-653c-4ed5-a08b-99647884a15e" />
 
 
 ## Ürün Durumu:
-![image](<img width="793" height="343" alt="Ürün durumu 2" src="https://github.com/user-attachments/assets/03a44158-5419-478a-ac98-8d14eee8cff0" />)
-![image](<img width="795" height="351" alt="Ürün durumu 1" src="https://github.com/user-attachments/assets/fb2533d7-2d01-427c-9001-38c5b6e92835" />)
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/03b1ef6f-0eee-4a7a-ad2e-c0cc1e3b28d3" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/c0b1262d-a0b7-42f2-a087-f724b517a4ff" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/9a94395d-1388-4f8b-9079-ad54b982e367" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/03e5a017-fcda-44dc-809d-4072db033487" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/0a1a1002-78cb-4a73-8890-c76efe930d59" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/8e267524-8d1a-452d-900b-00d5005585fd" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/d8e47b96-3b4f-4428-8c42-bffdf04c56dd" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/3f8b1f16-ea61-4c72-8cda-d7eb66085c50" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/7db8db10-7db6-44d4-a7c4-e0f2c4392d6f" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/a3962bcc-28ad-4338-b715-8b967a37e23d" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/ebe7e39d-60c1-4250-a8b6-2bbb4fd5077b" />
+
 
 ## Sprint Review :
 - Ekip olarak yapılan görüşmelerde uygulamanın özellikleri tekrar gözden geçirilip netleştirildi.
