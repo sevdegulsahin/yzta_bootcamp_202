@@ -43,6 +43,7 @@ Kullanıcılar, her mülakat sonrası detaylı geri bildirim alarak güçlü ve 
 - İK Uzmanları & Kariyer Danışmanları:Adaylarını daha verimli hazırlamak ve gelişimlerini takip etmek isteyen profesyoneller
   
 # SPRINT 1
+## Puan Tamamlama Mantığı:
 Tahmin Edilen Puan: 100 puan
 Tahmin Mantığı: Projenin toplam 300 puan olduğu varsayıldı. Her sprint 100 puan olacak şekilde planlandı. Bu sprintte temel arayüz, pozisyon seçimi, ilk soru-cevap döngüsü ve LLM entegrasyonu hedeflendi.
 
@@ -91,5 +92,50 @@ Gelişmesi Gerekenler:
 İleriye Dönük Planlar:
 - Belirlenen görev dağılımı ve bireysel sorumluluklar doğrultusunda proje süreci yapılandırılacak; her adımın planlanan şekilde ilerleyip ilerlemediği düzenli olarak gözlemlenecek ve gerekli güncellemeler yapılacaktır.
 - Yapay zeka destekli mülakat simülasyonunun temel işleyişini test edebilmek amacıyla, ilk fonksiyonel prototiplerin tasarımı, entegrasyonu ve senaryolar üzerinde denemeleri yapılmak üzere hazırlık süreci başlatılacaktır.
+# SPRINT 2
+## Puan Tamamlama Mantığı:
+ Tahmin Edilen Puan: 100 puan
+Tahmin Mantığı: Projenin toplam 300 puan olduğu varsayıldı. Her sprint 100 puan olacak şekilde planlandı. Bu sprintte temel arayüz, pozisyon seçimi, ilk soru-cevap döngüsü ve LLM entegrasyonu hedeflendi.
+2. sprint için backlog gözden geçirilmiş ve önceliklendirilmiştir. İlk sprintte tamamlanamayan işlerin yanı sıra, 2. sprintte tamamlanması gereken yeni işler de eklenmiştir.
+## Daily Scrum :
+Konuşmalar Whatsapp üzerinden toplantılar Google meet ve slack üzerinden yapılmıştır.
 
- 
+Whatsapp ve Toplantı Ekran Resimleri:
+[Whatsapp Link](https://docs.google.com/document/d/1Itl9e3Bnk0AnX2bn9Z2tXaNUmT2573JbjN7VhwM3hgA/edit?usp=sharing)
+
+**Sprint board update**: Sprint board screenshotları:
+
+## Ürün Durumu:
+![image](<img width="793" height="343" alt="Ürün durumu 2" src="https://github.com/user-attachments/assets/03a44158-5419-478a-ac98-8d14eee8cff0" />
+)
+![image](<img width="795" height="351" alt="Ürün durumu 1" src="https://github.com/user-attachments/assets/fb2533d7-2d01-427c-9001-38c5b6e92835" />)
+
+## Sprint Review :
+- Ekip olarak yapılaran görüşmelerde uygulamanın özellikleri tekrar gözden geçirilip netleştirildi.
+- Takım üyelerine görev dağılımları yapılmıştır. Herkesin sorumluluk alanları net bir şekilde belirlenmiştir.
+- Projeda kullanılacak veri seti belirlendi.
+- Arayüz Tasarımı Yapıldı.
+- Kullanılacak yazılım ve tasarım araçları belirlenmiştir. Arayüz tasarımında Figma, kodlama dili olarak Phyton kullanılacaktır.
+- Projenin Test aşaması Sprint 3 sürecinde yapılacaktır.
+  
+## Sprint Review Katılımcıları:
+- Emine Demirbaş (Developer-Aktif)
+- Edanur Terzi (Developer-Aktif)
+- Muhammad Abdulqadir Adem (Developer-Aktif)
+- Sevde Gül Şahin (Product Owner-Aktif)
+- Rümeysa Çelik (Scrum Master-Aktif)
+
+## Sprint Retrospective:
+İyi Gidenler:
+- Yazılım aşamasında ilerlemede hız kazandık.
+- Ekip içi iletişim ve fikir alışverişi daha da arttı, Geri bildirim konusunda aktif bir ekip iletişimi var.
+- Kullanıcı deneyimi hızlıca netleştirildi ve prototip ekranlar üretildi.
+- Teknik entegrasyon ve UI aşamalarında hedeflenen sonuca vardık.
+
+Gelişmesi Gerekenler:
+- Projenin test aşamasına geçmemiz gerekli olası hataları erken telafi etmemizde faydalı olacaktır.
+
+İleriye Dönük Planlar:
+- Belirlenen görev dağılımı ve bireysel sorumluluklar doğrultusunda proje süreci takibine devam edilecek.
+- Yapay zeka destekli mülakat simülasyonunun temel işleyişini test edebilmek amacıyla, ilk fonksiyonel prototiplerin tasarımı, entegrasyonu ve senaryolar üzerinde denemeleri yapılmak üzere hazırlık süreci başlatılacaktır.
+- Yapılacak test sonuçlarına göre durum değerlendirmesi yapılacak ve sonuca göre geliştirmeler yapılacak. 
