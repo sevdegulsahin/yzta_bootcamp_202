@@ -110,6 +110,9 @@ Whatsapp ve Toplantı Ekran Resimleri:
 
 
 ## Ürün Durumu:
+
+https://github.com/user-attachments/assets/a8eccd5a-dd26-424c-9ef1-0a5c2f865fad
+
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/03b1ef6f-0eee-4a7a-ad2e-c0cc1e3b28d3" />
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/c0b1262d-a0b7-42f2-a087-f724b517a4ff" />
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/9a94395d-1388-4f8b-9079-ad54b982e367" />
@@ -121,10 +124,6 @@ Whatsapp ve Toplantı Ekran Resimleri:
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/7db8db10-7db6-44d4-a7c4-e0f2c4392d6f" />
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/a3962bcc-28ad-4338-b715-8b967a37e23d" />
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/ebe7e39d-60c1-4250-a8b6-2bbb4fd5077b" />
-
-https://github.com/user-attachments/assets/a8eccd5a-dd26-424c-9ef1-0a5c2f865fad
-
-
 
 ## Sprint Review :
 - Ekip olarak yapılan görüşmelerde uygulamanın özellikleri tekrar gözden geçirilip netleştirildi.
