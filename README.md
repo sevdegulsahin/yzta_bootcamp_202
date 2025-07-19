@@ -106,7 +106,9 @@ Whatsapp ve Toplantı Ekran Resimleri:
 **Sprint board update**: Sprint board screenshotları:
 <img width="1147" height="576" alt="image" src="https://github.com/user-attachments/assets/119d6ede-7dff-4941-aac2-9fcff15f89ee" />
 <img width="1294" height="587" alt="image" src="https://github.com/user-attachments/assets/02eaf690-b89c-48ff-a2a6-66fccb240750" />
-<img width="1294" height="587" alt="image" src="https://github.com/user-attachments/assets/0ea92478-653c-4ed5-a08b-99647884a15e" />
+<img width="1297" height="586" alt="image" src="https://github.com/user-attachments/assets/f9baa1a5-26e0-4d72-a559-a5ac5a20f1a4" />
+<img width="1150" height="715" alt="image" src="https://github.com/user-attachments/assets/d6497370-20ec-4e83-85bc-a64413633b0b" />
+
 
 
 ## Ürün Durumu:
