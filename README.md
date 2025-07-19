@@ -64,7 +64,7 @@ Whatsapp Ekran Resimleri:
 ![image](https://github.com/user-attachments/assets/e06767be-8e56-4c09-a3ee-f7e384e940ec)
 
 ## Sprint Review :
-- Ekip olarak yapılaran görüşmelerde uygulamanın teması ve özelliklerine karar verilmiştir.
+- Ekip olarak yapılan görüşmelerde uygulamanın teması ve özelliklerine karar verilmiştir.
 - Proje fikri olarak Interviewly seçildi.
 - UI akış tasarımı yapıldı ve Figma'ya aktarıldı.
 - Kullanılacak yazılım ve tasarım araçları belirlenmiştir. Arayüz tasarımında Figma, kodlama dili olarak Phyton kullanılacaktır.
@@ -106,12 +106,11 @@ Whatsapp ve Toplantı Ekran Resimleri:
 **Sprint board update**: Sprint board screenshotları:
 
 ## Ürün Durumu:
-![image](<img width="793" height="343" alt="Ürün durumu 2" src="https://github.com/user-attachments/assets/03a44158-5419-478a-ac98-8d14eee8cff0" />
-)
+![image](<img width="793" height="343" alt="Ürün durumu 2" src="https://github.com/user-attachments/assets/03a44158-5419-478a-ac98-8d14eee8cff0" />)
 ![image](<img width="795" height="351" alt="Ürün durumu 1" src="https://github.com/user-attachments/assets/fb2533d7-2d01-427c-9001-38c5b6e92835" />)
 
 ## Sprint Review :
-- Ekip olarak yapılaran görüşmelerde uygulamanın özellikleri tekrar gözden geçirilip netleştirildi.
+- Ekip olarak yapılan görüşmelerde uygulamanın özellikleri tekrar gözden geçirilip netleştirildi.
 - Takım üyelerine görev dağılımları yapılmıştır. Herkesin sorumluluk alanları net bir şekilde belirlenmiştir.
 - Projeda kullanılacak veri seti belirlendi.
 - Arayüz Tasarımı Yapıldı.
