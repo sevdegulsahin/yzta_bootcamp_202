@@ -34,13 +34,17 @@ Kullanıcılar, her mülakat sonrası detaylı geri bildirim alarak güçlü ve 
 
 > Detaylı Raporlama ve Dışa Aktarım
 ## Hedef Kitle :
-- Üniversite Öğrencileri & Yeni Mezunlar:İlk iş/staj başvurusu yapacak, mülakat deneyimi az olan genç adaylar
-- Kariyer Değiştiren Profesyoneller:Pozisyon ya da sektör değiştirmek isteyen, güncelleme ihtiyacı duyan çalışanlar
-- Teknik Alan Adayları (Yazılım, Mühendislik vb.):Teknik mülakatlara hazırlanan, kodlama/algoritma pratiği yapmak isteyen kişiler
-- Özgüven Eksikliği Yaşayan Adaylar:Mülakat stresi olan, kendini ifade etmekte zorlanan bireyler
-- Yurt Dışı Başvuru Yapanlar:İngilizce mülakata hazırlanan, kültürel uyum hedefleyen profesyoneller
-- Özel Gereksinimli Adaylar:Erişilebilir, adil ve kişiselleştirilmiş mülakat deneyimi arayan bireyler
-- İK Uzmanları & Kariyer Danışmanları:Adaylarını daha verimli hazırlamak ve gelişimlerini takip etmek isteyen profesyoneller
+
+Odaklanılan Hedef Kitle: Geleceğin Teknoloji Profesyonelleri
+
+Interwievly, kariyerlerinin başlangıcında olan ve teknoloji sektöründe (yazılım, mühendislik, veri bilimi vb.) yer edinmeyi hedefleyen yeteneklere odaklanmıştır. Öncelikli hedef kitlemiz, teorik bilgilerini mülakat pratiğiyle birleştirerek ilk iş veya staj fırsatını yakalamak isteyen üniversite öğrencileri, yeni mezunlar ve kariyerinin başındaki teknik profesyonellerdir.
+
+Bu kitlenin temel ihtiyaçları ve karşılaştığı zorluklar şunlardır:
+- Teknik Bilgiyi Sergileme: Algoritma, veri yapıları ve temel mühendislik prensipleri gibi konulardaki bilgilerini, mülakat formatında etkili bir şekilde sunma ihtiyacı.
+- Mülakat Deneyimsizliği: Gerçek bir mülakatın stresi ve formatı konusunda pratik deneyim eksikliği.
+- Problem Çözme Becerileri: Sadece doğru cevabı bilmek değil, aynı zamanda çözüm sürecini adım adım ve anlaşılır bir şekilde açıklayabilme gerekliliği.
+- Davranışsal Sorulara Hazırlık: Teknik roller için özel olarak sorulan "Bir projede karşılaştığınız teknik bir zorluğu anlatın" gibi davranışsal sorulara hazırlıksız yakalanma.
+- Interwievly, bu adaylara yapay zeka destekli, gerçekçi ve kişiselleştirilmiş bir deneme ortamı sunarak özgüvenlerini artırmayı ve onları hayallerindeki teknik role hazırlamayı amaçlamaktadır.
   
 # SPRINT 1
 ## Puan Tamamlama Mantığı:
@@ -95,7 +99,7 @@ Gelişmesi Gerekenler:
 # SPRINT 2
 ## Sprint Yorumu:
 
-Sprint 2, projemiz 'Interwievly' için bir temel atma ve hazırlık sprinti olarak planlandı. Bu süreçte odak noktamız, kullanıcıların göreceği arayüzleri tasarlamak, yapay zekanın kullanacağı mülakat soruları için veri setini düzenlemek ve projenin çalışacağı backend altyapısını (Supabase) kurmaktı. Sprint sonunda, henüz fonksiyonel bir ürün olmasa da, bir sonraki geliştirme aşamasına geçmemizi sağlayacak tüm kritik tasarım ve altyapı bileşenleri başarıyla tamamlanmıştır. Bu sprint, Sprint 3'te başlayacak olan kodlama ve entegrasyon süreci için sağlam bir zemin oluşturmuştur.
+Sprint 2'ye başlarken, ürünümüz 'Interwievly' için kilit bir stratejik karar alındı ve hedef kitlemiz "teknoloji alanında kariyerine yeni başlayan veya başlamak isteyen adaylar" olarak netleştirildi. Bu sprint'teki tüm çalışmalarımız – veri seti oluşturulmasından arayüz tasarımlarına kadar – bu odaklanmış kitleye en yüksek değeri sunma hedefiyle gerçekleştirildi. Sprint sonunda, bu kitleye yönelik ilk temel altyapı ve tasarım varlıkları başarıyla oluşturularak bir sonraki geliştirme aşaması için sağlam bir zemin hazırlandı.
 
 ## Puan Tamamlama Mantığı:
  Sprint Hedefi: Bu sprint'in ana hedefi, uygulamanın temel arayüzlerini tasarlamak, mülakat soruları için kullanılacak veri setini hazırlamak ve projenin backend altyapısı için Supabase bağlantısını kurmaktı. Kısacası, Sprint 3'te başlayacak olan fonksiyonel geliştirmeler için zemin hazırlamaktı.
@@ -116,10 +120,10 @@ Whatsapp ve Toplantı Ekran Resimleri:
 **Sprint board update**: Sprint board screenshotları:
 [Miro Backlog Board](https://miro.com/app/board/uXjVIhcq9zs=/?share_link_id=460621211606)
 
-<img width="1147" height="576" alt="image" src="https://github.com/user-attachments/assets/119d6ede-7dff-4941-aac2-9fcff15f89ee" />
-<img width="1294" height="587" alt="image" src="https://github.com/user-attachments/assets/02eaf690-b89c-48ff-a2a6-66fccb240750" />
-<img width="1297" height="586" alt="image" src="https://github.com/user-attachments/assets/f9baa1a5-26e0-4d72-a559-a5ac5a20f1a4" />
-<img width="1150" height="715" alt="image" src="https://github.com/user-attachments/assets/d6497370-20ec-4e83-85bc-a64413633b0b" />
+<img width="1216" height="597" alt="image" src="https://github.com/user-attachments/assets/14e3eefb-7f7c-416a-a01d-7aeb703011e8" />
+
+<img width="1086" height="680" alt="image" src="https://github.com/user-attachments/assets/01c394eb-7373-40df-816a-012c1a3f8651" />
+
 
 
 
@@ -130,7 +134,9 @@ Bu sprint sonunda projenin fonksiyonel bir çıktısı olmamakla birlikte, uygul
 Kullanıcının karşılaşacağı ana ekranların görsel taslakları (mockup/wireframe) oluşturuldu. Bu tasarımlar, geliştirme sürecine rehberlik edecektir.
 
 Tasarım Görselleri: 
+
 https://github.com/user-attachments/assets/a8eccd5a-dd26-424c-9ef1-0a5c2f865fad
+
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/03e5a017-fcda-44dc-809d-4072db033487" />
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/c0b1262d-a0b7-42f2-a087-f724b517a4ff" />
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/9a94395d-1388-4f8b-9079-ad54b982e367" />
@@ -142,6 +148,8 @@ https://github.com/user-attachments/assets/a8eccd5a-dd26-424c-9ef1-0a5c2f865fad
 - Kapsamlı Arayüz Tasarımı: Uygulamanın ana akışını oluşturan tüm ekranların (Giriş, Pozisyon Seçme, Mülakat vb.) görsel tasarımları tamamlandı.
 - Mülakat Veri Setinin Oluşturulması: Farklı pozisyonlara yönelik başlangıç seviyesinde bir soru veri seti hazırlandı ve yapılandırıldı.
 - Backend Altyapısının Kurulması: Projenin backend'i olarak hizmet verecek Supabase projesi oluşturuldu ve Python ortamından bu veritabanına erişim için ilk bağlantı başarıyla sağlandı.
+Alınan Stratejik Kararlar
+- Sprint 2 boyunca yapılan çalışmalar ve özellikle veri seti hazırlığı sırasında karşılaşılan zorluklar göz önünde bulundurularak, ürünün hedef kitlesinin daraltılmasına karar verilmiştir. Pazar potansiyeli ve ürünün sağlayacağı en yüksek değer analiz edildiğinde, hedef kitlemiz "teknoloji alanında (yazılım, mühendislik vb.) kariyerine yeni başlayan veya başlamak isteyen adaylar" olarak güncellenmiştir. Bu stratejik odaklanma, sonraki sprintlerde geliştirilecek özelliklerin ve mülakat senaryolarının daha isabetli ve etkili olmasını sağlayacaktır.
   
 ## Sprint Review Katılımcıları:
 - Emine Demirbaş (Developer-Aktif)
@@ -156,6 +164,7 @@ https://github.com/user-attachments/assets/a8eccd5a-dd26-424c-9ef1-0a5c2f865fad
 - Ekip içi iletişim ve fikir alışverişi daha da arttı, geri bildirim konusunda aktif bir ekip iletişimi var.
 - Kullanıcı deneyimi hızlıca netleştirildi ve prototip ekranlar tasarlandı.
 - Teknik entegrasyon ve UI aşamalarında hedeflenen sonuca vardık.
+- Net Bir Hedef Kitleyle Çalışmak: Sprint başında hedef kitlemizi netleştirmiş olmamız, veri setini ve arayüz tasarımlarını çok daha odaklı ve verimli bir şekilde oluşturmamızı sağladı. Bu sayede gereksiz işlerden kaçındık.
 
 Gelişmesi Gerekenler:
 - Projenin fonksiyonel test aşamasına geçmesi için geliştirmeyi hızlandırmalıyız. Olası hataları erken görmek faydalı olacaktır.
