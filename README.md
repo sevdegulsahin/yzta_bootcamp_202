@@ -93,10 +93,20 @@ Gelişmesi Gerekenler:
 - Belirlenen görev dağılımı ve bireysel sorumluluklar doğrultusunda proje süreci yapılandırılacak; her adımın planlanan şekilde ilerleyip ilerlemediği düzenli olarak gözlemlenecek ve gerekli güncellemeler yapılacaktır.
 - Yapay zeka destekli mülakat simülasyonunun temel işleyişini test edebilmek amacıyla, ilk fonksiyonel prototiplerin tasarımı, entegrasyonu ve senaryolar üzerinde denemeleri yapılmak üzere hazırlık süreci başlatılacaktır.
 # SPRINT 2
+## Sprint Yorumu:
+
+Sprint 2, projemiz 'Interwievly' için bir temel atma ve hazırlık sprinti olarak planlandı. Bu süreçte odak noktamız, kullanıcıların göreceği arayüzleri tasarlamak, yapay zekanın kullanacağı mülakat soruları için veri setini düzenlemek ve projenin çalışacağı backend altyapısını (Supabase) kurmaktı. Sprint sonunda, henüz fonksiyonel bir ürün olmasa da, bir sonraki geliştirme aşamasına geçmemizi sağlayacak tüm kritik tasarım ve altyapı bileşenleri başarıyla tamamlanmıştır. Bu sprint, Sprint 3'te başlayacak olan kodlama ve entegrasyon süreci için sağlam bir zemin oluşturmuştur.
+
 ## Puan Tamamlama Mantığı:
- Tahmin Edilen Puan: 100 puan
-Tahmin Mantığı: Projenin toplam 300 puan olduğu varsayıldı. Her sprint 100 puan olacak şekilde planlandı. Bu sprintte temel arayüz, pozisyon seçimi, ilk soru-cevap döngüsü ve LLM entegrasyonu hedeflendi.
-2. sprint için backlog gözden geçirilmiş ve önceliklendirilmiştir. İlk sprintte tamamlanamayan işlerin yanı sıra, 2. sprintte tamamlanması gereken yeni işler de eklenmiştir.
+ Sprint Hedefi: Bu sprint'in ana hedefi, uygulamanın temel arayüzlerini tasarlamak, mülakat soruları için kullanılacak veri setini hazırlamak ve projenin backend altyapısı için Supabase bağlantısını kurmaktı. Kısacası, Sprint 3'te başlayacak olan fonksiyonel geliştirmeler için zemin hazırlamaktı.
+Puanlama:
+
+Planlanan Puan: 100
+
+Tamamlanan Puan: 90
+
+Açıklama: Sprint 2 için planlanan altyapı ve tasarım görevleri büyük ölçüde tamamlandı. Kullanıcı arayüzlerinin tasarlanması, mülakat veri setinin düzenlenmesi ve Supabase backend bağlantısının kurulması gibi kritik maddeler başarıyla bitirildi.
+
 ## Daily Scrum :
 Konuşmalar Whatsapp üzerinden toplantılar Google meet ve slack üzerinden yapılmıştır.
 
@@ -114,28 +124,24 @@ Whatsapp ve Toplantı Ekran Resimleri:
 
 
 ## Ürün Durumu:
+Bu sprint sonunda projenin fonksiyonel bir çıktısı olmamakla birlikte, uygulamanın temel taşları olan tasarım ve altyapı bileşenleri tamamlanmıştır.
 
+1. Tamamlanan Arayüz Tasarımları:
+Kullanıcının karşılaşacağı ana ekranların görsel taslakları (mockup/wireframe) oluşturuldu. Bu tasarımlar, geliştirme sürecine rehberlik edecektir.
+
+Tasarım Görselleri: 
 https://github.com/user-attachments/assets/a8eccd5a-dd26-424c-9ef1-0a5c2f865fad
-
-<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/03b1ef6f-0eee-4a7a-ad2e-c0cc1e3b28d3" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/03e5a017-fcda-44dc-809d-4072db033487" />
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/c0b1262d-a0b7-42f2-a087-f724b517a4ff" />
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/9a94395d-1388-4f8b-9079-ad54b982e367" />
-<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/03e5a017-fcda-44dc-809d-4072db033487" />
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/0a1a1002-78cb-4a73-8890-c76efe930d59" />
-<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/8e267524-8d1a-452d-900b-00d5005585fd" />
-<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/d8e47b96-3b4f-4428-8c42-bffdf04c56dd" />
-<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/3f8b1f16-ea61-4c72-8cda-d7eb66085c50" />
-<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/7db8db10-7db6-44d4-a7c4-e0f2c4392d6f" />
-<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/a3962bcc-28ad-4338-b715-8b967a37e23d" />
-<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/ebe7e39d-60c1-4250-a8b6-2bbb4fd5077b" />
+
 
 ## Sprint Review :
-- Ekip olarak yapılan görüşmelerde uygulamanın özellikleri tekrar gözden geçirilip netleştirildi.
-- Takım üyelerine görev dağılımları yapılmıştır. Herkesin sorumluluk alanları net bir şekilde belirlenmiştir.
-- Projeda kullanılacak veri seti belirlendi.
-- Arayüz Tasarımı Yapıldı.
-- Kullanılacak yazılım ve tasarım araçları belirlenmiştir. Arayüz tasarımında Figma, kodlama dili olarak Phyton kullanılacaktır.
-- Projenin Test aşaması Sprint 3 sürecinde yapılacaktır.
+- Bu sprint sonunda aşağıdaki Product Backlog maddeleri (PBI) tamamlanmış ve ekibe sunulmuştur:
+- Kapsamlı Arayüz Tasarımı: Uygulamanın ana akışını oluşturan tüm ekranların (Giriş, Pozisyon Seçme, Mülakat vb.) görsel tasarımları tamamlandı.
+- Mülakat Veri Setinin Oluşturulması: Farklı pozisyonlara yönelik başlangıç seviyesinde bir soru veri seti hazırlandı ve yapılandırıldı.
+- Backend Altyapısının Kurulması: Projenin backend'i olarak hizmet verecek Supabase projesi oluşturuldu ve Python ortamından bu veritabanına erişim için ilk bağlantı başarıyla sağlandı.
   
 ## Sprint Review Katılımcıları:
 - Emine Demirbaş (Developer-Aktif)
@@ -146,15 +152,17 @@ https://github.com/user-attachments/assets/a8eccd5a-dd26-424c-9ef1-0a5c2f865fad
 
 ## Sprint Retrospective:
 İyi Gidenler:
-- Yazılım aşamasında ilerlemede hız kazandık.
-- Ekip içi iletişim ve fikir alışverişi daha da arttı, Geri bildirim konusunda aktif bir ekip iletişimi var.
-- Kullanıcı deneyimi hızlıca netleştirildi ve prototip ekranlar üretildi.
+- Altyapı ve tasarım hazırlıklarında hedeflenen ilerlemeyi kaydettik.
+- Ekip içi iletişim ve fikir alışverişi daha da arttı, geri bildirim konusunda aktif bir ekip iletişimi var.
+- Kullanıcı deneyimi hızlıca netleştirildi ve prototip ekranlar tasarlandı.
 - Teknik entegrasyon ve UI aşamalarında hedeflenen sonuca vardık.
 
 Gelişmesi Gerekenler:
-- Projenin test aşamasına geçmemiz gerekli olası hataları erken telafi etmemizde faydalı olacaktır.
+- Projenin fonksiyonel test aşamasına geçmesi için geliştirmeyi hızlandırmalıyız. Olası hataları erken görmek faydalı olacaktır.
 
 İleriye Dönük Planlar:
-- Belirlenen görev dağılımı ve bireysel sorumluluklar doğrultusunda proje süreci takibine devam edilecek.
-- Yapay zeka destekli mülakat simülasyonunun temel işleyişini test edebilmek amacıyla, ilk fonksiyonel prototiplerin tasarımı, entegrasyonu ve senaryolar üzerinde denemeleri yapılmak üzere hazırlık süreci başlatılacaktır.
-- Yapılacak test sonuçlarına göre durum değerlendirmesi yapılacak ve sonuca göre geliştirmeler yapılacak. 
+- Sprint 2'de atılan temeller üzerine, Sprint 3 için aşağıdaki somut geliştirme adımları atılacaktır:
+- Frontend Kodlamasına Başlanması: Bu sprint'te hazırlanan arayüz tasarımlarının (pozisyon seçme, mülakat ekranı vb.) temel HTML/CSS/JS ile kodlanarak statik olarak hayata geçirilmesi.
+- Veri Setinin Supabase'e Aktarılması: Hazırlanan mülakat veri setinin Supabase veritabanındaki ilgili tablolara yüklenmesi.
+- İlk API Endpoint'inin Geliştirilmesi: Kullanıcı bir pozisyon seçtiğinde, Supabase'den o pozisyona ait rastgele bir soruyu çekecek olan /get-question API endpoint'inin Python ile geliştirilmesi.
+- Arayüz-API Bağlantısı: Statik olarak kodlanan mülakat ekranının, "Mülakatı Başlat" butonuna basıldığında /get-question API'ını çağırarak ilk soruyu dinamik olarak ekranda göstermesinin sağlanması.
