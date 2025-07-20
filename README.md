@@ -37,7 +37,7 @@ Kullanıcılar, her mülakat sonrası detaylı geri bildirim alarak güçlü ve 
 
 Odaklanılan Hedef Kitle: Geleceğin Teknoloji Profesyonelleri
 
-Interwievly, kariyerlerinin başlangıcında olan ve teknoloji sektöründe (yazılım, mühendislik, veri bilimi vb.) yer edinmeyi hedefleyen yeteneklere odaklanmıştır. Öncelikli hedef kitlemiz, teorik bilgilerini mülakat pratiğiyle birleştirerek ilk iş veya staj fırsatını yakalamak isteyen üniversite öğrencileri, yeni mezunlar ve kariyerinin başındaki teknik profesyonellerdir.
+Interwievly, kariyerlerinin başlangıcında olan ve teknoloji sektöründe (yazılım, veri bilimi vb.) yer edinmeyi hedefleyen yeteneklere odaklanmıştır. Öncelikli hedef kitlemiz, teorik bilgilerini mülakat pratiğiyle birleştirerek ilk iş veya staj fırsatını yakalamak isteyen üniversite öğrencileri, yeni mezunlar ve kariyerinin başındaki bireylere hitap ediyor.
 
 Bu kitlenin temel ihtiyaçları ve karşılaştığı zorluklar şunlardır:
 - Teknik Bilgiyi Sergileme: Algoritma, veri yapıları ve temel mühendislik prensipleri gibi konulardaki bilgilerini, mülakat formatında etkili bir şekilde sunma ihtiyacı.
@@ -99,7 +99,7 @@ Gelişmesi Gerekenler:
 # SPRINT 2
 ## Sprint Yorumu:
 
-Sprint 2'ye başlarken, ürünümüz 'Interwievly' için kilit bir stratejik karar alındı ve hedef kitlemiz "teknoloji alanında kariyerine yeni başlayan veya başlamak isteyen adaylar" olarak netleştirildi. Bu sprint'teki tüm çalışmalarımız – veri seti oluşturulmasından arayüz tasarımlarına kadar – bu odaklanmış kitleye en yüksek değeri sunma hedefiyle gerçekleştirildi. Sprint sonunda, bu kitleye yönelik ilk temel altyapı ve tasarım varlıkları başarıyla oluşturularak bir sonraki geliştirme aşaması için sağlam bir zemin hazırlandı.
+Sprint 2'ye başlarken, ürünümüz 'Interwievly' için kilit bir stratejik karar alındı ve hedef kitlemiz "teknoloji alanında kariyerine yeni başlayan veya başlamak isteyen adaylar" olarak netleştirildi. Bu sprint'teki tüm çalışmalarımız – veri seti düzenlenmesinden  arayüz tasarımlarına kadar – bu odaklanmış kitleye en yüksek değeri sunma hedefiyle gerçekleştirildi. Sprint sonunda, bu kitleye yönelik ilk temel altyapı ve tasarım varlıkları başarıyla oluşturularak bir sonraki geliştirme aşaması için sağlam bir zemin hazırlandı.
 
 ## Puan Tamamlama Mantığı:
  Sprint Hedefi: Bu sprint'in ana hedefi, uygulamanın temel arayüzlerini tasarlamak, mülakat soruları için kullanılacak veri setini hazırlamak ve projenin backend altyapısı için Supabase bağlantısını kurmaktı. Kısacası, Sprint 3'te başlayacak olan fonksiyonel geliştirmeler için zemin hazırlamaktı.
@@ -115,7 +115,7 @@ Açıklama: Sprint 2 için planlanan altyapı ve tasarım görevleri büyük öl
 Konuşmalar Whatsapp üzerinden toplantılar Google meet ve slack üzerinden yapılmıştır.
 
 Whatsapp ve Toplantı Ekran Resimleri:
-[Whatsapp Link](https://docs.google.com/document/d/1Itl9e3Bnk0AnX2bn9Z2tXaNUmT2573JbjN7VhwM3hgA/edit?usp=sharing)
+[Whatsapp Link](https://drive.google.com/file/d/1s9sORIHn98roiVnA8Mz5lvTEJUzHug6B/view?usp=sharing)
 
 **Sprint board update**: Sprint board screenshotları:
 [Miro Backlog Board](https://miro.com/app/board/uXjVIhcq9zs=/?share_link_id=460621211606)
@@ -171,7 +171,7 @@ Gelişmesi Gerekenler:
 
 İleriye Dönük Planlar:
 - Sprint 2'de atılan temeller üzerine, Sprint 3 için aşağıdaki somut geliştirme adımları atılacaktır:
-- Frontend Kodlamasına Başlanması: Bu sprint'te hazırlanan arayüz tasarımlarının (pozisyon seçme, mülakat ekranı vb.) temel HTML/CSS/JS ile kodlanarak statik olarak hayata geçirilmesi.
+- Frontend Kodlamasına devam edilmesi: Bu sprint'te hazırlanan arayüz tasarımlarının (pozisyon seçme, mülakat ekranı vb.) temel HTML/CSS/JS ile kodlanmaya başlandı ek sayfalara devam ederek statik olarak hayata geçirilmesi planlanmaktadır.
 - Veri Setinin Supabase'e Aktarılması: Hazırlanan mülakat veri setinin Supabase veritabanındaki ilgili tablolara yüklenmesi.
 - İlk API Endpoint'inin Geliştirilmesi: Kullanıcı bir pozisyon seçtiğinde, Supabase'den o pozisyona ait rastgele bir soruyu çekecek olan /get-question API endpoint'inin Python ile geliştirilmesi.
 - Arayüz-API Bağlantısı: Statik olarak kodlanan mülakat ekranının, "Mülakatı Başlat" butonuna basıldığında /get-question API'ını çağırarak ilk soruyu dinamik olarak ekranda göstermesinin sağlanması.
