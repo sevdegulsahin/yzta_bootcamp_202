@@ -1,116 +1,751 @@
 {% extends "base.html" %}
 
-{% block title %}{{ category | capitalize }} Mülakat Sorusu #{{ question_num }}{% endblock %}
+{% block title %}{{ category | capitalize }} Mülakat Sorusu #{{ question_num }} - Interviewly{% endblock %}
 
 {% block content %}
+<div class="question-page">
+    <div class="container">
+        <!-- Progress Header -->
+        <div class="progress-header" data-aos="fade-down">
+            <div class="progress-info">
+                <h1 class="page-title">
+                    <i class="fas fa-question-circle"></i>
+                    {{ category | capitalize }} Mülakatı
+                </h1>
+                <div class="progress-details">
+                    <span class="progress-text">Soru {{ question_num }} / {{ total_questions }}</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ (question_num / total_questions) * 100 }}%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="question-stats">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="timer">00:00</span>
+                        <span class="stat-label">Geçen Süre</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ ((question_num - 1) / total_questions * 100) | round(1) }}%</span>
+                        <span class="stat-label">Tamamlanan</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Card -->
+        <div class="question-card" data-aos="fade-up">
+            <div class="question-header">
+                <div class="question-meta">
+                    <span class="question-number">Soru #{{ question_num }}</span>
+                    <span class="question-category">{{ category | capitalize }}</span>
+                </div>
+                <div class="question-actions">
+                    <button class="action-btn" onclick="toggleFullscreen()" title="Tam ekran">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <button class="action-btn" onclick="copyQuestion()" title="Soruyu kopyala">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="question-content">
+                <div class="question-text">
+                    {{ question_text | safe }}
+                </div>
+            </div>
+
+            <!-- Answer Form -->
+            <div class="answer-section">
+                <form method="POST" action="{{ url_for('interview.interview') }}" class="answer-form" id="answerForm">
+                    <div class="form-group">
+                        <label for="user_input" class="form-label">
+                            <i class="fas fa-edit"></i>
+                            Cevabınızı yazın
+                        </label>
+                        <div class="textarea-wrapper">
+                            <textarea 
+                                id="user_input" 
+                                name="user_input" 
+                                class="answer-textarea" 
+                                placeholder="Cevabınızı buraya yazın..."
+                                required
+                                rows="6"
+                                maxlength="2000"
+                            ></textarea>
+                            <div class="textarea-footer">
+                                <div class="char-counter" id="charCounter">0/2000</div>
+                                <div class="word-counter" id="wordCounter">0 kelime</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="saveDraft()">
+                            <i class="fas fa-save"></i>
+                            Taslak Kaydet
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <i class="fas fa-paper-plane"></i>
+                            Cevabı Gönder
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation-section" data-aos="fade-up" data-aos-delay="200">
+            <div class="nav-buttons">
+                {% if question_num > 1 %}
+                <a href="{{ url_for('interview.interview_question_route', category=category, question_num=question_num - 1) }}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Önceki Soru
+                </a>
+                {% endif %}
+
+                <div class="nav-center">
+                    <a href="{{ url_for('interview.interview') }}" class="btn btn-secondary">
+                        <i class="fas fa-comments"></i>
+                        Sohbet Odasına Dön
+                    </a>
+                </div>
+
+                {% if question_num < total_questions %}
+                <a href="{{ url_for('interview.interview_question_route', category=category, question_num=question_num + 1) }}" class="btn btn-outline">
+                    Sonraki Soru
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                {% else %}
+                <a href="{{ url_for('interview.interview') }}" class="btn btn-success">
+                    <i class="fas fa-check-circle"></i>
+                    Mülakatı Tamamla
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="quick-actions">
+                <a href="{{ url_for('interview.create_interview') }}" class="quick-action-btn">
+                    <i class="fas fa-plus"></i>
+                    Yeni Mülakat
+                </a>
+                <a href="{{ url_for('interview.my_interviews') }}" class="quick-action-btn">
+                    <i class="fas fa-history"></i>
+                    Geçmiş Mülakatlar
+                </a>
+                <a href="{{ url_for('main.index') }}" class="quick-action-btn">
+                    <i class="fas fa-home"></i>
+                    Ana Sayfa
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Save Draft Modal -->
+<div class="modal" id="saveModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-save"></i> Taslak Kaydet</h3>
+        </div>
+        <div class="modal-body">
+            <p>Cevabınızı taslak olarak kaydetmek istediğinizden emin misiniz?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">İptal</button>
+            <button class="btn btn-primary" onclick="confirmSaveDraft()">Kaydet</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
 <style>
-  /* İçerik kutusuna sadece üst boşluk ekleyelim ki header üstüne binmesin */
-  .content-container {
-    max-width: 700px;
-    margin: 120px auto 40px auto;
-    /* 80px üst boşluk (header yüksekliği kadar) */
-    padding: 20px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-  }
+.question-page {
+    padding: var(--spacing-2xl) 0;
+    background: var(--bg-primary);
+    min-height: 100vh;
+}
+/* Progress Header */
+.progress-header {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+}
 
-  .question-meta {
+.progress-info h1 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-md);
+    font-size: 1.8rem;
+}
+
+.progress-info h1 i {
+    color: var(--primary-color);
+}
+
+.progress-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.progress-text {
+    color: var(--text-muted);
     font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 10px;
-  }
+}
 
-  .question-text {
-    font-size: 1.3rem;
-    font-weight: 600;
-    background: #f4f6f8;
-    padding: 15px 20px;
-    border-radius: 8px;
-    line-height: 1.5;
-    margin-bottom: 25px;
-  }
+.progress-bar {
+    width: 200px;
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
 
-  textarea {
-    width: 100%;
-    min-height: 120px;
-    resize: vertical;
-    padding: 12px 15px;
-    font-size: 1rem;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    transition: border-color 0.3s ease;
-  }
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border-radius: var(--radius-full);
+    transition: width 0.3s ease;
+}
 
-  textarea:focus {
-    border-color: #3498db;
-    outline: none;
-  }
+.question-stats {
+    display: flex;
+    gap: var(--spacing-md);
+}
 
-  button {
-    margin-top: 15px;
-    padding: 12px 25px;
-    background-color: #3498db;
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background: var(--bg-tertiary);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: white;
     font-size: 1.1rem;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
+}
 
-  button:hover {
-    background-color: #2980b9;
-  }
-
-  .nav-links {
-    margin-top: 30px;
+.stat-info {
     display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+    flex-direction: column;
+}
 
-  .nav-links a {
-    padding: 10px 18px;
-    background-color: #6c757d;
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Question Card */
+.question-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-bottom: var(--spacing-xl);
+    box-shadow: var(--shadow-lg);
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.question-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.question-number {
+    background: var(--primary-color);
     color: white;
-    text-decoration: none;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-lg);
     font-weight: 600;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-    min-width: 140px;
-    text-align: center;
-  }
+    font-size: 0.9rem;
+}
 
-  .nav-links a:hover {
-    background-color: #5a6268;
-  }
+.question-category {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.question-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.action-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.question-content {
+    padding: var(--spacing-xl);
+}
+
+.question-text {
+    font-size: 1.2rem;
+    line-height: 1.7;
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--primary-color);
+}
+
+/* Answer Section */
+.answer-section {
+    padding: var(--spacing-xl);
+    border-top: 1px solid var(--border-color);
+}
+
+.answer-form {
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.form-label i {
+    color: var(--primary-color);
+}
+
+.textarea-wrapper {
+    position: relative;
+}
+
+.answer-textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: var(--spacing-md);
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-size: 1rem;
+    line-height: 1.6;
+    resize: vertical;
+    transition: var(--transition-normal);
+    font-family: inherit;
+}
+
+.answer-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.textarea-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.char-counter, .word-counter {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.form-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+}
+
+.form-actions .btn {
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Navigation */
+.navigation-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.nav-center {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.quick-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.quick-action-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: var(--transition-normal);
+    font-size: 0.9rem;
+}
+
+.quick-action-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    max-width: 400px;
+    width: 90%;
+    animation: modalSlide 0.3s ease-out;
+}
+
+@keyframes modalSlide {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.modal-header h3 i {
+    color: var(--primary-color);
+}
+
+.modal-body {
+    padding: var(--spacing-lg);
+    color: var(--text-secondary);
+}
+
+.modal-footer {
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .progress-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .question-stats {
+        justify-content: center;
+    }
+    
+    .question-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        align-items: stretch;
+    }
+    
+    .nav-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .nav-center {
+        order: -1;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .quick-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .question-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+    
+    .question-actions {
+        align-self: flex-end;
+    }
+    
+    .question-text {
+        font-size: 1.1rem;
+        padding: var(--spacing-md);
+    }
+}
 </style>
+{% endblock %}
 
-<div class="content-container">
-  <div class="question-meta">Soru {{ question_num }} / {{ total_questions }} | Kategori: {{ category | capitalize }}
-  </div>
-  <div class="question-text">{{ question_text | safe }}</div>
-
-  <form action="{{ url_for('interview.interview') }}" method="post">
-    <label for="user_input" style="font-weight:600; margin-bottom:8px; display:block;">Cevabınızı buraya yazın:</label>
-    <textarea id="user_input" name="user_input" placeholder="Cevabınız..." required></textarea>
-    <button type="submit">Cevabı Gönder (Sohbeti Devam Ettir)</button>
-  </form>
-
-  <div class="nav-links">
-    {% if question_num < total_questions %} <a
-      href="{{ url_for('interview.interview_question_route', category=category, question_num=question_num + 1) }}">
-      Sonraki
-      Soru</a>
-      {% else %}
-      <a href="{{ url_for('interview.interview') }}">Mülakatı Tamamla</a>
-      {% endif %}
-      <a href="{{ url_for('interview.create_interview') }}">Başka Bir Mülakat Oluştur</a>
-      <a href="{{ url_for('interview.interview') }}">Sohbet Odasına Dön</a>
-  </div>
-</div>
+{% block scripts %}
+<script>
+let startTime = Date.now();
+let timerInterval;
+// Initialize timer
+function startTimer() {
+    timerInterval = setInterval(updateTimer, 1000);
+}
+function updateTimer() {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    document.getElementById('timer').textContent = display;
+}
+// Character and word counter
+function updateCounters() {
+    const textarea = document.getElementById('user_input');
+    const text = textarea.value;
+    const charCount = text.length;
+    const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+    document.getElementById('charCounter').textContent = `${charCount}/2000`;
+    document.getElementById('wordCounter').textContent = `${wordCount} kelime`;
+    const charCounter = document.getElementById('charCounter');
+    if (charCount > 1800) {
+        charCounter.style.color = '#ef4444';
+    } else if (charCount > 1600) {
+        charCounter.style.color = '#f59e0b';
+    } else {
+        charCounter.style.color = 'var(--text-muted)';
+    }
+}
+// Auto-resize textarea
+function autoResize(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 300) + 'px';
+}
+// Copy question text
+function copyQuestion() {
+    const questionText = document.querySelector('.question-text').textContent;
+    navigator.clipboard.writeText(questionText).then(() => {
+        console.log('Soru kopyalandı!');
+    }).catch(err => {
+        console.error('Kopyalama hatası:', err);
+    });
+}
+// Toggle fullscreen
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
+}
+// Save draft functionality
+function saveDraft() {
+    const textarea = document.getElementById('user_input');
+    if (textarea.value.trim()) {
+        document.getElementById('saveModal').classList.add('show');
+    } else {
+        console.warn('Kaydedilecek cevap bulunamadı');
+    }
+}
+function closeModal() {
+    document.getElementById('saveModal').classList.remove('show');
+}
+function confirmSaveDraft() {
+    const textarea = document.getElementById('user_input');
+    const draft = {
+        question: String({{ question_num }}),
+        answer: textarea.value,
+        timestamp: new Date().toISOString()
+    };
+    localStorage.setItem('interview_draft', JSON.stringify(draft));
+    console.log('Taslak kaydedildi!');
+    closeModal();
+}
+// Load draft on page load
+function loadDraft() {
+    const draft = localStorage.getItem('interview_draft');
+    if (draft) {
+        const draftData = JSON.parse(draft);
+        if (String(draftData.question) === String({{ question_num }})) {
+            const textarea = document.getElementById('user_input');
+            textarea.value = draftData.answer;
+            updateCounters();
+            autoResize(textarea);
+        }
+    }
+}
+document.addEventListener('DOMContentLoaded', function() {
+    // Start timer
+    startTimer();
+    // Setup textarea events
+    const textarea = document.getElementById('user_input');
+    textarea.addEventListener('input', function() {
+        updateCounters();
+        autoResize(this);
+    });
+    // Load draft
+    loadDraft();
+    // Focus on textarea
+    textarea.focus();
+    // Close modal when clicking outside
+    document.getElementById('saveModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + Enter to submit
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('submitBtn').click();
+        }
+        // Ctrl/Cmd + S to save draft
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            saveDraft();
+        }
+        // ESC ile modal kapat
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+    // Form submit event
+    document.getElementById('answerForm').addEventListener('submit', function(e) {
+        const textarea = document.getElementById('user_input');
+        const submitBtn = document.getElementById('submitBtn');
+        if (!textarea.value.trim()) {
+            e.preventDefault();
+            console.warn('Lütfen bir cevap yazın');
+            return;
+        }
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
+        // Clear draft
+        localStorage.removeItem('interview_draft');
+    });
+});
+</script>
 {% endblock %}

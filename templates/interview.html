@@ -1,128 +1,816 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mülakat Simülasyonu</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f7fa;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-        h1 {
-            background-color: #2c3e50;
-            color: white;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 1.8rem;
-            letter-spacing: 1px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-        }
-        #chat-box {
-            flex-grow: 1;
-            padding: 20px;
-            background-color: white;
-            margin: 20px auto;
-            max-width: 700px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            overflow-y: auto;
-            scroll-behavior: smooth;
-        }
-        .message {
-            max-width: 75%;
-            padding: 12px 18px;
-            border-radius: 20px;
-            margin-bottom: 12px;
-            line-height: 1.4;
-            word-wrap: break-word;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            font-size: 1rem;
-        }
-        .user {
-            background-color: #3498db;
-            color: white;
-            margin-left: auto;
-            border-bottom-right-radius: 0;
-            text-align: right;
-        }
-        .model {
-            background-color: #ecf0f1;
-            color: #2c3e50;
-            margin-right: auto;
-            border-bottom-left-radius: 0;
-            text-align: left;
-        }
-        form {
-            display: flex;
-            max-width: 700px;
-            margin: 0 auto 30px auto;
-            gap: 10px;
-            padding: 0 20px;
-        }
-        input[type="text"] {
-            flex-grow: 1;
-            padding: 12px 16px;
-            font-size: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 25px;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-        input[type="text"]:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 6px #3498db;
-        }
-        button {
-            background-color: #2ecc71;
-            border: none;
-            color: white;
-            padding: 0 25px;
-            font-size: 1.1rem;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #27ae60;
-        }
-        @media (max-width: 768px) {
-            #chat-box, form {
-                margin: 15px;
-                max-width: 100%;
-            }
-            .message {
-                max-width: 85%;
-            }
-        }
-    </style>
-</head>
-<body>
-    <h1>Mülakat Simülasyonu</h1>
-    <div id="chat-box" aria-live="polite" aria-relevant="additions">
-        {% for message in chat_history %}
-            <p class="message {{ message.role }}"><strong>{{ message.role|capitalize }}:</strong> {{ message.content }}</p>
-        {% endfor %}
+{% extends "base.html" %}
+
+{% block title %}Mülakat Simülasyonu - Interviewly{% endblock %}
+
+{% block content %}
+<div class="interview-page">
+    <div class="interview-container">
+        <!-- Interview Header -->
+        <div class="interview-header" data-aos="fade-down">
+            <div class="header-content">
+                <div class="interview-info">
+                    <h1 class="interview-title">
+                        <i class="fas fa-comments"></i>
+                        Mülakat Simülasyonu
+                    </h1>
+                    <p class="interview-subtitle">AI Asistan ile gerçek zamanlı mülakat deneyimi</p>
+                </div>
+                <div class="interview-controls">
+                    <div class="timer" id="timer">
+                        <i class="fas fa-clock"></i>
+                        <span id="timer-display">00:00</span>
+                    </div>
+                    <button class="btn btn-secondary" onclick="resetInterview()">
+                        <i class="fas fa-redo"></i>
+                        Yeniden Başlat
+                    </button>
+                    <button class="btn btn-danger" onclick="endInterview()">
+                        <i class="fas fa-stop"></i>
+                        Bitir
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="chat-interface" data-aos="fade-up">
+            <div class="chat-container">
+                <div class="chat-messages" id="chat-messages">
+                    {% for message in chat_history %}
+                    <div class="message-wrapper {{ message.role }}">
+                        <div class="message {{ message.role }}">
+                            <div class="message-avatar">
+                                {% if message.role == 'assistant' %}
+                                <i class="fas fa-robot"></i>
+                                {% else %}
+                                <i class="fas fa-user"></i>
+                                {% endif %}
+                            </div>
+                            <div class="message-content">
+                                <div class="message-header">
+                                    <span class="message-sender">
+                                        {% if message.role == 'assistant' %}
+                                        AI Mülakatçı
+                                        {% else %}
+                                        Siz
+                                        {% endif %}
+                                    </span>
+                                    <span class="message-time">{{ loop.index }}</span>
+                                </div>
+                                <div class="message-text">
+                                    {{ message.content }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Typing Indicator -->
+                <div class="typing-indicator" id="typing-indicator" style="display: none;">
+                    <div class="message assistant">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">AI Mülakatçı</span>
+                            </div>
+                            <div class="typing-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Form -->
+            <div class="chat-input-container">
+                <form method="POST" class="chat-form" id="chat-form">
+                    <div class="input-wrapper">
+                        <textarea 
+                            name="user_input" 
+                            id="user-input" 
+                            class="chat-input" 
+                            placeholder="Cevabınızı yazın..."
+                            rows="1"
+                            required
+                            maxlength="1000"
+                        ></textarea>
+                        <div class="input-actions">
+                            <div class="char-counter" id="char-counter">0/1000</div>
+                            <button type="submit" class="send-btn" id="send-btn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Interview Stats -->
+        <div class="interview-stats" data-aos="fade-up" data-aos-delay="200">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="message-count">{{ chat_history|length }}</span>
+                        <span class="stat-label">Mesaj</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="elapsed-time">00:00</span>
+                        <span class="stat-label">Geçen Süre</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="response-time">-</span>
+                        <span class="stat-label">Ort. Yanıt</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <form method="POST" action="">
-        <input type="text" name="user_input" required placeholder="Cevabınızı yazın...">
-        <button type="submit" aria-label="Mesaj Gönder">Gönder</button>
-    </form>
+<!-- End Interview Modal -->
+<div class="modal" id="endModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-exclamation-triangle"></i> Mülakatı Bitir</h3>
+        </div>
+        <div class="modal-body">
+            <p>Mülakatı bitirmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">İptal</button>
+            <button class="btn btn-danger" onclick="confirmEndInterview()">Evet, Bitir</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-    <script>
-        // Sayfa yüklendiğinde chat-box en altına scroll et
-        window.onload = () => {
-            const chatBox = document.getElementById('chat-box');
-            chatBox.scrollTop = chatBox.scrollHeight;
-        };
-    </script>
-</body>
-</html>
+{% block styles %}
+<style>
+.interview-page {
+    height: 100vh;
+    background: var(--bg-primary);
+    display: flex;
+    flex-direction: column;
+}
+
+.interview-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: var(--spacing-lg);
+}
+
+/* Interview Header */
+.interview-header {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+}
+
+.interview-info h1 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+    font-size: 1.5rem;
+}
+
+.interview-info h1 i {
+    color: var(--primary-color);
+}
+
+.interview-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.interview-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.timer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background: var(--bg-tertiary);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.timer i {
+    color: var(--accent-color);
+}
+
+/* Chat Interface */
+.chat-interface {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+.chat-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-lg);
+}
+
+.chat-messages {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.message-wrapper {
+    display: flex;
+    width: 100%;
+}
+
+.message-wrapper.user {
+    justify-content: flex-end;
+}
+
+.message-wrapper.assistant {
+    justify-content: flex-start;
+}
+
+.message {
+    display: flex;
+    gap: var(--spacing-md);
+    max-width: 70%;
+    animation: messageSlide 0.3s ease-out;
+}
+
+.message-wrapper.user .message {
+    flex-direction: row-reverse;
+}
+
+.message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.2rem;
+}
+
+.message-wrapper.user .message-avatar {
+    background: var(--primary-color);
+    color: white;
+}
+
+.message-wrapper.assistant .message-avatar {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.message-content {
+    flex: 1;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+    border: 1px solid var(--border-color);
+}
+
+.message-wrapper.user .message-content {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.message-sender {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.message-wrapper.user .message-sender {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.message-time {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.message-wrapper.user .message-time {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.message-text {
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+.message-wrapper.user .message-text {
+    color: white;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 4px;
+    padding: var(--spacing-sm) 0;
+}
+
+.typing-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typing {
+    0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes messageSlide {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Chat Input */
+.chat-input-container {
+    border-top: 1px solid var(--border-color);
+    padding: var(--spacing-lg);
+    background: var(--bg-secondary);
+}
+
+.chat-form {
+    width: 100%;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-md);
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+    transition: var(--transition-normal);
+}
+
+.input-wrapper:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.chat-input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1rem;
+    resize: none;
+    outline: none;
+    font-family: inherit;
+    line-height: 1.5;
+    max-height: 120px;
+}
+
+.chat-input::placeholder {
+    color: var(--text-muted);
+}
+
+.input-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.char-counter {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    min-width: 50px;
+    text-align: right;
+}
+
+.send-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    flex-shrink: 0;
+}
+
+.send-btn:hover {
+    background: var(--primary-dark);
+    transform: scale(1.05);
+}
+
+.send-btn:disabled {
+    background: var(--text-muted);
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Interview Stats */
+.interview-stats {
+    margin-top: var(--spacing-lg);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.stat-item {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.1rem;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    max-width: 400px;
+    width: 90%;
+    animation: modalSlide 0.3s ease-out;
+}
+
+@keyframes modalSlide {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.modal-header h3 i {
+    color: var(--accent-color);
+}
+
+.modal-body {
+    padding: var(--spacing-lg);
+    color: var(--text-secondary);
+}
+
+.modal-footer {
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .interview-container {
+        padding: var(--spacing-md);
+    }
+    
+    .header-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .interview-controls {
+        justify-content: center;
+    }
+    
+    .message {
+        max-width: 85%;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .message {
+        max-width: 95%;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .input-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .input-actions {
+        justify-content: space-between;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let startTime = Date.now();
+let timerInterval;
+let messageCount = {{ chat_history|length }};
+
+// Initialize timer
+function startTimer() {
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    
+    const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    document.getElementById('timer-display').textContent = display;
+    document.getElementById('elapsed-time').textContent = display;
+}
+
+// Auto-resize textarea
+function autoResize(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+}
+
+// Character counter
+function updateCharCounter() {
+    const input = document.getElementById('user-input');
+    const counter = document.getElementById('char-counter');
+    const count = input.value.length;
+    counter.textContent = `${count}/1000`;
+    
+    if (count > 900) {
+        counter.style.color = '#ef4444';
+    } else if (count > 800) {
+        counter.style.color = '#f59e0b';
+    } else {
+        counter.style.color = 'var(--text-muted)';
+    }
+}
+
+// Scroll to bottom
+function scrollToBottom() {
+    const chatContainer = document.querySelector('.chat-container');
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// Show typing indicator
+function showTypingIndicator() {
+    document.getElementById('typing-indicator').style.display = 'flex';
+    scrollToBottom();
+}
+
+// Hide typing indicator
+function hideTypingIndicator() {
+    document.getElementById('typing-indicator').style.display = 'none';
+}
+
+// Add message to chat
+function addMessage(content, role) {
+    const chatMessages = document.getElementById('chat-messages');
+    const messageWrapper = document.createElement('div');
+    messageWrapper.className = `message-wrapper ${role}`;
+    
+    const avatar = role === 'assistant' ? 'fa-robot' : 'fa-user';
+    const sender = role === 'assistant' ? 'AI Mülakatçı' : 'Siz';
+    
+    messageWrapper.innerHTML = `
+        <div class="message ${role}">
+            <div class="message-avatar">
+                <i class="fas ${avatar}"></i>
+            </div>
+            <div class="message-content">
+                <div class="message-header">
+                    <span class="message-sender">${sender}</span>
+                    <span class="message-time">${++messageCount}</span>
+                </div>
+                <div class="message-text">${content}</div>
+            </div>
+        </div>
+    `;
+    
+    chatMessages.appendChild(messageWrapper);
+    scrollToBottom();
+}
+
+// Form submission
+document.getElementById('chat-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const input = document.getElementById('user-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Add user message
+    addMessage(message, 'user');
+    
+    // Clear input
+    input.value = '';
+    autoResize(input);
+    updateCharCounter();
+    
+    // Show typing indicator
+    showTypingIndicator();
+    
+    // Disable form
+    const sendBtn = document.getElementById('send-btn');
+    sendBtn.disabled = true;
+    
+    // Submit form
+    setTimeout(() => {
+        this.submit();
+    }, 500);
+});
+
+// Modal functions
+function endInterview() {
+    document.getElementById('endModal').classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('endModal').classList.remove('show');
+}
+
+function confirmEndInterview() {
+    window.location.href = "{{ url_for('reset_interview') }}";
+}
+
+function resetInterview() {
+    if (confirm('Mülakatı yeniden başlatmak istediğinizden emin misiniz?')) {
+        window.location.href = "{{ url_for('interview.reset_interview') }}";
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    // Start timer
+    startTimer();
+    
+    // Auto-resize textarea
+    const textarea = document.getElementById('user-input');
+    textarea.addEventListener('input', function() {
+        autoResize(this);
+        updateCharCounter();
+    });
+    
+    // Update character counter
+    updateCharCounter();
+    
+    // Scroll to bottom
+    scrollToBottom();
+    
+    // Focus on input
+    textarea.focus();
+    
+    // Update message count
+    document.getElementById('message-count').textContent = messageCount;
+});
+
+// Close modal when clicking outside
+document.getElementById('endModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+</script>
+{% endblock %}

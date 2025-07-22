@@ -1,3 +1,40 @@
+/* ===== MODERN CSS RESET & VARIABLES ===== */
+:root {
+    --primary-color: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #818cf8;
+    --secondary-color: #10b981;
+    --secondary-dark: #059669;
+    --accent-color: #f59e0b;
+    --accent-dark: #d97706;
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --border-color: #475569;
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --transition-fast: 0.15s ease-in-out;
+    --transition-normal: 0.3s ease-in-out;
+    --transition-slow: 0.5s ease-in-out;
+}
+
 /* Varsayılan Sıfırlama (Opsiyonel ama iyi bir başlangıç) */
 * {
     margin: 0;
@@ -6,12 +43,115 @@
 }
 
 body {
-    font-family: 'Arial', sans-serif; /* Daha iyi bir font seçimi için Google Fonts kullanılabilir */
-    margin: 0;
-    padding: 0;
-    background-color: #1a2421; /* Ana koyu renk */
-    color: #ffffff;
-    overflow-x: hidden;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    min-height: 100vh;
+}
+
+h1, .hero-title {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-light);
+    letter-spacing: -1px;
+    margin-bottom: 1rem;
+}
+
+h2, .hero-subtitle {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.btn, .btn-app-primary {
+    font-family: var(--font-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: var(--radius-lg);
+    padding: 0.75rem 2rem;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-normal);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.btn:hover, .btn-app-primary:hover {
+    background: var(--primary-dark);
+    color: #fff;
+    box-shadow: var(--shadow-lg);
+}
+.btn-outline {
+    background: transparent;
+    color: var(--primary-light);
+    border: 2px solid var(--primary-light);
+}
+.btn-outline:hover {
+    background: var(--primary-light);
+    color: #fff;
+}
+.bg-app-primary {
+    background: var(--bg-primary) !important;
+}
+.bg-app-secondary {
+    background: var(--bg-secondary) !important;
+}
+.bg-app-tertiary {
+    background: var(--bg-tertiary) !important;
+}
+.text-app-primary {
+    color: var(--text-primary) !important;
+}
+.text-app-secondary {
+    color: var(--text-secondary) !important;
+}
+.text-app-muted {
+    color: var(--text-muted) !important;
+}
+input, textarea, select {
+    background: #fff;
+    color: #222;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: none;
+    transition: var(--transition-fast);
+}
+input:focus, textarea:focus, select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+.auth-container {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+.navbar, .header-modern {
+    background: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    /* border-bottom: 1px solid var(--border-color); */
+}
+.navbar .nav-link, .header-modern .nav-link {
+    color: var(--text-secondary) !important;
+    font-weight: 500;
+    font-size: 1.1rem;
+    transition: var(--transition-fast);
+}
+.navbar .nav-link.active, .navbar .nav-link:hover, .header-modern .nav-link.active, .header-modern .nav-link:hover {
+    color: var(--primary-light) !important;
+}
+.footer-modern {
+    background: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    border-top: 1px solid var(--border-color);
 }
 
 .container {
@@ -65,7 +205,7 @@ header nav a:hover {
 
 /* Hero Section Stilleri (Ana Sayfa) */
 .hero-section {
-    background-image: url('../img/background.jpg'); /* Logonuz ve arka plan resmini ekleyin */
+    background-image: url('../images/background.jpg'); /* Logonuz ve arka plan resmini ekleyin */
     background-size: cover;
     background-position: center;
     height: 100vh;
@@ -622,4 +762,53 @@ header nav a:hover {
 
 .btn-logout:hover {
     background-color: #c0392b;
+}
+.gradient-title {
+    font-size: 3.5rem;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    font-weight: 900;
+    background: linear-gradient(90deg, #1e293b 10%, #334155 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    text-shadow: 0 2px 12px rgba(30,41,59,0.18);
+    letter-spacing: -1px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+.interviewly-logo-gradient {
+    font-size: 2.7rem;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    font-weight: 900;
+    background: linear-gradient(90deg, #6366f1 10%, #10b981 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    letter-spacing: -2px;
+    text-shadow: 0 2px 16px rgba(245,158,11,0.12);
+}
+.login-bg {
+  min-height: 100vh;
+  width: 100vw;
+  background: var(--bg-primary, #0a1931);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+.gradient-logo {
+  background: linear-gradient(90deg, #6366f1 10%, #10b981 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  font-weight: bold;
+  letter-spacing: 1px;
 }

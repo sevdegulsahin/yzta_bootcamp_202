@@ -1,25 +1,160 @@
 {% extends "base.html" %}
 
-{% block title %}Oturum Aç{% endblock %}
+{% block title %}Giriş Yap{% endblock %}
 
 {% block content %}
-<div class="auth-container"> {# login-container yerine auth-container kullanıyoruz #}
-    <h2>Tekrar Hoş Geldin</h2>
-    <form method="POST" action="{{ url_for('auth.login') }}">
-        <div class="form-group">
-            <label for="email">E-Posta Adresi</label>
-            <input type="email" id="email" name="email" required value="{{ request.form.get('email', '') }}"> {# Girdiği
-            değeri kaybetmemesi için #}
+<div class="login-bg">
+    <form method="POST" action="{{ url_for('auth.login') }}" class="auth-container p-4 rounded shadow bg-app-tertiary text-app-primary" style="max-width:400px; margin:100px auto;">
+        <h2 class="mb-4 text-center text-app-primary">Tekrar Hoş Geldin</h2>
+        <div class="mb-3">
+            <label for="email" class="form-label text-app-primary">E-Posta Adresi</label>
+            <input type="email" id="email" name="email" class="form-control bg-white text-dark" required value="{{ request.form.get('email', '') }}">
         </div>
-        <div class="form-group">
-            <label for="password">Şifre</label>
-            <input type="password" id="password" name="password" required>
+        <div class="mb-3">
+            <label for="password" class="form-label text-app-primary">Şifre</label>
+            <input type="password" id="password" name="password" class="form-control bg-white text-dark" required>
         </div>
         {% if error %}
-        <div class="error-message">{{ error }}</div>
+        <div class="alert alert-danger py-2">{{ error }}</div>
         {% endif %}
-        <button type="submit" class="btn-submit">Giriş Yap</button>
+        <button type="submit" class="btn btn-app-primary w-100">Giriş Yap</button>
+        <p class="mt-3 text-center small text-app-secondary">Hesabın yok mu? <a href="{{ url_for('auth.register') }}">Kayıt Ol</a></p>
     </form>
-    <p>Hesabın yok mu? <a href="{{ url_for('auth.register') }}">Giriş Yap</a></p>
 </div>
+{% endblock %}
+
+{% block styles %}
+<style>
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23475569" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+
+.auth-container {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-2xl);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    max-width: 450px;
+    position: relative;
+    z-index: 2;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+}
+
+.auth-title {
+    font-size: 2rem;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+    font-weight: 700;
+}
+
+.auth-subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.auth-form {
+    margin-bottom: var(--spacing-xl);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.form-group label i {
+    color: var(--primary-color);
+    width: 16px;
+}
+
+.form-control {
+    width: 100%;
+    padding: var(--spacing-md);
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: var(--transition-normal);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.btn-submit {
+    width: 100%;
+    padding: var(--spacing-md);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-lg);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.auth-footer p {
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.auth-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition-fast);
+}
+
+.auth-link:hover {
+    color: var(--primary-light);
+    text-decoration: underline;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+console.log('Login page loaded!');
+</script>
 {% endblock %}
