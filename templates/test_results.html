@@ -3,764 +3,131 @@
 {% block title %}Test Sonuçları - Interviewly{% endblock %}
 
 {% block content %}
-<div class="test-results-page">
-    <div class="container">
-        <!-- Header Section -->
-        <div class="results-header" data-aos="fade-down">
-            <div class="header-content">
-                <div class="header-info">
-                    <h1 class="page-title">
-                        <i class="fas fa-chart-bar"></i>
-                        Test Sonuçlarınız
-                    </h1>
-                    {% if username %}
-                    <p class="welcome-text">Merhaba, <strong>{{ username }}</strong>!</p>
-                    {% endif %}
-                    {% if category %}
-                    <p class="test-category">Test Alanı: <strong>{{ category | capitalize }}</strong></p>
-                    {% endif %}
-                </div>
-                <div class="completion-badge">
-                    <i class="fas fa-trophy"></i>
-                    <span>Test Tamamlandı!</span>
-                </div>
+
+<body data-page-id="test-results">
+    <div class="test-results-page">
+        <div class="container">
+            <!-- Page Data for JS -->
+            <div id="page-data"
+                data-chart-data="{{ {'labels': ['Doğru', 'Yanlış'], 'data': [correct_answers_count, total_questions_asked - correct_answers_count]}|tojson|safe if is_open_ended_test else '{}'|tojson|safe }}"
+                style="display: none;">
             </div>
-        </div>
 
-        <!-- Results Summary -->
-        <div class="results-summary" data-aos="fade-up">
-            <div class="summary-grid">
-                <div class="summary-card">
-                    <div class="card-icon">
-                        <i class="fas fa-question-circle"></i>
+            <!-- Header Section -->
+            <div class="results-header" data-aos="fade-down">
+                <div class="header-content">
+                    <div class="header-info">
+                        <h1 class="page-title"><i class="fas fa-chart-bar"></i>Test Sonuçlarınız</h1>
+                        {% if username %}<p class="welcome-text">Merhaba, <strong>{{ username }}</strong>!</p>{% endif
+                        %}
+                        {% if category %}<p class="test-category">Test Alanı: <strong>{{ category | capitalize
+                                }}</strong></p>{% endif %}
                     </div>
-                    <div class="card-content">
-                        <span class="card-value">{{ total_questions_asked }}</span>
-                        <span class="card-label">Toplam Soru</span>
-                    </div>
-                </div>
-
-                {% if is_open_ended_test %}
-                <div class="summary-card">
-                    <div class="card-icon correct">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="card-content">
-                        <span class="card-value">{{ correct_answers_count }}</span>
-                        <span class="card-label">Doğru Cevap</span>
-                    </div>
-                </div>
-
-                <div class="summary-card">
-                    <div class="card-icon score">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="card-content">
-                        <span class="card-value">{{ score }}</span>
-                        <span class="card-label">Puan</span>
-                    </div>
-                </div>
-
-                <div class="summary-card">
-                    <div class="card-icon percentage">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <div class="card-content">
-                        <span class="card-value">{{ ((correct_answers_count / total_questions_asked) * 100) | round(1) }}%</span>
-                        <span class="card-label">Başarı Oranı</span>
-                    </div>
-                </div>
-                {% else %}
-                <div class="summary-card">
-                    <div class="card-icon pending">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="card-content">
-                        <span class="card-value">Değerlendiriliyor</span>
-                        <span class="card-label">AI Analizi</span>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Performance Chart -->
-        {% if is_open_ended_test %}
-        <div class="performance-section" data-aos="fade-up" data-aos-delay="100">
-            <div class="section-header">
-                <h3 class="section-title">
-                    <i class="fas fa-chart-line"></i>
-                    Performans Analizi
-                </h3>
-            </div>
-            <div class="performance-chart">
-                <canvas id="performanceChart" width="400" height="200"></canvas>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Detailed Answers -->
-        {% if detailed_answers %}
-        <div class="detailed-answers" data-aos="fade-up" data-aos-delay="200">
-            <div class="section-header">
-                <h3 class="section-title">
-                    <i class="fas fa-list-ul"></i>
-                    Detaylı Cevaplarınız
-                </h3>
-                <div class="section-actions">
-                    <button class="action-btn" onclick="exportResults()">
-                        <i class="fas fa-download"></i>
-                        Sonuçları İndir
-                    </button>
-                    <button class="action-btn" onclick="shareResults()">
-                        <i class="fas fa-share"></i>
-                        Paylaş
-                    </button>
+                    <div class="completion-badge"><i class="fas fa-trophy"></i><span>Test Tamamlandı!</span></div>
                 </div>
             </div>
 
-            <div class="answers-list">
-                {% for answer in detailed_answers %}
-                <div class="answer-card" data-aos="fade-up" data-aos-delay="{{ loop.index * 50 }}">
-                    <div class="answer-header">
-                        <div class="answer-number">
-                            <span class="number">#{{ loop.index }}</span>
+            <!-- Results Summary -->
+            <div class="results-summary" data-aos="fade-up">
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="card-icon"><i class="fas fa-question-circle"></i></div>
+                        <div class="card-content">
+                            <span class="card-value">{{ total_questions_asked }}</span>
+                            <span class="card-label">Toplam Soru</span>
                         </div>
-                        <div class="answer-status">
+                    </div>
+                    {% if is_open_ended_test %}
+                    <div class="summary-card">
+                        <div class="card-icon correct"><i class="fas fa-check-circle"></i></div>
+                        <div class="card-content">
+                            <span class="card-value">{{ correct_answers_count }}</span>
+                            <span class="card-label">Doğru Cevap</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="card-icon score"><i class="fas fa-star"></i></div>
+                        <div class="card-content">
+                            <span class="card-value">{{ score }}</span>
+                            <span class="card-label">Puan</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="card-icon percentage"><i class="fas fa-percentage"></i></div>
+                        <div class="card-content">
+                            <span class="card-value">{{ ((correct_answers_count / total_questions_asked) * 100) |
+                                round(1) }}%</span>
+                            <span class="card-label">Başarı Oranı</span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="summary-card">
+                        <div class="card-icon pending"><i class="fas fa-clock"></i></div>
+                        <div class="card-content">
+                            <span class="card-value">Değerlendiriliyor</span>
+                            <span class="card-label">AI Analizi</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Performance Chart -->
+            {% if is_open_ended_test %}
+            <div class="performance-section" data-aos="fade-up" data-aos-delay="100">
+                <div class="section-header">
+                    <h3 class="section-title"><i class="fas fa-chart-line"></i>Performans Analizi</h3>
+                </div>
+                <div class="performance-chart"><canvas id="performanceChart"></canvas></div>
+            </div>
+            {% endif %}
+
+            <!-- Detailed Answers -->
+            {% if detailed_answers %}
+            <div class="detailed-answers" data-aos="fade-up" data-aos-delay="200">
+                <div class="section-header">
+                    <h3 class="section-title"><i class="fas fa-list-ul"></i>Detaylı Cevaplarınız</h3>
+                    <div class="section-actions">
+                        <button class="action-btn" data-action="export"><i class="fas fa-download"></i>Sonuçları
+                            İndir</button>
+                        <button class="action-btn" data-action="share"><i class="fas fa-share"></i>Paylaş</button>
+                    </div>
+                </div>
+                <div class="answers-list">
+                    {% for answer in detailed_answers %}
+                    <div class="answer-card" data-aos="fade-up">
+                        <div class="answer-header">
+                            <div class="answer-number">Soru #{{ loop.index }}</div>
                             {% if answer.is_correct is not none %}
-                                {% if answer.is_correct %}
-                                <span class="status-badge correct">
-                                    <i class="fas fa-check"></i>
-                                    Doğru
-                                </span>
-                                {% else %}
-                                <span class="status-badge incorrect">
-                                    <i class="fas fa-times"></i>
-                                    Yanlış
-                                </span>
-                                {% endif %}
-                            {% else %}
-                            <span class="status-badge pending">
-                                <i class="fas fa-clock"></i>
-                                Değerlendiriliyor
+                            <span class="status-badge {{ 'correct' if answer.is_correct else 'incorrect' }}">
+                                <i class="fas {{ 'fa-check' if answer.is_correct else 'fa-times' }}"></i>
+                                {{ 'Doğru' if answer.is_correct else 'Yanlış' }}
                             </span>
+                            {% else %}
+                            <span class="status-badge pending"><i class="fas fa-clock"></i>Değerlendiriliyor</span>
                             {% endif %}
                         </div>
-                    </div>
-
-                    <div class="answer-content">
-                        <div class="question-section">
+                        <div class="answer-content">
                             <h4 class="question-title">Soru</h4>
                             <p class="question-text">{{ answer.question_text }}</p>
-                        </div>
-
-                        <div class="response-section">
                             <h4 class="response-title">Cevabınız</h4>
                             <p class="response-text">{{ answer.user_response }}</p>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
-        </div>
-        {% endif %}
+            {% endif %}
 
-        <!-- Recommendations -->
-        {% if is_open_ended_test %}
-        <div class="recommendations-section" data-aos="fade-up" data-aos-delay="300">
-            <div class="section-header">
-                <h3 class="section-title">
-                    <i class="fas fa-lightbulb"></i>
-                    Öneriler
-                </h3>
+            <!-- Action Buttons -->
+            <div class="action-buttons" data-aos="fade-up" data-aos-delay="400">
+                <a href="{{ url_for('interview.create_interview') }}" class="btn btn-primary"><i
+                        class="fas fa-plus"></i>Yeni Test Oluştur</a>
+                <a href="{{ url_for('interview.my_interviews') }}" class="btn btn-secondary"><i
+                        class="fas fa-history"></i>Geçmiş Mülakatlar</a>
+                <a href="{{ url_for('main.index') }}" class="btn btn-outline"><i class="fas fa-home"></i>Ana Sayfa</a>
             </div>
-            <div class="recommendations-grid">
-                <div class="recommendation-card">
-                    <div class="rec-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <h4>Çalışma Önerisi</h4>
-                    <p>Yanlış cevapladığınız konuları tekrar gözden geçirin ve pratik yapın.</p>
-                </div>
-                <div class="recommendation-card">
-                    <div class="rec-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <h4>Zaman Yönetimi</h4>
-                    <p>Soruları daha hızlı cevaplamak için zaman yönetimi tekniklerini geliştirin.</p>
-                </div>
-                <div class="recommendation-card">
-                    <div class="rec-icon">
-                        <i class="fas fa-redo"></i>
-                    </div>
-                    <h4>Tekrar Test</h4>
-                    <p>Farklı kategorilerde testler çözerek bilginizi genişletin.</p>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Action Buttons -->
-        <div class="action-buttons" data-aos="fade-up" data-aos-delay="400">
-            <a href="{{ url_for('interview.create_interview') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i>
-                Yeni Test Oluştur
-            </a>
-            <a href="{{ url_for('interview.my_interviews') }}" class="btn btn-secondary">
-                <i class="fas fa-history"></i>
-                Geçmiş Mülakatlar
-            </a>
-            <a href="{{ url_for('main.index') }}" class="btn btn-outline">
-                <i class="fas fa-home"></i>
-                Ana Sayfa
-            </a>
         </div>
     </div>
-</div>
-{% endblock %}
-
-{% block styles %}
-<style>
-.test-results-page {
-    padding: var(--spacing-2xl) 0;
-    background: var(--bg-primary);
-    min-height: 100vh;
-}
-
-/* Results Header */
-.results-header {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-xl);
-}
-
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--spacing-lg);
-}
-
-.header-info h1 {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-sm);
-    font-size: 2rem;
-}
-
-.header-info h1 i {
-    color: var(--primary-color);
-}
-
-.welcome-text, .test-category {
-    color: var(--text-secondary);
-    margin-bottom: var(--spacing-xs);
-    font-size: 1.1rem;
-}
-
-.completion-badge {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
-    color: white;
-    padding: var(--spacing-md) var(--spacing-lg);
-    border-radius: var(--radius-lg);
-    font-weight: 600;
-    font-size: 1.1rem;
-}
-
-.completion-badge i {
-    font-size: 1.2rem;
-}
-
-/* Results Summary */
-.results-summary {
-    margin-bottom: var(--spacing-2xl);
-}
-
-.summary-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--spacing-lg);
-}
-
-.summary-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-lg);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    transition: var(--transition-normal);
-    animation: cardSlide 0.5s ease-out;
-}
-
-@keyframes cardSlide {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.summary-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--primary-color);
-}
-
-.card-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: white;
-    flex-shrink: 0;
-}
-
-.card-icon.correct {
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-}
-
-.card-icon.score {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-}
-
-.card-icon.percentage {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-}
-
-.card-icon.pending {
-    background: linear-gradient(135deg, #6b7280, #4b5563);
-}
-
-.card-content {
-    display: flex;
-    flex-direction: column;
-}
-
-.card-value {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    line-height: 1;
-}
-
-.card-label {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin-top: var(--spacing-xs);
-}
-
-/* Performance Section */
-.performance-section {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-2xl);
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-lg);
-    flex-wrap: wrap;
-    gap: var(--spacing-md);
-}
-
-.section-title {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    color: var(--text-primary);
-    margin: 0;
-    font-size: 1.5rem;
-}
-
-.section-title i {
-    color: var(--primary-color);
-}
-
-.section-actions {
-    display: flex;
-    gap: var(--spacing-sm);
-}
-
-.action-btn {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: var(--transition-normal);
-    font-size: 0.9rem;
-}
-
-.action-btn:hover {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-
-.performance-chart {
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-lg);
-    text-align: center;
-}
-
-/* Detailed Answers */
-.detailed-answers {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-2xl);
-}
-
-.answers-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
-}
-
-.answer-card {
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    transition: var(--transition-normal);
-}
-
-.answer-card:hover {
-    box-shadow: var(--shadow-md);
-    border-color: var(--primary-color);
-}
-
-.answer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-md);
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
-}
-
-.answer-number {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-}
-
-.answer-number .number {
-    background: var(--primary-color);
-    color: white;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.status-badge {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-lg);
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.status-badge.correct {
-    background: rgba(34, 197, 94, 0.1);
-    color: #22c55e;
-}
-
-.status-badge.incorrect {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-}
-
-.status-badge.pending {
-    background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
-}
-
-.answer-content {
-    padding: var(--spacing-lg);
-}
-
-.question-section, .response-section {
-    margin-bottom: var(--spacing-lg);
-}
-
-.question-section:last-child, .response-section:last-child {
-    margin-bottom: 0;
-}
-
-.question-title, .response-title {
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-sm);
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.question-text, .response-text {
-    color: var(--text-secondary);
-    line-height: 1.6;
-    background: var(--bg-secondary);
-    padding: var(--spacing-md);
-    border-radius: var(--radius-md);
-    border-left: 3px solid var(--primary-color);
-}
-
-/* Recommendations */
-.recommendations-section {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-2xl);
-}
-
-.recommendations-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--spacing-lg);
-}
-
-.recommendation-card {
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-lg);
-    text-align: center;
-    transition: var(--transition-normal);
-}
-
-.recommendation-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--primary-color);
-}
-
-.rec-icon {
-    width: 60px;
-    height: 60px;
-    background: var(--primary-color);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto var(--spacing-md);
-    color: white;
-    font-size: 1.5rem;
-}
-
-.recommendation-card h4 {
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-sm);
-    font-size: 1.2rem;
-}
-
-.recommendation-card p {
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin: 0;
-}
-
-/* Action Buttons */
-.action-buttons {
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-lg);
-    flex-wrap: wrap;
-}
-
-.action-buttons .btn {
-    padding: var(--spacing-md) var(--spacing-xl);
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .header-content {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .completion-badge {
-        align-self: center;
-    }
-    
-    .summary-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .section-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .section-actions {
-        justify-content: center;
-    }
-    
-    .recommendations-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .action-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-}
-
-@media (max-width: 480px) {
-    .summary-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .answer-header {
-        flex-direction: column;
-        gap: var(--spacing-sm);
-        align-items: stretch;
-    }
-    
-    .answer-number {
-        justify-content: center;
-    }
-    
-    .status-badge {
-        align-self: center;
-    }
-}
-</style>
-{% endblock %}
-
-{% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-// Performance Chart
-{% if is_open_ended_test %}
-function createPerformanceChart() {
-    const ctx = document.getElementById('performanceChart').getContext('2d');
-    
-    const data = {
-        labels: ['Doğru', 'Yanlış'],
-        datasets: [{
-            data: [{{ correct_answers_count }}, {{ total_questions_asked - correct_answers_count }}],
-            backgroundColor: [
-                '#22c55e',
-                '#ef4444'
-            ],
-            borderColor: [
-                '#16a34a',
-                '#dc2626'
-            ],
-            borderWidth: 2
-        }]
-    };
-    
-    const config = {
-        type: 'doughnut',
-        data: data,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        color: 'var(--text-primary)',
-                        font: {
-                            size: 14
-                        }
-                    }
-                }
-            }
-        }
-    };
-    
-    new Chart(ctx, config);
-}
-{% endif %}
-
-// Export results
-function exportResults() {
-    const results = {
-        username: '{{ username }}',
-        category: '{{ category }}',
-        totalQuestions: {{ total_questions_asked }},
-        correctAnswers: {{ correct_answers_count if is_open_ended_test else 0 }},
-        score: '{{ score if is_open_ended_test else "N/A" }}',
-        timestamp: new Date().toISOString()
-    };
-    
-    const dataStr = JSON.stringify(results, null, 2);
-    const dataBlob = new Blob([dataStr], {type: 'application/json'});
-    
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(dataBlob);
-    link.download = `test-results-${new Date().toISOString().split('T')[0]}.json`;
-    link.click();
-    
-            console.log('Sonuçlar indirildi!');
-}
-
-// Share results
-function shareResults() {
-    const shareData = {
-        title: 'Interviewly Test Sonuçları',
-        text: `{{ username }} olarak {{ category }} testinde {{ total_questions_asked }} sorudan {{ correct_answers_count if is_open_ended_test else 0 }} tanesini doğru cevapladım!`,
-        url: window.location.href
-    };
-    
-    if (navigator.share) {
-        navigator.share(shareData);
-    } else {
-        // Fallback: copy to clipboard
-        navigator.clipboard.writeText(shareData.text + '\n' + shareData.url).then(() => {
-            console.log('Sonuçlar kopyalandı!');
-        });
-    }
-}
-
-// Initialize
-document.addEventListener('DOMContentLoaded', function() {
-    {% if is_open_ended_test %}
-    createPerformanceChart();
-    {% endif %}
-    
-    // Add animation delay to cards
-    const cards = document.querySelectorAll('.summary-card, .answer-card, .recommendation-card');
-    cards.forEach((card, index) => {
-        card.style.animationDelay = `${index * 0.1}s`;
-    });
-});
-</script>
+</body>
 {% endblock %}

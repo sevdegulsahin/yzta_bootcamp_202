@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block title %}Geçmiş Mülakatlarım - Interviewly{% endblock %}
 
 {% block content %}
@@ -21,43 +20,20 @@
                             <i class="fas fa-clipboard-list"></i>
                         </div>
                         <div class="stat-info">
-                            <span class="stat-value">{{ mülakatlar|length if mülakatlar else 0 }}</span>
+                            <span class="stat-value">{{ interviews|length if interviews else 0 }}</span>
                             <span class="stat-label">Toplam Mülakat</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Filters and Search -->
-        <div class="filters-section" data-aos="fade-up" data-aos-delay="100">
-            <div class="filters-container">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Mülakat ara..." class="search-input">
-                </div>
-                <div class="filter-buttons">
-                    <button class="filter-btn active" data-filter="all">
-                        <i class="fas fa-list"></i>
-                        Tümü
-                    </button>
-                    <button class="filter-btn" data-filter="technical">
-                        <i class="fas fa-code"></i>
-                        Teknik
-                    </button>
-                    <button class="filter-btn" data-filter="general">
-                        <i class="fas fa-users"></i>
-                        Genel
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Interviews List -->
-        {% if mülakatlar %}
+        <!-- Interviews List Grid -->
+        {% if interviews %}
         <div class="interviews-grid" data-aos="fade-up" data-aos-delay="200">
-            {% for mülakat in mülakatlar %}
-            <div class="interview-card" data-category="{{ mülakat.category or 'general' }}" data-aos="fade-up" data-aos-delay="{{ loop.index * 50 }}">
+            {% for interview in interviews %}
+            <div class="interview-card" data-category="{{ interview.category or 'general' }}" data-aos="fade-up"
+                data-aos-delay="{{ loop.index * 50 }}"
+                onclick="location.href='{{ url_for('interview.interview_details', question_id=interview.id) }}'">
                 <div class="card-header">
                     <div class="interview-meta">
                         <div class="interview-number">
@@ -65,123 +41,39 @@
                         </div>
                         <div class="interview-info">
                             <h3 class="interview-title">
-                                {{ mülakat.category | capitalize if mülakat.category else 'Genel' }} Mülakatı
+                                {{ interview.category | capitalize if interview.category else 'Genel' }} Mülakatı
                             </h3>
                             <div class="interview-details">
                                 <span class="detail-item">
                                     <i class="fas fa-calendar"></i>
-                                    {{ mülakat.generated_at.split('T')[0] }}
+                                    {{ interview.created_at.split("T")[0] }}
                                 </span>
                                 <span class="detail-item">
                                     <i class="fas fa-tag"></i>
-                                    {{ mülakat.question_type | capitalize if mülakat.question_type else 'Bilinmiyor' }}
+                                    {{ interview.question_type | capitalize if interview.question_type else 'Bilinmiyor'
+                                    }}
                                 </span>
                             </div>
                         </div>
                     </div>
                     <div class="interview-status">
-                        {% if mülakat.answers %}
+                        {% if interview.answers %}
                         <span class="status-badge completed">
                             <i class="fas fa-check-circle"></i>
                             Tamamlandı
                         </span>
                         {% else %}
                         <span class="status-badge pending">
-                            <i class="fas fa-clock"></i>
-                            Bekliyor
+                            <i class="fas fa-exclamation-triangle "></i>
+                            Boş
                         </span>
                         {% endif %}
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    <div class="question-section">
-                        <h4 class="section-title">
-                            <i class="fas fa-question-circle"></i>
-                            Soru
-                        </h4>
-                        <p class="question-text">{{ mülakat.question_text }}</p>
-                    </div>
-
-                    {% if mülakat.answers %}
-                    <div class="answers-section">
-                        <h4 class="section-title">
-                            <i class="fas fa-comments"></i>
-                            Cevaplarınız ({{ mülakat.answers|length }})
-                        </h4>
-                        <div class="answers-list">
-                            {% for answer in mülakat.answers %}
-                            <div class="answer-item">
-                                <div class="answer-header">
-                                    <span class="answer-number">Cevap {{ loop.index }}</span>
-                                    <span class="answer-date">
-                                        <i class="fas fa-clock"></i>
-                                        {{ answer.answered_at.split('T')[0] }}
-                                    </span>
-                                </div>
-                                <div class="answer-content">
-                                    <p class="answer-text">{{ answer.user_answer }}</p>
-                                </div>
-                                <div class="answer-result">
-                                    <span class="result-label">Sonuç:</span>
-                                    {% if answer.is_correct is none %}
-                                    <span class="result-badge pending">
-                                        <i class="fas fa-hourglass-half"></i>
-                                        Değerlendiriliyor
-                                    </span>
-                                    {% elif answer.is_correct %}
-                                    <span class="result-badge correct">
-                                        <i class="fas fa-check"></i>
-                                        Doğru
-                                    </span>
-                                    {% else %}
-                                    <span class="result-badge incorrect">
-                                        <i class="fas fa-times"></i>
-                                        Yanlış
-                                    </span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% else %}
-                    <div class="no-answers">
-                        <div class="empty-state">
-                            <i class="fas fa-comment-slash"></i>
-                            <p>Bu mülakat için henüz cevap verilmemiş</p>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-
-                <div class="card-footer">
-                    <div class="card-actions">
-                        <button class="action-btn" onclick="viewInterviewDetails({{ loop.index }})">
-                            <i class="fas fa-eye"></i>
-                            Detaylar
-                        </button>
-                        <button class="action-btn" onclick="shareInterview({{ loop.index }})">
-                            <i class="fas fa-share"></i>
-                            Paylaş
-                        </button>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
-
-        <!-- No Results Message -->
-        <div class="no-results" id="noResults" style="display: none;" data-aos="fade-up">
-            <div class="empty-state">
-                <i class="fas fa-search"></i>
-                <h3>Arama Sonucu Bulunamadı</h3>
-                <p>Arama kriterlerinize uygun mülakat bulunamadı</p>
-            </div>
-        </div>
-
         {% else %}
-        <!-- Empty State -->
         <div class="empty-state-container" data-aos="fade-up">
             <div class="empty-state">
                 <div class="empty-icon">
@@ -196,641 +88,626 @@
             </div>
         </div>
         {% endif %}
-
-        <!-- Action Buttons -->
-        {% if mülakatlar %}
-        <div class="action-buttons" data-aos="fade-up" data-aos-delay="300">
-            <a href="{{ url_for('interview.create_interview') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i>
-                Yeni Mülakat Başlat
-            </a>
-            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
-                <i class="fas fa-home"></i>
-                Ana Sayfa
-            </a>
-        </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}
-
 {% block styles %}
 <style>
-.my-interviews-page {
-    padding: var(--spacing-2xl) 0;
-    background: var(--bg-primary);
-    min-height: 100vh;
-}
-
-/* Page Header */
-.page-header {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-xl);
-}
-
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--spacing-lg);
-}
-
-.header-info h1 {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-sm);
-    font-size: 2rem;
-}
-
-.header-info h1 i {
-    color: var(--primary-color);
-}
-
-.page-subtitle {
-    color: var(--text-muted);
-    font-size: 1.1rem;
-}
-
-.header-stats {
-    display: flex;
-    gap: var(--spacing-md);
-}
-
-.stat-card {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    background: var(--bg-tertiary);
-    padding: var(--spacing-md);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
-}
-
-.stat-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--primary-color);
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.2rem;
-}
-
-.stat-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-}
-
-.stat-label {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-/* Filters Section */
-.filters-section {
-    margin-bottom: var(--spacing-xl);
-}
-
-.filters-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--spacing-lg);
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-lg);
-}
-
-.search-box {
-    position: relative;
-    flex: 1;
-    max-width: 400px;
-}
-
-.search-box i {
-    position: absolute;
-    left: var(--spacing-md);
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted);
-}
-
-.search-input {
-    width: 100%;
-    padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 3rem;
-    background: var(--bg-tertiary);
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    color: var(--text-primary);
-    font-size: 1rem;
-    transition: var(--transition-normal);
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-.filter-buttons {
-    display: flex;
-    gap: var(--spacing-sm);
-}
-
-.filter-btn {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--bg-tertiary);
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: var(--transition-normal);
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.filter-btn:hover {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-
-.filter-btn.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-
-/* Interviews Grid */
-.interviews-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: var(--spacing-xl);
-    margin-bottom: var(--spacing-2xl);
-}
-
-.interview-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-    transition: var(--transition-normal);
-    animation: cardSlide 0.5s ease-out;
-}
-
-@keyframes cardSlide {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
+    .my-interviews-page {
+        padding: var(--spacing-2xl) 0;
+        background: var(--bg-primary);
+        min-height: 100vh;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    /* Page Header */
+    .page-header {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-xl);
+        margin-bottom: var(--spacing-xl);
     }
-}
 
-.interview-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-xl);
-    border-color: var(--primary-color);
-}
-
-.card-header {
-    padding: var(--spacing-lg);
-    border-bottom: 1px solid var(--border-color);
-    background: var(--bg-tertiary);
-}
-
-.interview-meta {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-}
-
-.interview-number {
-    width: 50px;
-    height: 50px;
-    background: var(--primary-color);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
-    font-size: 1.2rem;
-    flex-shrink: 0;
-}
-
-.interview-info {
-    flex: 1;
-}
-
-.interview-title {
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-sm);
-    font-size: 1.2rem;
-}
-
-.interview-details {
-    display: flex;
-    gap: var(--spacing-md);
-    flex-wrap: wrap;
-}
-
-.detail-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    color: var(--text-muted);
-    font-size: 0.85rem;
-}
-
-.interview-status {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.status-badge {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-lg);
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.status-badge.completed {
-    background: rgba(34, 197, 94, 0.1);
-    color: #22c55e;
-    border: 1px solid rgba(34, 197, 94, 0.3);
-}
-
-.status-badge.pending {
-    background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
-    border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.card-body {
-    padding: var(--spacing-lg);
-}
-
-.section-title {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-md);
-    font-size: 1.1rem;
-}
-
-.section-title i {
-    color: var(--primary-color);
-}
-
-.question-text {
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin-bottom: var(--spacing-lg);
-}
-
-.answers-section {
-    margin-top: var(--spacing-lg);
-}
-
-.answers-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.answer-item {
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-md);
-}
-
-.answer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-sm);
-}
-
-.answer-number {
-    font-weight: 600;
-    color: var(--text-primary);
-    font-size: 0.9rem;
-}
-
-.answer-date {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    color: var(--text-muted);
-    font-size: 0.8rem;
-}
-
-.answer-text {
-    color: var(--text-secondary);
-    line-height: 1.5;
-    margin-bottom: var(--spacing-sm);
-}
-
-.answer-result {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-}
-
-.result-label {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-
-.result-badge {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-md);
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.result-badge.correct {
-    background: rgba(34, 197, 94, 0.1);
-    color: #22c55e;
-}
-
-.result-badge.incorrect {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-}
-
-.result-badge.pending {
-    background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
-}
-
-.no-answers {
-    padding: var(--spacing-xl);
-    text-align: center;
-}
-
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-md);
-    color: var(--text-muted);
-}
-
-.empty-state i {
-    font-size: 3rem;
-    color: var(--text-muted);
-}
-
-.empty-state h3 {
-    color: var(--text-primary);
-    margin: 0;
-}
-
-.empty-state p {
-    margin: 0;
-    text-align: center;
-}
-
-.card-footer {
-    padding: var(--spacing-lg);
-    border-top: 1px solid var(--border-color);
-    background: var(--bg-tertiary);
-}
-
-.card-actions {
-    display: flex;
-    gap: var(--spacing-sm);
-}
-
-.action-btn {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: var(--transition-normal);
-    font-size: 0.9rem;
-    text-decoration: none;
-}
-
-.action-btn:hover {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-
-/* Empty State Container */
-.empty-state-container {
-    padding: var(--spacing-4xl) 0;
-    text-align: center;
-}
-
-.empty-state-container .empty-state {
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-.empty-state-container .empty-icon {
-    width: 100px;
-    height: 100px;
-    background: var(--bg-tertiary);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto var(--spacing-lg);
-    font-size: 3rem;
-    color: var(--text-muted);
-}
-
-/* Action Buttons */
-.action-buttons {
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-lg);
-    margin-top: var(--spacing-2xl);
-}
-
-.action-buttons .btn {
-    padding: var(--spacing-md) var(--spacing-xl);
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
     .header-content {
-        flex-direction: column;
-        align-items: stretch;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--spacing-lg);
     }
-    
+
+    .header-info h1 {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-sm);
+        font-size: 2rem;
+    }
+
+    .header-info h1 i {
+        color: var(--primary-color);
+    }
+
+    .page-subtitle {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+    }
+
+    .header-stats {
+        display: flex;
+        gap: var(--spacing-md);
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        background: var(--bg-tertiary);
+        padding: var(--spacing-md);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--primary-color);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .stat-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    /* Filters Section */
+    .filters-section {
+        margin-bottom: var(--spacing-xl);
+    }
+
     .filters-container {
-        flex-direction: column;
-        align-items: stretch;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--spacing-lg);
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-lg);
     }
-    
+
     .search-box {
-        max-width: none;
+        position: relative;
+        flex: 1;
+        max-width: 400px;
     }
-    
-    .interviews-grid {
-        grid-template-columns: 1fr;
+
+    .search-box i {
+        position: absolute;
+        left: var(--spacing-md);
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
     }
-    
-    .interview-details {
-        flex-direction: column;
+
+    .search-input {
+        width: 100%;
+        padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 3rem;
+        background: var(--bg-tertiary);
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: var(--transition-normal);
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .filter-buttons {
+        display: flex;
         gap: var(--spacing-sm);
     }
-    
-    .action-buttons {
+
+    .filter-btn {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-sm) var(--spacing-md);
+        background: var(--bg-tertiary);
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: var(--transition-normal);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .filter-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .filter-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    /* Interviews Grid */
+    .interviews-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: var(--spacing-xl);
+        margin-bottom: var(--spacing-2xl);
+    }
+
+    .interview-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        transition: var(--transition-normal);
+        animation: cardSlide 0.5s ease-out;
+    }
+
+    @keyframes cardSlide {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .interview-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--primary-color);
+    }
+
+    .card-header {
+        padding: var(--spacing-lg);
+        border-bottom: 1px solid var(--border-color);
+        background: var(--bg-tertiary);
+    }
+
+    .interview-meta {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+    }
+
+    .interview-number {
+        width: 50px;
+        height: 50px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .interview-info {
+        flex: 1;
+    }
+
+    .interview-title {
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-sm);
+        font-size: 1.2rem;
+    }
+
+    .interview-details {
+        display: flex;
+        gap: var(--spacing-md);
+        flex-wrap: wrap;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+    .interview-status {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .status-badge {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: var(--radius-lg);
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-badge.completed {
+        background: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .status-badge.pending {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .card-body {
+        padding: var(--spacing-lg);
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-md);
+        font-size: 1.1rem;
+    }
+
+    .section-title i {
+        color: var(--primary-color);
+    }
+
+    .question-text {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .answers-section {
+        margin-top: var(--spacing-lg);
+    }
+
+    .answers-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .answer-item {
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-md);
+    }
+
+    .answer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .answer-number {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .answer-date {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        color: var(--text-muted);
+        font-size: 0.8rem;
+    }
+
+    .answer-text {
+        color: var(--text-secondary);
+        line-height: 1.5;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .answer-result {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    .result-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .result-badge {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: var(--radius-md);
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .result-badge.correct {
+        background: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+    }
+
+    .result-badge.incorrect {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+    .result-badge.pending {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+    }
+
+    .no-answers {
+        padding: var(--spacing-xl);
+        text-align: center;
+    }
+
+    .empty-state {
+        display: flex;
         flex-direction: column;
         align-items: center;
+        gap: var(--spacing-md);
+        color: var(--text-muted);
     }
-}
 
-@media (max-width: 480px) {
-    .interview-meta {
-        flex-direction: column;
-        align-items: flex-start;
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--text-muted);
+    }
+
+    .empty-state h3 {
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .empty-state p {
+        margin: 0;
+        text-align: center;
+    }
+
+    .card-footer {
+        padding: var(--spacing-lg);
+        border-top: 1px solid var(--border-color);
+        background: var(--bg-tertiary);
+    }
+
+    .card-actions {
+        display: flex;
         gap: var(--spacing-sm);
     }
-    
-    .interview-status {
-        justify-content: flex-start;
-        margin-top: var(--spacing-sm);
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-sm) var(--spacing-md);
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: var(--transition-normal);
+        font-size: 0.9rem;
+        text-decoration: none;
     }
-    
-    .card-actions {
-        flex-direction: column;
+
+    .action-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
     }
-}
+
+    /* Empty State Container */
+    .empty-state-container {
+        padding: var(--spacing-4xl) 0;
+        text-align: center;
+    }
+
+    .empty-state-container .empty-state {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .empty-state-container .empty-icon {
+        width: 100px;
+        height: 100px;
+        background: var(--bg-tertiary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto var(--spacing-lg);
+        font-size: 3rem;
+        color: var(--text-muted);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: var(--spacing-lg);
+        margin-top: var(--spacing-2xl);
+    }
+
+    .action-buttons .btn {
+        padding: var(--spacing-md) var(--spacing-xl);
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filters-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .search-box {
+            max-width: none;
+        }
+
+        .interviews-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .interview-details {
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .interview-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+        }
+
+        .interview-status {
+            justify-content: flex-start;
+            margin-top: var(--spacing-sm);
+        }
+
+        .card-actions {
+            flex-direction: column;
+        }
+    }
 </style>
 {% endblock %}
-
 {% block scripts %}
 <script>
-let currentFilter = 'all';
-let currentSearch = '';
+    let currentFilter = 'all';
+    let currentSearch = '';
 
-// Filter functionality
-function filterInterviews(filter) {
-    currentFilter = filter;
-    updateFilterButtons();
-    applyFilters();
-}
+    // Filter functionality
+    function filterInterviews(filter) {
+        currentFilter = filter;
+        updateFilterButtons();
+        applyFilters();
+    }
 
-function updateFilterButtons() {
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.querySelector(`[data-filter="${currentFilter}"]`).classList.add('active');
-}
+    function updateFilterButtons() {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-filter="${currentFilter}"]`).classList.add('active');
+    }
 
-function applyFilters() {
-    const cards = document.querySelectorAll('.interview-card');
-    let visibleCount = 0;
-    
-    cards.forEach(card => {
-        const category = card.dataset.category;
-        const title = card.querySelector('.interview-title').textContent.toLowerCase();
-        const question = card.querySelector('.question-text').textContent.toLowerCase();
-        const searchMatch = !currentSearch || 
-            title.includes(currentSearch.toLowerCase()) || 
-            question.includes(currentSearch.toLowerCase());
-        const filterMatch = currentFilter === 'all' || category === currentFilter;
-        
-        if (searchMatch && filterMatch) {
-            card.style.display = 'block';
-            visibleCount++;
-        } else {
-            card.style.display = 'none';
+    function applyFilters() {
+        const cards = document.querySelectorAll('.interview-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const category = card.dataset.category;
+            const title = card.querySelector('.interview-title').textContent.toLowerCase();
+            const question = card.querySelector('.question-text').textContent.toLowerCase();
+            const searchMatch = !currentSearch ||
+                title.includes(currentSearch.toLowerCase()) ||
+                question.includes(currentSearch.toLowerCase());
+            const filterMatch = currentFilter === 'all' || category === currentFilter;
+
+            if (searchMatch && filterMatch) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Show/hide no results message
+        const noResults = document.getElementById('noResults');
+        if (noResults) {
+            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
         }
-    });
-    
-    // Show/hide no results message
-    const noResults = document.getElementById('noResults');
-    if (noResults) {
-        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
     }
-}
 
-// Search functionality
-document.getElementById('searchInput').addEventListener('input', function(e) {
-    currentSearch = e.target.value;
-    applyFilters();
-});
-
-// Filter button event listeners
-document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        filterInterviews(this.dataset.filter);
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function (e) {
+        currentSearch = e.target.value;
+        applyFilters();
     });
-});
 
-// Interview actions
-function viewInterviewDetails(index) {
-    // Show interview details
-    console.log(`Mülakat #${index} detayları görüntüleniyor...`);
-    // Burada modal açılabilir veya detay sayfasına yönlendirilebilir
-}
+    // Filter button event listeners
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            filterInterviews(this.dataset.filter);
+        });
+    });
 
-function shareInterview(index) {
-    if (navigator.share) {
-        navigator.share({
-            title: `Mülakat #${index}`,
-            text: 'Interviewly platformunda tamamladığım mülakat',
-            url: window.location.href
-        });
-    } else {
-        // Fallback: copy to clipboard
-        navigator.clipboard.writeText(window.location.href).then(() => {
-            console.log('Link kopyalandı!');
-        });
+    // Interview actions
+    function viewInterviewDetails(index) {
+        // Show interview details
+        console.log(`Mülakat #${index} detayları görüntüleniyor...`);
+        // Burada modal açılabilir veya detay sayfasına yönlendirilebilir
     }
-}
 
-// Initialize
-document.addEventListener('DOMContentLoaded', function() {
-    // Add animation delay to cards
-    const cards = document.querySelectorAll('.interview-card');
-    cards.forEach((card, index) => {
-        card.style.animationDelay = `${index * 0.1}s`;
+    function shareInterview(index) {
+        if (navigator.share) {
+            navigator.share({
+                title: `Mülakat #${index}`,
+                text: 'Interviewly platformunda tamamladığım mülakat',
+                url: window.location.href
+            });
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                console.log('Link kopyalandı!');
+            });
+        }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add animation delay to cards
+        const cards = document.querySelectorAll('.interview-card');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
     });
-});
 </script>
 {% endblock %}

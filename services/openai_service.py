@@ -56,3 +56,53 @@ def generate_single_openai_question(prompt):
     except Exception as e:
         logging.error(f"YZ ile mülakat sorusu üretilemedi: {e}")
         return "Şu anda yapay zeka destekli soru üretilemiyor." 
+    
+
+import json
+
+# ... (mevcut importlarınız ve fonksiyonlarınız) ...
+
+def evaluate_answer_with_ai(question, user_answer):
+    """
+    Bir soruyu ve kullanıcı cevabını alıp, AI ile değerlendirir.
+    Değerlendirme sonucunu JSON formatında döndürür.
+    """
+    try:
+        # AI'a rolünü, görevini ve istediğimiz çıktı formatını net bir şekilde anlatıyoruz.
+        prompt = f"""
+        Sen bir teknik mülakat değerlendirme uzmanısın. Görevin, sana verilen bir soruyu ve bu soruya verilen bir kullanıcı cevabını analiz etmektir.
+        Cevabın doğruluğunu, eksikliğini ve kalitesini değerlendir.
+        
+        Değerlendirme sonucunu SADECE ve SADECE aşağıdaki gibi bir JSON formatında döndür:
+        {{
+          "is_correct": true veya false,
+          "feedback": "Kullanıcının cevabının neden doğru veya yanlış olduğuna dair kısa ve yapıcı bir geri bildirim."
+        }}
+
+        Soru: "{question}"
+        Kullanıcı Cevabı: "{user_answer}"
+        """
+        
+        # Bu, daha önce kullandığınız OpenAI çağırma fonksiyonu olmalı
+        # generate_single_openai_question veya benzeri bir fonksiyon olabilir.
+        # Önemli olan, bu prompt'u AI'a göndermektir.
+        response_text = generate_single_openai_question(prompt) # Kendi OpenAI çağırma fonksiyonunuzu kullanın
+        
+        # AI'dan gelen metni JSON olarak ayrıştırmaya çalış
+        evaluation_json = json.loads(response_text)
+        
+        # Beklenen anahtarların olup olmadığını kontrol et
+        if 'is_correct' not in evaluation_json or 'feedback' not in evaluation_json:
+            # AI beklenen formatta cevap vermezse, varsayılan bir değer döndür
+            logging.error(f"AI değerlendirmesi beklenen formatta değil: {response_text}")
+            return {"is_correct": None, "feedback": "AI cevabı otomatik olarak değerlendiremedi."}
+            
+        return evaluation_json
+
+    except json.JSONDecodeError:
+        # AI geçerli bir JSON döndürmezse
+        logging.error(f"AI geçerli bir JSON döndürmedi: {response_text}")
+        return {"is_correct": None, "feedback": "AI değerlendirmesi ayrıştırılamadı."}
+    except Exception as e:
+        logging.error(f"AI değerlendirmesi sırasında bir hata oluştu: {e}")
+        return {"is_correct": None, "feedback": "Değerlendirme sırasında bir hata oluştu."}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Mülakat Detayları - Interviewly{% endblock %}
+
+{% block content %}
+<div class="interview-details-page">
+    <div class="container">
+        <div class="details-header" data-aos="fade-down">
+            <h1>
+                <i class="fas fa-file-alt"></i>
+                Mülakat Detayları
+            </h1>
+            <p>
+                <strong>Tarih:</strong> {{ interview.created_at.split("T")[0] }} |
+                <strong>Kategori:</strong> {{ interview.category | capitalize if interview.category else 'Genel' }} |
+                <strong>Soru Tipi:</strong> {{ interview.question_type | capitalize if interview.question_type else
+                'Bilinmiyor' }}
+            </p>
+        </div>
+
+        <div class="details-body" data-aos="fade-up">
+            <div class="question-section">
+                <h3>
+                    <i class="fas fa-question-circle"></i>
+                    Sorulan Soru
+                </h3>
+                <p>{{ interview.question_text }}</p>
+            </div>
+
+            {% if interview.answers %}
+            <div class="answers-section">
+                <h3>
+                    <i class="fas fa-comments"></i>
+                    Cevaplar
+                </h3>
+                {% for answer in interview.answers %}
+                <div class="answer-item" data-aos="fade-up" data-aos-delay="{{ loop.index * 50 }}">
+                    <div class="answer-header">
+                        <span>Cevap {{ loop.index }} - {{ answer.answered_at.split("T")[0] }}</span>
+                    </div>
+                    <div class="answer-content">
+                        <p>{{ answer.user_answer }}</p>
+                    </div>
+                    <div class="answer-result">
+                        <strong>Sonuç:</strong>
+                        {% if answer.is_correct is none %}
+                        <span class="result-badge pending">
+                            <i class="fas fa-hourglass-half"></i>
+                            Değerlendiriliyor
+                        </span>
+                        {% elif answer.is_correct %}
+                        <span class="result-badge correct">
+                            <i class="fas fa-check"></i>
+                            Doğru
+                        </span>
+                        {% else %}
+                        <span class="result-badge incorrect">
+                            <i class="fas fa-times"></i>
+                            Yanlış
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% if answer.ai_evaluation %}
+                    <div class="ai-feedback-section" data-aos="fade-up">
+                        <h4>
+                            <i class="fas fa-lightbulb"></i>
+                            AI Geri Bildirimi
+                        </h4>
+                        <p>{{ answer.ai_evaluation }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="action-buttons" data-aos="fade-up" data-aos-delay="300">
+            <a href="{{ url_for('interview.my_interviews') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Geri Dön
+            </a>
+            <a href="{{ url_for('interview.create_interview') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Yeni Mülakat Başlat
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

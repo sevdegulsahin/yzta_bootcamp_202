@@ -3,208 +3,51 @@
 {% block title %}{{ category | capitalize }} Test Sorusu #{{ question_num }}{% endblock %}
 
 {% block content %}
-<style>
-  .content-container {
-    max-width: 700px;
-    margin: 120px auto 40px auto; /* Header yüksekliği kadar üst boşluk */
-    padding: 25px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-    text-align: center;
-  }
-  .question-meta {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 15px;
-    text-align: center;
-  }
-  .question-text {
-    font-size: 1.3rem;
-    font-weight: 600;
-    background: #f4f6f8;
-    padding: 18px 22px;
-    border-radius: 10px;
-    line-height: 1.5;
-    margin-bottom: 30px;
-    text-align: left;
-    border-left: 5px solid #3498db;
-  }
-  .options-container {
-    margin-top: 20px;
-    text-align: left;
-    font-size: 1.1rem;
-  }
-  .options-container label {
-    display: block;
-    margin-bottom: 10px;
-    padding: 12px 15px;
-    background-color: #f0f0f0;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s, border-color 0.3s;
-    border: 1px solid #e0e0e0;
-    position: relative;
-  }
-  .options-container label:hover {
-    background-color: #e9ecef;
-  }
-  .options-container input[type="radio"]:checked + label {
-    background-color: #d4edda;
-    border-color: #28a745;
-    font-weight: 500;
-    color: #155724;
-  }
-  .options-container input[type="radio"] {
-      display: none;
-  }
-  .option-label {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .option-text {
-      flex-grow: 1;
-      margin-right: 10px;
-  }
-  .correct-indicator {
-      font-weight: bold;
-      color: #28a745;
-      background-color: #e9f7ec;
-      padding: 3px 8px;
-      border-radius: 5px;
-      font-size: 0.9em;
-  }
 
-  textarea {
-    width: 100%;
-    min-height: 120px;
-    resize: vertical;
-    padding: 12px 15px;
-    font-size: 1rem;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    transition: border-color 0.3s ease;
-    margin-top: 20px;
-  }
-  textarea:focus {
-    border-color: #3498db;
-    outline: none;
-  }
-  button {
-    margin-top: 20px;
-    padding: 12px 25px;
-    background-color: #3498db;
-    color: white;
-    font-size: 1.1rem;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  button:hover {
-    background-color: #2980b9;
-  }
-  .nav-links {
-    margin-top: 30px;
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .nav-links a {
-    padding: 10px 18px;
-    background-color: #6c757d;
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-    min-width: 140px;
-    text-align: center;
-  }
-  .nav-links a:hover {
-    background-color: #5a6268;
-  }
-  .error-message {
-        color: #e74c3c;
-        background-color: #fbeaea;
-        border: 1px solid #e74c3c;
-        padding: 10px 15px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        font-weight: 500;
-        text-align: left;
-    }
-</style>
+<body data-page-id="written-test">
+  <div class="written-test-page">
+    <div class="content-container" data-aos="fade-up">
+      <div class="question-meta">Soru {{ question_num }} / {{ total_questions }} | Kategori: {{ category | capitalize if
+        category else 'Genel Yetenek' }} | Tür: {{ question_type | capitalize }}</div>
+      <div class="question-text">{{ question_text | safe }}</div>
 
-<div class="content-container">
-  <div class="question-meta">Soru {{ question_num }} / {{ total_questions }} | Kategori: {{ category | capitalize if category else 'Genel Yetenek' }} | Tür: {{ question_type | capitalize }}</div>
-  <div class="question-text">{{ question_text | safe }}</div>
+      <form action="{{ url_for('interview.submit_written_answer') }}" method="post">
+        <input type="hidden" name="question_id" value="{{ session.get('current_question_id') }}">
+        <input type="hidden" name="question_type" value="{{ question_type }}">
+        <input type="hidden" name="category" value="{{ category }}">
+        <input type="hidden" name="question_num" value="{{ question_num }}">
+        <input type="hidden" name="total_questions" value="{{ total_questions }}">
 
-  <form action="{{ url_for('interview.submit_written_answer') }}" method="post">
-    <input type="hidden" name="question_id" value="{{ session.get('current_question_id') }}">
-    <input type="hidden" name="question_type" value="{{ question_type }}">
-    <input type="hidden" name="category" value="{{ category }}">
-    <input type="hidden" name="question_num" value="{{ question_num }}">
-    <input type="hidden" name="total_questions" value="{{ total_questions }}">
-
-    {% if question_type == 'open_ended' %}
-        <textarea id="user_answer" name="user_answer" placeholder="Cevabınızı buraya yazın..." required></textarea>
-    {% elif question_type == 'true_false' %}
+        {% if question_type == 'open_ended' %}
+        <textarea id="user_answer" name="user_answer" class="form-control" placeholder="Cevabınızı buraya yazın..."
+          rows="6" required></textarea>
+        {% elif question_type == 'true_false' %}
         <div class="options-container">
-            {% set correct_answer_for_display = parsed_data.get('correct_answer') if parsed_data else None %}
+          <input type="radio" id="option_true" name="user_answer" value="True" required>
+          <label for="option_true">Doğru</label>
 
-            <input type="radio" id="option_true" name="user_answer" value="True" required {% if correct_answer_for_display == 'True' %}checked{% endif %}>
-            <label for="option_true" class="option-label">
-                <span class="option-text">Doğru</span>
-                {% if correct_answer_for_display == 'True' %}
-                    <span class="correct-indicator">Doğru Cevap</span>
-                {% endif %}
-            </label>
-
-            <input type="radio" id="option_false" name="user_answer" value="False" {% if correct_answer_for_display == 'False' %}checked{% endif %}>
-            <label for="option_false" class="option-label">
-                <span class="option-text">Yanlış</span>
-                {% if correct_answer_for_display == 'False' %}
-                    <span class="correct-indicator">Doğru Cevap</span>
-                {% endif %}
-            </label>
+          <input type="radio" id="option_false" name="user_answer" value="False">
+          <label for="option_false">Yanlış</label>
         </div>
-    {% elif question_type == 'multiple_choice' %}
+        {% elif question_type == 'multiple_choice' %}
         <div class="options-container">
-            {# parsed_data içindeki seçenekleri döngü ile bas #}
-            {# options değişkeninin varlığını ve geçerliliğini kontrol etmeliyiz #}
-            {# Bu set ifadesi, parsed_data veya options yoksa hata vermesini engeller #}
-            {% set options = parsed_data.get('options') if parsed_data and parsed_data.get('options') %}
-
-            {% if options %} {# Eğer options değişkeni geçerliyse (None değilse) döngüyü çalıştır #}
-                {% set correct_answer_for_display = parsed_data.get('correct_answer') if parsed_data else None %}
-                {% for key, value in options.items() %} {# options varsa .items() metodu çağrılır #}
-                    <input type="radio" id="option_{{ key }}" name="user_answer" value="{{ key }}" required>
-                    <label for="option_{{ key }}" class="option-label">
-                        <span class="option-text">{{ key }}) {{ value }}</span>
-                        {% if correct_answer_for_display == key %}
-                            <span class="correct-indicator">Doğru Cevap</span>
-                        {% endif %}
-                    </label>
-                {% endfor %}
-            {% else %} {# Eğer options yoksa veya None ise bu mesaj gösterilir #}
-                <p class="error-message">Çoktan seçmeli seçenekler yüklenemedi.</p>
-            {% endif %}
+          {% set options = parsed_data.get('options', {}) %}
+          {% for key, value in options.items() %}
+          <input type="radio" id="option_{{ key }}" name="user_answer" value="{{ key }}" required>
+          <label for="option_{{ key }}">{{ key }}) {{ value }}</label>
+          {% endfor %}
         </div>
-    {% else %}
-        <p class="error-message">Bilinmeyen soru türü: {{ question_type }}</p>
-    {% endif %}
+        {% else %}
+        <p class="alert alert-error">Bilinmeyen soru türü: {{ question_type }}</p>
+        {% endif %}
 
-    <button type="submit">Cevabı Gönder</button>
-  </form>
+        <button type="submit" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">Cevabı Gönder</button>
+      </form>
 
-  <div class="nav-links">
-    <a href="{{ url_for('interview.create_interview') }}">Yeni Test Oluştur</a>
-    <a href="{{ url_for('interview.interview') }}">Sohbet Odasına Dön</a>
+      <div class="nav-links">
+        <a href="{{ url_for('interview.create_interview') }}" class="btn btn-secondary">Yeni Test Oluştur</a>
+      </div>
+    </div>
   </div>
-</div>
+</body>
 {% endblock %}

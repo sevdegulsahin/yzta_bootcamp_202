@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Asistan Mülakat Sonucu - Interviewly{% endblock %}
+
+{% block content %}
+<div class="assistant-results-page">
+    <div class="container">
+        <div class="results-header">
+            <h1><i class="fas fa-robot"></i> Asistan Mülakat Sonucu</h1>
+            <p>Merhaba, <strong>{{ username }}</strong>!</p>
+            <p>Mülakat Alanı: <strong>{{ category|capitalize }}</strong></p>
+        </div>
+        <div class="results-summary">
+            <h3><i class="fas fa-comments"></i> Sohbet Özeti</h3>
+            <div class="chat-history">
+                {% for message in chat_history %}
+                <div class="chat-message {{ message.role }}">
+                    <strong>
+                        {% if message.role == 'assistant' %}AI Mülakatçı:{% else %}Siz:{% endif %}
+                    </strong>
+                    <span>{{ message.content }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <h3><i class="fas fa-lightbulb"></i> AI Geri Bildirimi</h3>
+            <div class="ai-feedback">
+                <p>{{ ai_feedback }}</p>
+            </div>
+        </div>
+        <div class="action-buttons">
+            <a href="{{ url_for('interview.create_interview') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Yeni Mülakat
+            </a>
+            <a href="{{ url_for('main.index') }}" class="btn btn-outline">
+                <i class="fas fa-home"></i> Ana Sayfa
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
