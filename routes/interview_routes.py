@@ -114,13 +114,11 @@ def interview_question_route(category, question_num):
             return render_template('error.html', message=ai_question)
 
         # Soru kaydederken (ör: start_written_test veya interview_question_route içinde)
-        session_id = session.get('current_session_id')
         new_question_id = save_question_to_supabase(
             category,
             ai_question,
             user_id,
             question_type='chatbot_technical',
-            session_id=session_id
         )
 
         if not new_question_id:
@@ -162,19 +160,6 @@ def create_interview():
         session['selected_technical_area'] = technical_area
         session['selected_difficulty'] = difficulty
 
-        # --- BURASI YENİ EKLENDİ ---
-        if interview_type in ['assistant', 'written_test']:
-            session_id = str(uuid.uuid4())
-            session['current_session_id'] = session_id
-
-            supabase.table("interview_sessions").insert({
-                "id": session_id,
-                "user_id": user_id,
-                "category": technical_area if mode_choice == 'technical' else 'general',
-                "interview_type": interview_type,
-                "started_at": datetime.now()
-            }).execute()
-        # --- YENİ EKLEME SONU ---
 
         if not interview_type:
             error_message = "Lütfen bir mülakat türü seçin (Asistan veya Yazılı Test)."
