@@ -3,38 +3,71 @@
 {% block title %}Interviewly - AI Destekli Mülakat Simülasyonu{% endblock %}
 
 {% block content %}
-
 <body data-page-id="home">
     <!-- Hero Section -->
     <section class="hero-section">
-        <div class="hero-content" data-aos="fade-up">
-            <h1 class="hero-title">
-                Mülakat Simülasyonuna Hoş Geldiniz!
-            </h1>
-            <p class="hero-subtitle">
-                Yapay zeka destekli gerçek mülakat deneyimi ile <br>
-                teknik ve davranışsal sorularla kendinizi test edin, performansınızı analiz edin.
-            </p>
-            <div class="hero-buttons">
-                {% if session.get('user_id') %}
-                <a href="{{ url_for('interview.create_interview') }}" class="btn btn-primary">
-                    <i class="fas fa-play"></i>
-                    Yeni Mülakat Başlat
-                </a>
-                <a href="{{ url_for('interview.my_interviews') }}" class="btn btn-secondary">
-                    <i class="fas fa-history"></i>
-                    Geçmiş Mülakatlarım
-                </a>
-                {% else %}
-                <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Giriş Yap
-                </a>
-                <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">
-                    <i class="fas fa-user-plus"></i>
-                    Kayıt Ol
-                </a>
-                {% endif %}
+        <div class="container">
+            <div class="hero-container">
+                <!-- Left Column: Text Content -->
+                <div class="hero-text" data-aos="fade-right">
+                    <h1 class="hero-title">
+                        Mülakatlara Hükmedin, Hayalinizdeki İşe Ulaşın
+                    </h1>
+                    <p class="hero-subtitle">
+                        Yapay zeka destekli mülakat simülasyonlarımızla kendinizi test edin. Gerçekçi senaryolar, anında geri bildirim ve detaylı performans analizi ile kariyerinizde bir adım öne geçin.
+                    </p>
+                    <div class="hero-buttons">
+                        {% if session.get('user_id') %}
+                        <a href="{{ url_for('interview.create_interview') }}" class="btn btn-primary">
+                            <i class="fas fa-play"></i>&nbsp;Mülakat Başlat
+                        </a>
+                        <a href="{{ url_for('interview.my_interviews') }}" class="btn btn-secondary">
+                            <i class="fas fa-history"></i>&nbsp;Geçmişim
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i>&nbsp;Giriş Yap
+                        </a>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">
+                            <i class="fas fa-user-plus"></i>&nbsp;Kayıt Ol
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Right Column: Visual Element -->
+                <div class="hero-visual" data-aos="fade-left" data-aos-delay="200">
+                    <!-- New Floating Tech Icons -->
+                    <div class="hero-tech-icon icon-1" title="Python">
+                        <i class="fab fa-python"></i>
+                    </div>
+                    <div class="hero-tech-icon icon-2" title="JavaScript">
+                        <i class="fab fa-js-square"></i>
+                    </div>
+                    <div class="hero-tech-icon icon-3" title="React">
+                        <i class="fab fa-react"></i>
+                    </div>
+                    <div class="hero-tech-icon icon-4" title="SQL">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    
+                    <div class="hero-mockup-card">
+                        <div class="mockup-header">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="ai-message">
+                                <div class="ai-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="ai-bubble">
+                                    Merhaba, bir önceki projenizde karşılaştığınız en zorlu teknik sorunu ve bunu nasıl aştığınızı anlatır mısınız?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

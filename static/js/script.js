@@ -67,9 +67,6 @@
             case 'interview':
                 initInterviewPage();
                 break;
-            case 'interview-question':
-                initInterviewQuestionPage();
-                break;
             case 'my-interviews':
                 initMyInterviewsPage();
                 break;
@@ -80,6 +77,8 @@
                 initTestResultsPage();
                 break;
         }
+        // This runs outside the router to catch pages without a pageId
+        initInterviewQuestionPage();
     });
 
     /**
@@ -355,8 +354,189 @@
      * Initializes logic for the 'Interview Question' page.
      */
     function initInterviewQuestionPage() {
-        // This page has been removed as per the new design.
-        // Logic for written test questions is now on `written_test_question.html`
+        const questionPage = document.querySelector('.question-page');
+        if (!questionPage) {
+            return; // Not on the interview question page
+        }
+
+        const questionNum = questionPage.dataset.questionNum;
+        if (!questionNum) {
+            console.error('Question number not found on page.');
+            return;
+        }
+
+        let startTime = Date.now();
+        let timerInterval;
+
+        // Initialize timer
+        function startTimer() {
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+        function updateTimer() {
+            const timerEl = document.getElementById('timer');
+            if (!timerEl) return;
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            timerEl.textContent = display;
+        }
+
+        // Character and word counter
+        function updateCounters() {
+            const textarea = document.getElementById('user_input');
+            if (!textarea) return;
+            const text = textarea.value;
+            const charCount = text.length;
+            const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+            document.getElementById('charCounter').textContent = `${charCount}/2000`;
+            document.getElementById('wordCounter').textContent = `${wordCount} kelime`;
+            const charCounterEl = document.getElementById('charCounter');
+            if (charCount > 1800) {
+                charCounterEl.style.color = '#ef4444';
+            } else if (charCount > 1600) {
+                charCounterEl.style.color = '#f59e0b';
+            } else {
+                charCounterEl.style.color = 'var(--text-muted)';
+            }
+        }
+
+        // Auto-resize textarea
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 300) + 'px';
+        }
+
+        // Copy question text
+        function copyQuestion() {
+            const questionText = document.querySelector('.question-text').textContent;
+            navigator.clipboard.writeText(questionText.trim()).then(() => {
+                Interviewly.showNotification('Soru kopyalandı!', 'info');
+            }).catch(err => {
+                Interviewly.showNotification('Kopyalama başarısız oldu.', 'error');
+                console.error('Kopyalama hatası:', err);
+            });
+        }
+
+        // Toggle fullscreen
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    Interviewly.showNotification(`Hata: ${err.message}`, 'error');
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Save draft functionality
+        const saveModal = document.getElementById('saveModal');
+
+        function showSaveModal() {
+            const textarea = document.getElementById('user_input');
+            if (textarea.value.trim()) {
+                if (saveModal) saveModal.classList.add('show');
+            } else {
+                Interviewly.showNotification('Kaydedilecek cevap bulunamadı.', 'error');
+            }
+        }
+
+        function closeModal() {
+            if (saveModal) saveModal.classList.remove('show');
+        }
+
+        function confirmSaveDraft() {
+            const textarea = document.getElementById('user_input');
+            const draft = {
+                question: String(questionNum),
+                answer: textarea.value,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('interview_draft', JSON.stringify(draft));
+            Interviewly.showNotification('Taslak kaydedildi!', 'success');
+            closeModal();
+        }
+
+        // Load draft on page load
+        function loadDraft() {
+            const draftJSON = localStorage.getItem('interview_draft');
+            if (draftJSON) {
+                try {
+                    const draftData = JSON.parse(draftJSON);
+                    if (String(draftData.question) === String(questionNum)) {
+                        const textarea = document.getElementById('user_input');
+                        textarea.value = draftData.answer;
+                        updateCounters();
+                        autoResize(textarea);
+                        Interviewly.showNotification('Kaydedilmiş taslak yüklendi.', 'info');
+                    }
+                } catch (e) {
+                    console.error("Failed to parse draft from localStorage", e);
+                    localStorage.removeItem('interview_draft');
+                }
+            }
+        }
+
+        // --- Start of logic from original DOMContentLoaded ---
+        startTimer();
+
+        const textarea = document.getElementById('user_input');
+        if (textarea) {
+            textarea.addEventListener('input', function () {
+                updateCounters();
+                autoResize(this);
+            });
+            textarea.focus();
+        }
+
+        loadDraft();
+
+        document.getElementById('fullscreenBtn')?.addEventListener('click', toggleFullscreen);
+        document.getElementById('copyBtn')?.addEventListener('click', copyQuestion);
+        document.getElementById('saveDraftBtn')?.addEventListener('click', showSaveModal);
+        document.getElementById('cancelSaveBtn')?.addEventListener('click', closeModal);
+        document.getElementById('confirmSaveBtn')?.addEventListener('click', confirmSaveDraft);
+        
+        if (saveModal) {
+            saveModal.addEventListener('click', function (e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                const submitBtn = document.getElementById('submitBtn');
+                if (document.activeElement === textarea && submitBtn) {
+                    e.preventDefault();
+                    submitBtn.click();
+                }
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                showSaveModal();
+            }
+            if (e.key === 'Escape' && saveModal && saveModal.classList.contains('show')) {
+                closeModal();
+            }
+        });
+
+        const answerForm = document.getElementById('answerForm');
+        if(answerForm) {
+            answerForm.addEventListener('submit', function (e) {
+                const textarea = document.getElementById('user_input');
+                const submitBtn = document.getElementById('submitBtn');
+                if (!textarea.value.trim()) {
+                    e.preventDefault();
+                    Interviewly.showNotification('Lütfen bir cevap yazın.', 'error');
+                    return;
+                }
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
+                localStorage.removeItem('interview_draft');
+            });
+        }
     }
 
     /**

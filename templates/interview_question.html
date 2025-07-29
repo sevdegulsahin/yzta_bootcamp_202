@@ -3,7 +3,7 @@
 {% block title %}{{ category | capitalize }} Mülakat Sorusu #{{ question_num }} - Interviewly{% endblock %}
 
 {% block content %}
-<div class="question-page">
+<div class="question-page" data-question-num="{{ question_num }}">
     <div class="container">
         <!-- Progress Header -->
         <div class="progress-header" data-aos="fade-down">
@@ -49,10 +49,10 @@
                     <span class="question-category">{{ category | capitalize }}</span>
                 </div>
                 <div class="question-actions">
-                    <button class="action-btn" onclick="toggleFullscreen()" title="Tam ekran">
+                    <button class="action-btn" id="fullscreenBtn" title="Tam ekran">
                         <i class="fas fa-expand"></i>
                     </button>
-                    <button class="action-btn" onclick="copyQuestion()" title="Soruyu kopyala">
+                    <button class="action-btn" id="copyBtn" title="Soruyu kopyala">
                         <i class="fas fa-copy"></i>
                     </button>
                 </div>
@@ -83,7 +83,7 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="saveDraft()">
+                        <button type="button" class="btn btn-secondary" id="saveDraftBtn">
                             <i class="fas fa-save"></i>
                             Taslak Kaydet
                         </button>
@@ -156,155 +156,9 @@
             <p>Cevabınızı taslak olarak kaydetmek istediğinizden emin misiniz?</p>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeModal()">İptal</button>
-            <button class="btn btn-primary" onclick="confirmSaveDraft()">Kaydet</button>
+            <button class="btn btn-secondary" id="cancelSaveBtn">İptal</button>
+            <button class="btn btn-primary" id="confirmSaveBtn">Kaydet</button>
         </div>
     </div>
 </div>
-{% endblock %}
-
-
-{% block scripts %}
-<script>
-    let startTime = Date.now();
-    let timerInterval;
-    // Initialize timer
-    function startTimer() {
-        timerInterval = setInterval(updateTimer, 1000);
-    }
-    function updateTimer() {
-        const elapsed = Math.floor((Date.now() - startTime) / 1000);
-        const minutes = Math.floor(elapsed / 60);
-        const seconds = elapsed % 60;
-        const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        document.getElementById('timer').textContent = display;
-    }
-    // Character and word counter
-    function updateCounters() {
-        const textarea = document.getElementById('user_input');
-        const text = textarea.value;
-        const charCount = text.length;
-        const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
-        document.getElementById('charCounter').textContent = `${charCount}/2000`;
-        document.getElementById('wordCounter').textContent = `${wordCount} kelime`;
-        const charCounter = document.getElementById('charCounter');
-        if (charCount > 1800) {
-            charCounter.style.color = '#ef4444';
-        } else if (charCount > 1600) {
-            charCounter.style.color = '#f59e0b';
-        } else {
-            charCounter.style.color = 'var(--text-muted)';
-        }
-    }
-    // Auto-resize textarea
-    function autoResize(textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = Math.min(textarea.scrollHeight, 300) + 'px';
-    }
-    // Copy question text
-    function copyQuestion() {
-        const questionText = document.querySelector('.question-text').textContent;
-        navigator.clipboard.writeText(questionText).then(() => {
-            console.log('Soru kopyalandı!');
-        }).catch(err => {
-            console.error('Kopyalama hatası:', err);
-        });
-    }
-    // Toggle fullscreen
-    function toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            document.exitFullscreen();
-        }
-    }
-    // Save draft functionality
-    function saveDraft() {
-        const textarea = document.getElementById('user_input');
-        if (textarea.value.trim()) {
-            document.getElementById('saveModal').classList.add('show');
-        } else {
-            console.warn('Kaydedilecek cevap bulunamadı');
-        }
-    }
-    function closeModal() {
-        document.getElementById('saveModal').classList.remove('show');
-    }
-    function confirmSaveDraft() {
-        const textarea = document.getElementById('user_input');
-        const draft = {
-            question: String({{ question_num }}),
-            answer: textarea.value,
-            timestamp: new Date().toISOString()
-    };
-    localStorage.setItem('interview_draft', JSON.stringify(draft));
-    console.log('Taslak kaydedildi!');
-    closeModal();
-}
-    // Load draft on page load
-    function loadDraft() {
-        const draft = localStorage.getItem('interview_draft');
-        if (draft) {
-            const draftData = JSON.parse(draft);
-            if (String(draftData.question) === String({{ question_num }})) {
-            const textarea = document.getElementById('user_input');
-            textarea.value = draftData.answer;
-            updateCounters();
-            autoResize(textarea);
-        }
-    }
-}
-    document.addEventListener('DOMContentLoaded', function () {
-        // Start timer
-        startTimer();
-        // Setup textarea events
-        const textarea = document.getElementById('user_input');
-        textarea.addEventListener('input', function () {
-            updateCounters();
-            autoResize(this);
-        });
-        // Load draft
-        loadDraft();
-        // Focus on textarea
-        textarea.focus();
-        // Close modal when clicking outside
-        document.getElementById('saveModal').addEventListener('click', function (e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function (e) {
-            // Ctrl/Cmd + Enter to submit
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                e.preventDefault();
-                document.getElementById('submitBtn').click();
-            }
-            // Ctrl/Cmd + S to save draft
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                saveDraft();
-            }
-            // ESC ile modal kapat
-            if (e.key === 'Escape') {
-                closeModal();
-            }
-        });
-        // Form submit event
-        document.getElementById('answerForm').addEventListener('submit', function (e) {
-            const textarea = document.getElementById('user_input');
-            const submitBtn = document.getElementById('submitBtn');
-            if (!textarea.value.trim()) {
-                e.preventDefault();
-                console.warn('Lütfen bir cevap yazın');
-                return;
-            }
-            // Show loading state
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
-            // Clear draft
-            localStorage.removeItem('interview_draft');
-        });
-    });
-</script>
 {% endblock %}

@@ -44,7 +44,7 @@
                     <li class="nav-item {% if active_page == 'index' %}active{% endif %}">
                         <a class="nav-link" href="{{ url_for('main.index') }}"><i class="fas fa-home"></i> Anasayfa</a>
                     </li>
-                    {% if user %}
+                    {% if session.get('user_id') %}
                     <li class="nav-item {% if active_page == 'create_interview' %}active{% endif %}">
                         <a class="nav-link" href="{{ url_for('interview.create_interview') }}"><i
                                 class="fas fa-plus-circle"></i> Yeni Mülakat</a>
@@ -54,8 +54,9 @@
                                 class="fas fa-history"></i> Geçmişim</a>
                     </li>
                     <li class="nav-item {% if active_page == 'profile' %}active{% endif %}">
+                        {# On pages where the full 'user' object isn't passed, we rely on 'name' from the session #}
                         <a class="nav-link"
-                            href="{{ url_for('profile.profile', username=user.get('name', 'Kullanici')) }}"><i
+                            href="{{ url_for('profile.profile', username=user.get('name') if user else session.get('name', 'Kullanici')) }}"><i
                                 class="fas fa-user-circle"></i> Profilim</a>
                     </li>
                     <li class="nav-item">
