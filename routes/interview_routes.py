@@ -162,7 +162,7 @@ def create_interview():
 
 
         if not interview_type:
-            error_message = "Lütfen bir mülakat türü seçin (Asistan veya Yazılı Test)."
+            error_message = "Lütfen bir mülakat türü seçin (Asistan veya Yazılı Mülakat)."
             return render_template('create_interview.html', error=error_message, categories=ALLOWED_CATEGORIES)
 
         if not mode_choice:
@@ -184,7 +184,7 @@ def create_interview():
                 return redirect(url_for('interview.interview'))
 
         elif interview_type == 'written_test':
-            logging.info("Yeni bir yazılı test başlatılıyor. Eski test verileri temizleniyor.")
+            logging.info("Yeni bir yazılı mülakat başlatılıyor. Eski test verileri temizleniyor.")
             session.pop('completed_test_questions_data', None)
             session.pop('current_test_question_data', None)
             session.pop('current_test_question_id', None)
@@ -221,7 +221,7 @@ def start_written_test():
     total_questions_in_session = session.get('total_written_test_questions', 10) 
 
     if not user_id:
-        logging.warning("Yazılı test başlatma denemesi, oturum yok.")
+        logging.warning("Yazılı mülakat başlatma denemesi, oturum yok.")
         return redirect(url_for('auth.login'))
 
     if question_num > total_questions_in_session:
@@ -332,7 +332,7 @@ def submit_written_answer():
         user_id=str(user_id),
         user_answer=user_answer_input,
         is_correct=ai_evaluation_result,
-        session_id=session_id
+        #session_id=session_id
     )
 
     if response:
@@ -497,34 +497,73 @@ def my_interviews():
     return render_template('my_interviews.html', interviews=interviews)
 
 
+# Gerekli importları dosyanızın en üstüne eklediğinizden emin olun
+from services.openai_service import evaluate_answer_with_ai
+
 @interview_bp.route('/interview/<question_id>/details')
 def interview_details(question_id):
     user_id = session.get('user_id')
     if not user_id:
         return redirect(url_for('auth.login'))
 
-    # Soru detayını çek
-    question_response = supabase.table("interview_questions") \
-        .select("id, category, question_text, created_at, question_type") \
-        .eq("id", question_id) \
-        .single() \
-        .execute()
-    interview = question_response.data if question_response and hasattr(question_response, "data") else None
+    try:
+        # ... (kodunuzun başındaki SELECT sorguları aynı kalabilir) ...
+        # Soru detayını çek
+        question_response = supabase.table("interview_questions") \
+            .select("id, category, question_text, created_at, question_type") \
+            .eq("id", question_id) \
+            .single() \
+            .execute()
+        interview = question_response.data if question_response and hasattr(question_response, "data") else None
 
-    # Cevapları çek
-    answers_response = supabase.table("interview_answers") \
-        .select("id, question_id, user_answer, is_correct, ai_evaluation, answered_at") \
-        .eq("question_id", str(question_id)) \
-        .eq("user_id", str(user_id)) \
-        .order("answered_at", desc=False) \
-        .execute()
-    answers = answers_response.data if answers_response and hasattr(answers_response, "data") else []
+        if not interview:
+            return "Soru bulunamadı.", 404
 
-    if interview is not None:
+        # Cevapları çek
+        answers_response = supabase.table("interview_answers") \
+            .select("id, question_id, user_answer, is_correct, ai_evaluation, answered_at") \
+            .eq("question_id", str(question_id)) \
+            .eq("user_id", str(user_id)) \
+            .order("answered_at", desc=False) \
+            .execute()
+        answers = answers_response.data if answers_response and hasattr(answers_response, "data") else []
+
+        question_text = interview.get('question_text')
+        
+        for answer in answers:
+            if question_text and not answer.get('ai_evaluation'):
+                logging.info(f"Cevap ID {answer['id']} için AI değerlendirmesi başlatılıyor...")
+                
+                evaluation = evaluate_answer_with_ai(question_text, answer['user_answer'])
+                
+                # --- ÇÖZÜMÜN OLDUĞU YER BURASI ---
+                is_correct_bool = evaluation.get('is_correct')
+                
+                # Veritabanına göndermeden önce boolean değeri sayıya dönüştür.
+                # Eğer is_correct_bool True ise 1, False ise 0, None ise None olur.
+                is_correct_numeric = int(is_correct_bool) if is_correct_bool is not None else None
+                
+                # Değerlendirme sonucunu veritabanına kaydet
+                update_data = {
+                    "is_correct": is_correct_numeric, # <<< Sayısal değeri gönderiyoruz
+                    "ai_evaluation": evaluation.get('feedback')
+                }
+                supabase.table("interview_answers") \
+                    .update(update_data) \
+                    .eq("id", answer['id']) \
+                    .execute()
+
+                # Şablona göndereceğimiz veriyi boolean olarak tutmaya devam edelim
+                # çünkü Jinja şablonumuz `is true` kontrolü yapıyor.
+                answer['is_correct'] = is_correct_bool 
+                answer['ai_evaluation'] = evaluation.get('feedback')
+
         interview["answers"] = answers
+        return render_template('interview_details.html', interview=interview)
 
-    return render_template('interview_details.html', interview=interview)
-
+    except Exception as e:
+        logging.exception(f"Mülakat detayları getirilirken veya değerlendirilirken KRİTİK HATA:")
+        return render_template('error.html', message="Detaylar getirilirken bir hata oluştu.")
 
 @interview_bp.route('/assistant_results')
 def assistant_results():
@@ -576,3 +615,4 @@ def assistant_results():
         chat_history=chat_history,
         ai_feedback=ai_feedback
     )
+

@@ -66,14 +66,14 @@
 
             <!-- Answer Form -->
             <div class="answer-section">
-                <form method="POST" action="{{ url_for('interview.interview') }}" class="answer-form" id="answerForm">
+                <form method="POST" action="{{ url_for('interview.submit_written_answer') }}" class="answer-form" id="answerForm">
                     <div class="form-group">
                         <label for="user_input" class="form-label">
                             <i class="fas fa-edit"></i>
                             Cevabınızı yazın
                         </label>
                         <div class="textarea-wrapper">
-                            <textarea id="user_input" name="user_input" class="answer-textarea"
+                            <textarea id="user_input" name="user_answer" class="answer-textarea"
                                 placeholder="Cevabınızı buraya yazın..." required rows="6" maxlength="2000"></textarea>
                             <div class="textarea-footer">
                                 <div class="char-counter" id="charCounter">0/2000</div>
@@ -83,7 +83,7 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" id="saveDraftBtn">
+                        <button type="button" class="btn btn-secondary" onclick="saveDraft()">
                             <i class="fas fa-save"></i>
                             Taslak Kaydet
                         </button>

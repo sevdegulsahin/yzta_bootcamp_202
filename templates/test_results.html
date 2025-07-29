@@ -3,131 +3,342 @@
 {% block title %}Test Sonuçları - Interviewly{% endblock %}
 
 {% block content %}
-
-<body data-page-id="test-results">
-    <div class="test-results-page">
-        <div class="container">
-            <!-- Page Data for JS -->
-            <div id="page-data"
-                data-chart-data="{{ {'labels': ['Doğru', 'Yanlış'], 'data': [correct_answers_count, total_questions_asked - correct_answers_count]}|tojson|safe if is_open_ended_test else '{}'|tojson|safe }}"
-                style="display: none;">
+<div class="test-results-page">
+    <div class="container">
+        <!-- Header Section -->
+        <div class="results-header" data-aos="fade-down">
+            <div class="header-content">
+                <div class="header-info">
+                    <h1 class="page-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Test Sonuçlarınız
+                    </h1>
+                    {% if username %}
+                    <p class="welcome-text">Merhaba, <strong>{{ username }}</strong>!</p>
+                    {% endif %}
+                    {% if category %}
+                    <p class="test-category">Test Alanı: <strong>{{ category | capitalize }}</strong></p>
+                    {% endif %}
+                </div>
+                <div class="completion-badge">
+                    <i class="fas fa-trophy"></i>
+                    <span>Test Tamamlandı!</span>
+                </div>
             </div>
+        </div>
 
-            <!-- Header Section -->
-            <div class="results-header" data-aos="fade-down">
-                <div class="header-content">
-                    <div class="header-info">
-                        <h1 class="page-title"><i class="fas fa-chart-bar"></i>Test Sonuçlarınız</h1>
-                        {% if username %}<p class="welcome-text">Merhaba, <strong>{{ username }}</strong>!</p>{% endif
-                        %}
-                        {% if category %}<p class="test-category">Test Alanı: <strong>{{ category | capitalize
-                                }}</strong></p>{% endif %}
-                    </div>
-                    <div class="completion-badge"><i class="fas fa-trophy"></i><span>Test Tamamlandı!</span></div>
+ <!-- Results Summary -->
+<div class="results-summary" data-aos="fade-up">
+    <div class="summary-grid">
+        <!-- Toplam Soru Kartı -->
+        <div class="summary-card">
+            <div class="card-icon">
+                <i class="fas fa-question-circle"></i>
+            </div>
+            <div class="card-content">
+                <span class="card-value">{{ total_questions_asked }}</span>
+                <span class="card-label">Toplam Soru</span>
+            </div>
+        </div>
+
+        {% if is_open_ended_test %}
+            <!-- Doğru Cevap Kartı -->
+            <div class="summary-card">
+                <div class="card-icon correct">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="card-content">
+                    <span class="card-value">{{ correct_answers_count }}</span>
+                    <span class="card-label">Doğru Cevap</span>
                 </div>
             </div>
 
-            <!-- Results Summary -->
-            <div class="results-summary" data-aos="fade-up">
-                <div class="summary-grid">
-                    <div class="summary-card">
-                        <div class="card-icon"><i class="fas fa-question-circle"></i></div>
-                        <div class="card-content">
-                            <span class="card-value">{{ total_questions_asked }}</span>
-                            <span class="card-label">Toplam Soru</span>
-                        </div>
-                    </div>
-                    {% if is_open_ended_test %}
-                    <div class="summary-card">
-                        <div class="card-icon correct"><i class="fas fa-check-circle"></i></div>
-                        <div class="card-content">
-                            <span class="card-value">{{ correct_answers_count }}</span>
-                            <span class="card-label">Doğru Cevap</span>
-                        </div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="card-icon score"><i class="fas fa-star"></i></div>
-                        <div class="card-content">
-                            <span class="card-value">{{ score }}</span>
-                            <span class="card-label">Puan</span>
-                        </div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="card-icon percentage"><i class="fas fa-percentage"></i></div>
-                        <div class="card-content">
-                            <span class="card-value">{{ ((correct_answers_count / total_questions_asked) * 100) |
-                                round(1) }}%</span>
-                            <span class="card-label">Başarı Oranı</span>
-                        </div>
-                    </div>
+            <!-- YANLIŞ CEVAP KARTI (YENİ VE GÜVENLİ) -->
+            <div class="summary-card">
+                <div class="card-icon incorrect">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="card-content">
+                    {% if correct_answers_count is number %}
+                        <span class="card-value">{{ total_questions_asked - correct_answers_count }}</span>
                     {% else %}
-                    <div class="summary-card">
-                        <div class="card-icon pending"><i class="fas fa-clock"></i></div>
-                        <div class="card-content">
-                            <span class="card-value">Değerlendiriliyor</span>
-                            <span class="card-label">AI Analizi</span>
-                        </div>
-                    </div>
+                        <span class="card-value">N/A</span>
+                    {% endif %}
+                    <span class="card-label">Yanlış Cevap</span>
+                </div>
+            </div>
+
+            <!-- PUAN KARTI -->
+            <div class="summary-card">
+                <div class="card-icon score"><i class="fas fa-star"></i></div>
+                <div class="card-content">
+                    <span class="card-value">{{ score }}</span>
+                    <span class="card-label">Puan</span>
+                </div>
+            </div>
+            <!-- BAŞARI ORANI KARTI (GÜVENLİ) -->
+            <div class="summary-card">
+                <div class="card-icon percentage">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="card-content">
+                    {% if correct_answers_count is number and total_questions_asked > 0 %}
+                        <span class="card-value">{{ ((correct_answers_count / total_questions_asked) * 100) | round(1) }}%</span>
+                    {% else %}
+                        <span class="card-value">{{ score }}</span>
+                    {% endif %}
+                    <span class="card-label">Başarı Oranı</span>
+                </div>
+            </div>
+        
+        {% else %}
+            <!-- Bu kısım doğru çalışıyor -->
+            <div class="summary-card">
+                <div class="card-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="card-content">
+                    <span class="card-value">Değerlendiriliyor</span>
+                    <span class="card-label">AI Analizi</span>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Performance Chart -->
+{% if is_open_ended_test %}
+<div class="performance-section" data-aos="fade-up" data-aos-delay="100">
+    <div class="section-header">
+        <h3 class="section-title">
+            <i class="fas fa-chart-line"></i>
+            Performans Analizi
+        </h3>
+    </div>
+    <div class="performance-chart">
+        {# KOŞULU BURAYA EKLEDİK #}
+        {% if correct_answers_count is number %}
+            <canvas id="performanceChart" width="400" height="200"></canvas>
+        {% else %}
+            <p class="chart-placeholder">Performans grafiği, cevaplarınız bir uzman tarafından değerlendirildikten sonra burada gösterilecektir.</p>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Detailed Answers -->
+{% if detailed_answers %}
+<div class="detailed-answers" data-aos="fade-up" data-aos-delay="200">
+    <div class="section-header">
+        <h3 class="section-title">
+            <i class="fas fa-list-ul"></i>
+            Detaylı Cevaplarınız
+        </h3>
+        <div class="section-actions">
+            <button class="action-btn" onclick="exportResults()">
+                <i class="fas fa-download"></i>
+                Sonuçları İndir
+            </button>
+            <button class="action-btn" onclick="shareResults()">
+                <i class="fas fa-share"></i>
+                Paylaş
+            </button>
+        </div>
+    </div>
+
+    <div class="answers-list">
+        {% for answer in detailed_answers %}
+        <div class="answer-card" data-aos="fade-up" data-aos-delay="{{ loop.index * 50 }}">
+            <div class="answer-header">
+                <div class="answer-number">
+                    <span class="number">#{{ loop.index }}</span>
+                </div>
+                <div class="answer-status">
+                    {# Artık 'is_correct' boolean (true/false) bir değer #}
+                    {% if answer.is_correct is true %}
+                        <span class="status-badge correct"><i class="fas fa-check"></i> Doğru</span>
+                    {% elif answer.is_correct is false %}
+                        <span class="status-badge incorrect"><i class="fas fa-times"></i> Yanlış</span>
+                    {% else %} {# is_correct None ise #}
+                        <span class="status-badge pending"><i class="fas fa-clock"></i> Değerlendirilemedi</span>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- Performance Chart -->
-            {% if is_open_ended_test %}
-            <div class="performance-section" data-aos="fade-up" data-aos-delay="100">
-                <div class="section-header">
-                    <h3 class="section-title"><i class="fas fa-chart-line"></i>Performans Analizi</h3>
+            <div class="answer-content">
+                <div class="question-section">
+                    <h4 class="question-title">Soru</h4>
+                    <p class="question-text">{{ answer.question_text }}</p>
                 </div>
-                <div class="performance-chart"><canvas id="performanceChart"></canvas></div>
-            </div>
-            {% endif %}
 
-            <!-- Detailed Answers -->
-            {% if detailed_answers %}
-            <div class="detailed-answers" data-aos="fade-up" data-aos-delay="200">
-                <div class="section-header">
-                    <h3 class="section-title"><i class="fas fa-list-ul"></i>Detaylı Cevaplarınız</h3>
-                    <div class="section-actions">
-                        <button class="action-btn" data-action="export"><i class="fas fa-download"></i>Sonuçları
-                            İndir</button>
-                        <button class="action-btn" data-action="share"><i class="fas fa-share"></i>Paylaş</button>
-                    </div>
+                <div class="response-section">
+                    <h4 class="response-title">Cevabınız</h4>
+                    <p class="response-text">{{ answer.user_response }}</p>
                 </div>
-                <div class="answers-list">
-                    {% for answer in detailed_answers %}
-                    <div class="answer-card" data-aos="fade-up">
-                        <div class="answer-header">
-                            <div class="answer-number">Soru #{{ loop.index }}</div>
-                            {% if answer.is_correct is not none %}
-                            <span class="status-badge {{ 'correct' if answer.is_correct else 'incorrect' }}">
-                                <i class="fas {{ 'fa-check' if answer.is_correct else 'fa-times' }}"></i>
-                                {{ 'Doğru' if answer.is_correct else 'Yanlış' }}
-                            </span>
-                            {% else %}
-                            <span class="status-badge pending"><i class="fas fa-clock"></i>Değerlendiriliyor</span>
-                            {% endif %}
-                        </div>
-                        <div class="answer-content">
-                            <h4 class="question-title">Soru</h4>
-                            <p class="question-text">{{ answer.question_text }}</p>
-                            <h4 class="response-title">Cevabınız</h4>
-                            <p class="response-text">{{ answer.user_response }}</p>
-                        </div>
-                    </div>
-                    {% endfor %}
+                
+                {% if answer.feedback %}
+                <div class="feedback-section">
+                    <h4 class="feedback-title">
+                        <i class="fas fa-comment-dots"></i> AI Geri Bildirimi
+                    </h4>
+                    <p class="feedback-text">{{ answer.feedback }}</p>
                 </div>
-            </div>
-            {% endif %}
-
-            <!-- Action Buttons -->
-            <div class="action-buttons" data-aos="fade-up" data-aos-delay="400">
-                <a href="{{ url_for('interview.create_interview') }}" class="btn btn-primary"><i
-                        class="fas fa-plus"></i>Yeni Test Oluştur</a>
-                <a href="{{ url_for('interview.my_interviews') }}" class="btn btn-secondary"><i
-                        class="fas fa-history"></i>Geçmiş Mülakatlar</a>
-                <a href="{{ url_for('main.index') }}" class="btn btn-outline"><i class="fas fa-home"></i>Ana Sayfa</a>
+                {% endif %}
             </div>
         </div>
+        {% endfor %} {# for döngüsü burada bitiyor #}
     </div>
-</body>
+</div>
+{% endif %} {# --- EKSİK OLAN VE HATAYI DÜZELTEN SATIR BU --- #}
+        <!-- Recommendations -->
+        {% if is_open_ended_test %}
+        <div class="recommendations-section" data-aos="fade-up" data-aos-delay="300">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Öneriler
+                </h3>
+            </div>
+            <div class="recommendations-grid">
+                <div class="recommendation-card">
+                    <div class="rec-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h4>Çalışma Önerisi</h4>
+                    <p>Yanlış cevapladığınız konuları tekrar gözden geçirin ve pratik yapın.</p>
+                </div>
+                <div class="recommendation-card">
+                    <div class="rec-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h4>Zaman Yönetimi</h4>
+                    <p>Soruları daha hızlı cevaplamak için zaman yönetimi tekniklerini geliştirin.</p>
+                </div>
+                <div class="recommendation-card">
+                    <div class="rec-icon">
+                        <i class="fas fa-redo"></i>
+                    </div>
+                    <h4>Tekrar Test</h4>
+                    <p>Farklı kategorilerde testler çözerek bilginizi genişletin.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="action-buttons" data-aos="fade-up" data-aos-delay="400">
+            <a href="{{ url_for('interview.create_interview') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Yeni Test Oluştur
+            </a>
+            <a href="{{ url_for('interview.my_interviews') }}" class="btn btn-secondary">
+                <i class="fas fa-history"></i>
+                Geçmiş Mülakatlar
+            </a>
+            <a href="{{ url_for('main.index') }}" class="btn btn-outline">
+                <i class="fas fa-home"></i>
+                Ana Sayfa
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// --- JINJA2 'IF' BLOĞU BURADA BAŞLIYOR ---
+// JavaScript'in bu kısmını, sadece 'correct_answers_count' bir sayı ise render et
+{% if correct_answers_count is number %}
+function createPerformanceChart() {
+    // Canvas elementi sadece bu koşul doğruysa var olacağı için,
+    // kodu güvenle çalıştırabiliriz.
+    const ctx = document.getElementById('performanceChart');
+    if (!ctx) return; // Ek güvenlik önlemi
+    
+    const data = {
+        labels: ['Doğru', 'Yanlış'],
+        datasets: [{
+            // Artık bu kodun sadece 'correct_answers_count' bir sayı olduğunda 
+            // çalışacağını biliyoruz, bu yüzden hata vermeyecektir.
+            data: [{{ correct_answers_count }}, {{ total_questions_asked - correct_answers_count }}],
+            backgroundColor: [
+                'rgba(34, 197, 94, 0.7)',
+                'rgba(239, 68, 68, 0.7)'
+            ],
+            borderColor: [
+                '#16a34a',
+                '#dc2626'
+            ],
+            borderWidth: 2
+        }]
+    };
+    
+    new Chart(ctx.getContext('2d'), {
+        type: 'doughnut',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { color: 'var(--text-primary)', font: { size: 14 } }
+                }
+            }
+        }
+    });
+}
+// Fonksiyonu DOM yüklendiğinde çağır.
+document.addEventListener('DOMContentLoaded', createPerformanceChart);
+{% endif %}
+// --- JINJA2 'IF' BLOĞUNUN SONU ---
+
+
+// Export ve Share fonksiyonları sayısal olmayan verilerle de çalışacak şekilde güncellendi
+function exportResults() {
+    const results = {
+        username: '{{ username }}',
+        category: '{{ category }}',
+        totalQuestions: {{ total_questions_asked }},
+        correctAnswers: '{{ correct_answers_count }}', // Tırnak içine aldık
+        score: '{{ score }}', // Tırnak içine aldık
+        timestamp: new Date().toISOString()
+    };
+    
+    const dataStr = JSON.stringify(results, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = `test-results-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    console.log('Sonuçlar indirildi!');
+}
+
+function shareResults() {
+    const shareData = {
+        title: 'Interviewly Test Sonuçları',
+        text: `{{ username }} olarak {{ category }} testini tamamladım! Sonuçlarımı incele.`,
+        url: window.location.href
+    };
+    
+    if (navigator.share) {
+        navigator.share(shareData);
+    } else {
+        navigator.clipboard.writeText(shareData.text + '\n' + shareData.url).then(() => {
+            console.log('Sonuçlar kopyalandı!');
+        });
+    }
+}
+
+// Genel DOMContentLoaded işlemleri
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.summary-card, .answer-card, .recommendation-card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+});
+</script>
 {% endblock %}

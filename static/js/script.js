@@ -162,7 +162,7 @@
                 duration: document.getElementById('summary-duration'),
             };
 
-            const typeMap = { assistant: 'AI Asistan ile Mülakat', written_test: 'Yazılı Test' };
+            const typeMap = { assistant: 'AI Asistan ile Mülakat', written_test: 'Yazılı Mülakat' };
             const modeMap = { general: 'Genel Yetenek', technical: 'Teknik' };
             const difficultyMap = { beginner: 'Başlangıç', intermediate: 'Orta', advanced: 'İleri' };
 
