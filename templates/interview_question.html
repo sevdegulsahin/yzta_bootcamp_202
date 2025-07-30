@@ -83,10 +83,6 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="saveDraft()">
-                            <i class="fas fa-save"></i>
-                            Taslak Kaydet
-                        </button>
                         <button type="submit" class="btn btn-primary" id="submitBtn">
                             <i class="fas fa-paper-plane"></i>
                             Cevabı Gönder
@@ -101,7 +97,7 @@
             <div class="nav-buttons">
                 {% if question_num > 1 %}
                 <a href="{{ url_for('interview.interview_question_route', category=category, question_num=question_num - 1) }}"
-                    class="btn btn-outline">
+                    class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i>
                     Önceki Soru
                 </a>
@@ -116,7 +112,7 @@
 
                 {% if question_num < total_questions %} <a
                     href="{{ url_for('interview.interview_question_route', category=category, question_num=question_num + 1) }}"
-                    class="btn btn-outline">
+                    class="btn btn-secondary">
                     Sonraki Soru
                     <i class="fas fa-arrow-right"></i>
                     </a>
@@ -142,22 +138,6 @@
                     Ana Sayfa
                 </a>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Save Draft Modal -->
-<div class="modal" id="saveModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3><i class="fas fa-save"></i> Taslak Kaydet</h3>
-        </div>
-        <div class="modal-body">
-            <p>Cevabınızı taslak olarak kaydetmek istediğinizden emin misiniz?</p>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" id="cancelSaveBtn">İptal</button>
-            <button class="btn btn-primary" id="confirmSaveBtn">Kaydet</button>
         </div>
     </div>
 </div>

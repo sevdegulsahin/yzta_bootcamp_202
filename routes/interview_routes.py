@@ -105,6 +105,17 @@ def interview_question_route(category, question_num):
         logging.error(f"Geçersiz mülakat kategorisi istendi: {category}")
         return render_template('error.html', message="Geçersiz mülakat kategorisi."), 404
 
+    # YENİ: Eğer bu ilk soru ise, yeni bir test oturumu başlat
+    if question_num == 1:
+        # Yeni, benzersiz bir test oturum kimliği oluştur ve session'a kaydet
+        new_interview_id = str(uuid.uuid4())
+        session['current_interview_id'] = new_interview_id
+        logging.info(f"Yeni test oturumu başlatıldı. ID: {new_interview_id}")
+        
+        # Artık session'da büyük veri biriktirmeyeceğimiz için bu listeye gerek yok.
+        # Yine de eski verilerden kalmış olabilecekleri temizlemek iyi bir pratiktir.
+        session.pop('completed_test_questions_data', None)
+
     try:
         prompt = f"'{category}' alanında bir iş mülakatı için düşündürücü ve teknik bir soru üret. Sadece soruyu ver, ek açıklama veya formatlama yapma."
         ai_question = generate_single_openai_question(prompt)
@@ -113,7 +124,6 @@ def interview_question_route(category, question_num):
             logging.error(f"OpenAI soru üretme hatası: {ai_question}")
             return render_template('error.html', message=ai_question)
 
-        # Soru kaydederken (ör: start_written_test veya interview_question_route içinde)
         new_question_id = save_question_to_supabase(
             category,
             ai_question,
@@ -130,12 +140,12 @@ def interview_question_route(category, question_num):
         session['current_test_question_num'] = question_num
         session['current_test_category'] = category
         session['current_test_question_data'] = {'question': ai_question}
-        session['current_test_question_type'] = 'open_ended' # Soru tipini de session'a ekleyelim
+        session['current_test_question_type'] = 'open_ended'
         session.modified = True
         
         return render_template('interview_question.html',
                                question_num=question_num,
-                               total_questions=5,
+                               total_questions=5, # Bu değeri dinamik hale getirebilirsiniz
                                question_text=ai_question,
                                category=category)
     except Exception as e:
@@ -211,146 +221,65 @@ def create_interview():
                            selected_mode=selected_mode,
                            selected_technical_area=selected_technical_area)
 
-@interview_bp.route('/start_written_test', methods=['GET', 'POST'])
-def start_written_test():
-    user_id = session.get('user_id')
-   
-    category_from_request = request.args.get('category')
-    question_num = int(request.args.get('question_num', 1))
-
-    total_questions_in_session = session.get('total_written_test_questions', 10) 
-
-    if not user_id:
-        logging.warning("Yazılı mülakat başlatma denemesi, oturum yok.")
-        return redirect(url_for('auth.login'))
-
-    if question_num > total_questions_in_session:
-        logging.info(f"Tüm {total_questions_in_session} test soruları tamamlandı. Sonuç sayfasına yönlendiriliyor.")
-
-        current_category_for_result = category_from_request if category_from_request is not None else session.get('selected_category_for_test', 'general')
-        return redirect(url_for('interview.test_results', category=current_category_for_result)) 
-
-    current_category = category_from_request
-    if current_category is None:
-        current_category = session.get('selected_category_for_test')
-    if current_category is None:
-        current_category = 'general' 
-
-    logging.info(f"Mevcut kategori: {current_category}, Soru Numarası: {question_num}")
-
-    question_type_to_generate = 'open_ended'
-    difficulty = session.get('selected_difficulty', 'intermediate')  # <-- EKLE
-
-    # --- PROMPT SEÇİMİ ---
-    if current_category == 'general':
-        prompt = (
-            "Bir iş mülakatında adayın kişisel gelişim, liderlik, takım çalışması, motivasyon, iletişim, problem çözme, "
-            "zorluklarla başa çıkma, kariyer hedefleri gibi konularda düşünmesini sağlayacak klasik bir açık uçlu genel yetenek sorusu üret. "
-            "Sadece sorunun metnini ver. Ek açıklama veya formatlama yapma."
-        )
-    else:
-        category_desc = f"'{current_category}' alanı"
-        # difficulty Türkçe'ye çevrilebilir isterseniz
-        difficulty_map = {
-            'beginner': 'başlangıç',
-            'intermediate': 'orta',
-            'advanced': 'ileri'
-        }
-        difficulty_tr = difficulty_map.get(difficulty, 'orta')
-        prompt = (
-            f"{category_desc} ile ilgili, yeni bir iş mülakatı için düşündürücü ve açıklayıcı bir açık uçlu teknik soru üret. "
-            f"Sorunun zorluk seviyesi {difficulty_tr} düzeyde olmalı. "
-            "Sadece sorunun metnini ver. Ek açıklama veya formatlama yapma."
-        )
-
-    current_question_text = generate_single_openai_question(prompt)
-    parsed_question_data = {'question': current_question_text}
-
-    if not parsed_question_data or 'question' not in parsed_question_data:
-        logging.error(f"AI soru çıktısı ayrıştırılamadı: {current_question_text}")
-        return render_template('error.html', message="AI'dan gelen soru formatı bozuk.")
-
-    current_question_text = parsed_question_data['question']
-    
-    # Soru kaydederken (ör: start_written_test veya interview_question_route içinde)
-    session_id = session.get('current_session_id')
-    new_question_id = save_question_to_supabase(
-        current_category,
-        current_question_text,
-        user_id,
-        question_type=question_type_to_generate,
-        session_id=session_id
-    )
-
-    if not new_question_id:
-        logging.error(f"Soru Supabase'e kaydedilemedi. Kategori: {current_category}")
-        return render_template('error.html', message="Soru kaydedilirken bir hata oluştu.")
-
-    session['current_test_question_data'] = parsed_question_data
-    session['current_test_question_id'] = new_question_id 
-    session['current_test_question_num'] = question_num 
-    session['current_test_question_type'] = question_type_to_generate
-    session['current_test_category'] = current_category
-    session.modified = True
-
-    return render_template('written_test_question.html',
-                           question_num=question_num,
-                           total_questions=total_questions_in_session, 
-                           question_text=current_question_text,
-                           category=current_category, 
-                           question_type=question_type_to_generate,
-                           parsed_data=parsed_question_data)
-
-def parse_ai_question_response(ai_response, question_type):
-    parsed = {'question': ai_response} 
-    return parsed
-
 @interview_bp.route('/submit_written_answer', methods=['POST'])
 def submit_written_answer():
     user_id = session.get('user_id')
     if not user_id:
         return redirect(url_for('auth.login'))
 
+    # Session'dan sadece o anki soru ve test ile ilgili ID'leri alıyoruz
     question_id = session.get('current_test_question_id')
-    question_type = session.get('current_test_question_type')
-    category = session.get('current_test_category') 
+    category = session.get('current_test_category')
     question_num = session.get('current_test_question_num')
-    total_questions = session.get('total_written_test_questions', 10) 
+    total_questions = session.get('total_written_test_questions', 5) # toplam soru sayısını senkronize ettim
+    
+    # YENİ: O anki testin benzersiz ID'sini session'dan alıyoruz
+    interview_session_id = session.get('current_interview_id')
+    user_answer_input = request.form.get('user_answer')
 
-    user_answer_input = request.form.get('user_answer') 
+    if not all([question_id, interview_session_id]):
+        logging.error("Cevap gönderilemedi: Soru veya Test Oturum ID'si session'da bulunamadı.")
+        return render_template('error.html', message="Cevap gönderilemedi: Oturum bilgisi eksik.")
 
-    if not question_id:
-        logging.error("Cevap gönderilemedi: Mevcut soru ID'si session'da bulunamadı.")
-        return render_template('error.html', message="Cevap gönderilemedi: Soru bilgisi bulunamadı.")
-
-    ai_evaluation_result = None
-
-    # Cevap kaydederken (ör: submit_written_answer içinde)
-    session_id = session.get('current_session_id')
-    response = save_answer_to_supabase(
-        question_id=str(question_id),
-        user_id=str(user_id),
-        user_answer=user_answer_input,
-        is_correct=ai_evaluation_result,
-        #session_id=session_id
+    # AI puanını ve değerlendirmesini al
+    evaluation = evaluate_answer_with_ai(
+        session.get('current_test_question_data', {}).get('question'),
+        user_answer_input
     )
+    score = evaluation.get('score')
+    is_correct = evaluation.get('is_correct')
+    feedback = evaluation.get('feedback')
+    is_correct_numeric = 1.0 if is_correct else 0.0 if is_correct is not None else None
 
-    if response:
-        completed_questions_data = session.get('completed_test_questions_data', [])
-        completed_questions_data.append({
-            'question_text': session.get('current_test_question_data', {}).get('question'),
-            'user_answer': user_answer_input,
-            'question_type': question_type,
-            'is_correct': ai_evaluation_result
-        })
-        session['completed_test_questions_data'] = completed_questions_data
-        session.modified = True
+    # Veritabanına kaydetme işlemi (save_answer_to_supabase yerine doğrudan yazıldı)
+    response_ok = False
+    try:
+        # Not: 'question_text' sütununuzun interview_answers tablonuzda olması gerekir.
+        supabase.table("interview_answers").insert({
+            "question_id": str(question_id),
+            "user_id": str(user_id),
+            "user_answer": user_answer_input,
+            "is_correct": is_correct_numeric,
+            "score": score,
+            "ai_response": feedback,
+            "question_text": session.get('current_test_question_data', {}).get('question'),
+            # YENİ: Test kimliğini veritabanına ekliyoruz
+            "interview_session_id": interview_session_id 
+        }).execute()
+        response_ok = True
+    except Exception as e:
+        logging.error(f"Supabase kaydı başarısız: {e}")
+        response_ok = False
+    
+    # Session'a büyük veri ekleme bloğu TAMAMEN KALDIRILDI.
 
+    if response_ok:
         next_question_num = question_num + 1
 
         if next_question_num > total_questions:
-            logging.info(f"Tüm {total_questions} test soruları tamamlandı. Sonuç sayfasına yönlendiriliyor.")
-            return redirect(url_for('interview.test_results', category=category))
+            logging.info(f"Test tamamlandı. ID: {interview_session_id}. Sonuç sayfasına yönlendiriliyor.")
+            # Sonuçlar sayfasına o teste ait ID'yi URL parametresi olarak gönderiyoruz
+            return redirect(url_for('interview.test_results', category=category, interview_id=interview_session_id))
         else:
             return redirect(url_for('interview.interview_question_route', category=category, question_num=next_question_num))
     else:
@@ -362,58 +291,57 @@ def test_results():
     user_id = session.get('user_id')
     if not user_id:
         return redirect(url_for('auth.login'))
-  
-    category = request.args.get('category') 
-    completed_test_questions_data = session.get('completed_test_questions_data', [])
 
-    if not completed_test_questions_data:
-        logging.warning("Test sonuçları getirilemedi: Tamamlanan test verileri eksik.")
-        return redirect(url_for('main.index'))
+    category = request.args.get('category')
+    # YENİ: Session yerine URL'den gelen test kimliğini alıyoruz
+    interview_id = request.args.get('interview_id')
 
+    if not interview_id:
+        logging.error("Sonuçlar sayfası 'interview_id' olmadan çağrıldı.")
+        return render_template('error.html', message="Sonuçları göstermek için geçerli bir test kimliği gereklidir.")
+
+    # YENİ: Veritabanından o teste ait TÜM cevapları tek bir sorgu ile çekiyoruz
+    answers_response = supabase.table("interview_answers") \
+        .select("*") \
+        .eq("user_id", user_id) \
+        .eq("interview_session_id", interview_id) \
+        .order("answered_at", desc=False) \
+        .execute()
+    
+    answers = answers_response.data if answers_response and hasattr(answers_response, "data") else []
+
+    # Veri işleme mantığı aynı kalıyor
     detailed_answers = []
     correct_answers_count = 0
-    total_questions_in_test = len(completed_test_questions_data)
-
-    for item in completed_test_questions_data:
-        question_text = item.get('question_text', 'Soru Metni Yok')
-        user_answer = item.get('user_answer', 'Cevap verilmedi')
-        
-        evaluation = evaluate_answer_with_ai(question_text, user_answer)
-        
-        is_correct = evaluation.get('is_correct')
-        feedback = evaluation.get('feedback')
-
-        if is_correct is True:
+    for a in answers:
+        is_correct = a.get('is_correct')
+        if is_correct == 1.0:
             correct_answers_count += 1
-        
         detailed_answers.append({
-            'question_text': question_text,
-            'user_response': user_answer,
+            'question_text': a.get('question_text', ''),
+            'user_response': a.get('user_answer', ''),
             'is_correct': is_correct,
-            'feedback': feedback 
+            'feedback': a.get('ai_response', '')
         })
 
-    success_rate = 0
-    if total_questions_in_test > 0:
-        success_rate = round((correct_answers_count / total_questions_in_test) * 100, 1)
+    total_questions_in_test = len(answers)
+    incorrect_answers_count = total_questions_in_test - correct_answers_count
+    
+    # Test bittiği için o teste ait session verilerini temizliyoruz
+    session.pop('current_interview_id', None)
+    session.pop('current_test_question_id', None)
+    session.pop('current_test_question_data', None)
+    session.modified = True
 
-    results_data = {
-        'total_questions': total_questions_in_test,
-        'correct_answers': correct_answers_count,
-        'success_rate': f"{success_rate}%",
-        'score': f"{correct_answers_count * 20}", # Örnek puanlama: Her doğru cevap 20 puan
-        'detailed_answers': detailed_answers
-    }
     return render_template('test_results.html',
                            username=session.get('user_profile', {}).get('name', 'Kullanıcı'),
-                           category=category, 
-                           total_questions_asked=results_data['total_questions'],
-                           correct_answers_count=results_data['correct_answers'],
-                           score=results_data['score'],
-                           detailed_answers=results_data['detailed_answers'],
-                           is_open_ended_test=True) 
-
-
+                           category=category,
+                           total_questions_asked=total_questions_in_test,
+                           correct_answers_count=correct_answers_count,
+                           incorrect_answers_count=incorrect_answers_count, 
+                           score=correct_answers_count * 20,
+                           detailed_answers=detailed_answers,
+                           is_open_ended_test=True)
 
 # @interview_bp.route('/my_interviews')
 # def my_interviews():
@@ -514,6 +442,7 @@ def interview_details(question_id):
             .eq("id", question_id) \
             .single() \
             .execute()
+    
         interview = question_response.data if question_response and hasattr(question_response, "data") else None
 
         if not interview:
@@ -575,7 +504,8 @@ def assistant_results():
     if not chat_history or len(chat_history) < 2:
         return render_template('error.html', message="Değerlendirilecek bir sohbet geçmişi bulunamadı.")
 
-    from services.openai_service import generate_openai_response
+    from services.openai_service import generate_openai_response, evaluate_answer_with_ai
+
     summary_prompt = [
         {"role": "system", "content": "Sen bir mülakat değerlendiricisisin. Aşağıdaki mülakat sohbetini değerlendir, adayın güçlü ve gelişime açık yönlerini özetle, genel bir geri bildirim ver."}
     ] + chat_history
@@ -588,12 +518,12 @@ def assistant_results():
     if not category:
         category = "Genel Yetenek"
 
-    # --- AI değerlendirmesini interview_answers tablosuna kaydet ---
+    # --- AI değerlendirmesini ve puanını interview_answers tablosuna kaydet ---
     question_id = session.get('current_question_id')
     if question_id:
         # Son cevabı bul (asistan mülakatında genelde tek cevap olur)
         answer_response = supabase.table("interview_answers") \
-            .select("id") \
+            .select("id, user_answer") \
             .eq("question_id", str(question_id)) \
             .eq("user_id", str(user_id)) \
             .order("answered_at", desc=True) \
@@ -603,8 +533,14 @@ def assistant_results():
 
         if answer_data:
             answer_id = answer_data["id"]
+            user_answer = answer_data.get("user_answer", "")
+            # AI puanını al
+            score = evaluate_answer_with_ai(
+                session.get('chat_history', [{}])[-2].get('content', ''),  # Son kullanıcı cevabı
+                user_answer
+            )
             supabase.table("interview_answers") \
-                .update({"ai_evaluation": ai_feedback}) \
+                .update({"ai_evaluation": ai_feedback, "score": score}) \
                 .eq("id", str(answer_id)) \
                 .execute()
 

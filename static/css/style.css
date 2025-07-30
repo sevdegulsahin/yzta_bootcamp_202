@@ -45,8 +45,10 @@
 body {
     background: var(--bg-primary);
     color: var(--text-primary);
-    font-family: var(--font-primary);
+    font-family: 'Inter', sans-serif;
     min-height: 100vh;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 .container {
@@ -65,52 +67,90 @@ body {
 .text-app-primary {
     color: var(--text-primary) !important;
 }
+
+/* Navbar genel ayarlar */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 80px;
+    height: 72px;
+    background-color: var(--bg-app);
+    padding: 0 1rem;
 }
 
+.navbar-brand .gradient-logo {
+    font-size: 1.9rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    background: linear-gradient(90deg, #6366f1 0%, #10b981 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+}
+
+/* Nav item link */
 .navbar .nav-link {
     color: var(--text-secondary);
     font-weight: 500;
     font-size: 1rem;
-    transition: var(--transition-fast);
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-md);
+    position: relative;
+    padding: 0.5rem 0.75rem;
+    transition: color 0.3s ease;
 }
-.navbar .nav-link.active, .navbar .nav-link:hover {
+
+.navbar .nav-link i {
+    margin-right: 6px;
+}
+
+/* Hover efekti - underline animasyonu */
+.navbar .nav-link::after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 2px;
+    background: var(--primary-light);
+    transition: width 0.3s ease;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border-radius: 1px;
+}
+
+.navbar .nav-link:hover::after,
+.navbar .nav-link.active::after {
+    width: 100%;
+}
+
+.navbar .nav-link:hover {
     color: var(--primary-light);
-    background-color: var(--bg-tertiary);
 }
 
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-.navbar .nav-link, .header-modern .nav-link {
-    color: var(--text-secondary) !important;
-    font-weight: 500;
-    font-size: 1.1rem;
-    transition: var(--transition-fast);
+/* Icon+text hizalaması */
+.navbar .nav-link i {
+    vertical-align: middle;
+    font-size: 1rem;
 }
 
-.navbar-brand .gradient-logo {
-    font-size: 1.8rem;
-    font-family: var(--font-heading);
-    font-weight: 700;
-    background: linear-gradient(90deg, #6366f1 10%, #10b981 90%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-fill-color: transparent;
-    display: inline-block;
-    letter-spacing: -1px;
-    text-decoration: none;
+/* Çıkış rengi */
+.navbar .nav-link.text-danger {
+    color: #ef4444 !important;
 }
+.navbar .nav-link.text-danger:hover {
+    color: #dc2626 !important;
+}
+
+/* Responsive için daha iyi görünüm */
+@media (max-width: 992px) {
+    .navbar {
+        padding: 1rem;
+    }
+
+    .navbar .nav-link {
+        padding: 0.75rem 1rem;
+    }
+}
+
 .btn {
   padding: 0.75rem 2rem;
   border-radius: var(--radius-lg);
@@ -146,6 +186,26 @@ body {
 .btn-secondary:hover {
   background-color: var(--bg-tertiary);
   text-decoration: none;
+}
+
+.btn-success {
+  background-color: var(--secondary-color);
+  color: white;
+  box-shadow: 0 5px 12px rgb(16 185 129 / 0.5);
+}
+
+.btn-success:hover {
+  background-color: var(--secondary-dark);
+}
+
+.btn-danger {
+  background-color: #ef4444;
+  color: white;
+  box-shadow: 0 5px 12px rgb(239 68 68 / 0.5);
+}
+
+.btn-danger:hover {
+  background-color: #dc2626; /* A darker red */
 }
 
 /* Notification System */
@@ -323,6 +383,10 @@ body {
     transform: rotateY(0) rotateX(0);
 }
 
+html {
+    height: 100%;
+    box-sizing: border-box;
+}
 .mockup-header {
     display: flex;
     gap: var(--spacing-sm);
@@ -383,7 +447,7 @@ body {
     color: var(--text-secondary);
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-md);
-    z-index: 1;
+    z-index: 10;
     transition: var(--transition-normal);
 }
 
@@ -393,10 +457,11 @@ body {
     transform: scale(1.1);
 }
 
-.hero-tech-icon.icon-1 { top: 0%; left: 15%; animation: float 8s ease-in-out infinite; }
+.hero-tech-icon.icon-1 { top: -15%; left: 5%; animation: float 8s ease-in-out infinite; }
 .hero-tech-icon.icon-2 { top: 20%; right: -5%; animation: float 10s ease-in-out infinite -4s; }
 .hero-tech-icon.icon-3 { bottom: 15%; left: -10%; animation: float 12s ease-in-out infinite -8s; }
-.hero-tech-icon.icon-4 { bottom: -5%; right: 10%; animation: float 9s ease-in-out infinite -2s; }
+.hero-tech-icon.icon-4 { bottom: -15%; right: 5%; animation: float 9s ease-in-out infinite -2s; }
+
 
 @keyframes float {
     0% { transform: translateY(0px); }
@@ -590,6 +655,9 @@ body {
     padding: var(--spacing-2xl) 0;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     text-align: center;
+    padding-top: 2rem !important;
+    padding-bottom: 1.5rem !important; 
+    margin-bottom: 0 !important;
 }
 
 .cta-content h2 {
@@ -641,6 +709,7 @@ body {
         order: 1;
         margin-bottom: 3rem;
         perspective: none;
+        position: relative;
     }
 
     .hero-mockup-card {

@@ -50,7 +50,7 @@ def save_question_to_supabase(category, question_text, user_id, question_type=No
         logging.error(f"Supabase'e soru kaydederken hata: {e}")
         return None
 
-def save_answer_to_supabase(question_id, user_id, user_answer, ai_response=None, selected_option=None, is_correct=None):
+def save_answer_to_supabase(question_id, user_id, user_answer, ai_response=None, selected_option=None, is_correct=None, score=None):
     if not supabase:
         logging.error("Supabase bağlantısı yok, cevap kaydedilemiyor.")
         return None
@@ -61,7 +61,8 @@ def save_answer_to_supabase(question_id, user_id, user_answer, ai_response=None,
             "user_answer": user_answer,
             "ai_response": ai_response,
             "selected_option": selected_option,
-            "is_correct": is_correct
+            "is_correct": is_correct,
+            "score": score  # <-- yeni eklenen alan
         }
         response = supabase.table("interview_answers").insert(answer_data).execute()
 
@@ -73,4 +74,4 @@ def save_answer_to_supabase(question_id, user_id, user_answer, ai_response=None,
             return None
     except Exception as e:
         logging.error(f"Supabase'e cevap kaydederken hata: {e}")
-        return None 
+        return None

@@ -64,45 +64,56 @@ import json
 
 def evaluate_answer_with_ai(question, user_answer):
     """
-    Bir soruyu ve kullanıcı cevabını alıp, AI ile değerlendirir.
-    Değerlendirme sonucunu JSON formatında döndürür.
+    Soruyu ve kullanıcı cevabını alıp, AI ile 0-100 arası bir puan döndürür.
     """
     try:
-        # AI'a rolünü, görevini ve istediğimiz çıktı formatını net bir şekilde anlatıyoruz.
         prompt = f"""
-        Sen bir teknik mülakat değerlendirme uzmanısın. Görevin, sana verilen bir soruyu ve bu soruya verilen bir kullanıcı cevabını analiz etmektir.
-        Cevabın doğruluğunu, eksikliğini ve kalitesini değerlendir.
-        
-        Değerlendirme sonucunu SADECE ve SADECE aşağıdaki gibi bir JSON formatında döndür:
-        {{
-          "is_correct": true veya false,
-          "feedback": "Kullanıcının cevabının neden doğru veya yanlış olduğuna dair kısa ve yapıcı bir geri bildirim."
-        }}
+        Sen bir kıdemli teknik mülakat değerlendirme uzmanısın. Sana bir teknik soru ve bu soruya verilen bir aday cevabı verilecek.
+        Cevabı değerlendirirken yalnızca teknik doğruluk, ifade kalitesi, konuya uygunluk, derinlik ve profesyonellik açısından objektif bir puan ver.
+
+        Aşağıdaki puanlama sistemini kesin şekilde uygula:
+
+        0: Cevap saçma, alakasız, rastgele karakter dizisi, anlam içermeyen kelimeler, konu dışı cümleler, boş ifadeler veya otomatik üretilmiş gibi (örnek: “asdasd”, “evet”, “hayır”, “bilmiyorum”, “çok güzel soru”, vs.). Bu tür cevaplar her durumda 0 puan alır.
+
+        1–20: Cevap teknik olarak yetersiz, çok eksik veya hatalı. Bazı anahtar kelimeler geçse de anlamlı veya doğru bir açıklama yapılmamış.
+
+        21–40: Temel kavramlara değinilmiş ama bilgi eksik, yüzeysel ya da kısmen yanlış.
+
+        41–60: Doğru bilgiler var ama sınırlı derinlikte. Açıklama orta seviyede.
+
+        61–80: Teknik olarak doğru, iyi açıklanmış, ancak ufak eksikler olabilir.
+
+        81–100: Eksiksiz, detaylı, teknik olarak hatasız, iyi yapılandırılmış ve profesyonel cevap.
+
+        Lütfen sadece bu puanlama sistemine göre tek bir TAM SAYI döndür.
+        Hiçbir açıklama, gerekçe, yorum ya da fazladan metin yazma.
 
         Soru: "{question}"
         Kullanıcı Cevabı: "{user_answer}"
         """
-        
-        # Bu, daha önce kullandığınız OpenAI çağırma fonksiyonu olmalı
-        # generate_single_openai_question veya benzeri bir fonksiyon olabilir.
-        # Önemli olan, bu prompt'u AI'a göndermektir.
-        response_text = generate_single_openai_question(prompt) # Kendi OpenAI çağırma fonksiyonunuzu kullanın
-        
-        # AI'dan gelen metni JSON olarak ayrıştırmaya çalış
-        evaluation_json = json.loads(response_text)
-        
-        # Beklenen anahtarların olup olmadığını kontrol et
-        if 'is_correct' not in evaluation_json or 'feedback' not in evaluation_json:
-            # AI beklenen formatta cevap vermezse, varsayılan bir değer döndür
-            logging.error(f"AI değerlendirmesi beklenen formatta değil: {response_text}")
-            return {"is_correct": None, "feedback": "AI cevabı otomatik olarak değerlendiremedi."}
-            
-        return evaluation_json
 
-    except json.JSONDecodeError:
-        # AI geçerli bir JSON döndürmezse
-        logging.error(f"AI geçerli bir JSON döndürmedi: {response_text}")
-        return {"is_correct": None, "feedback": "AI değerlendirmesi ayrıştırılamadı."}
+        response_text = generate_single_openai_question(prompt)
+        # Gelen cevabı float'a çevir
+        score = None
+        try:
+            score = float(response_text.strip())
+        except Exception:
+            logging.error(f"AI puan cevabı sayı formatında değil: {response_text}")
+            score = None
+
+        # is_correct ve feedback üretmek için ek mantık ekle
+        is_correct = None
+        if score is not None:
+            is_correct = score >= 60  # Örneğin 60 ve üzeri doğru kabul edilsin
+
+        feedback = f"Cevabınız {score} puan aldı." if score is not None else "Değerlendirme yapılamadı."
+
+        return {
+            "score": score,
+            "is_correct": is_correct,
+            "feedback": feedback
+        }
+
     except Exception as e:
-        logging.error(f"AI değerlendirmesi sırasında bir hata oluştu: {e}")
-        return {"is_correct": None, "feedback": "Değerlendirme sırasında bir hata oluştu."}
+        logging.error(f"AI puanlama sırasında hata: {e}")
+        return None

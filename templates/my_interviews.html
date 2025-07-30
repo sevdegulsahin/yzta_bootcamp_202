@@ -58,13 +58,21 @@
                     </div>
                     <div class="interview-status">
                         {% if interview.answers %}
-                        <span class="status-badge completed">
+                        {% set last_answer = interview.answers[-1] %}
+                        {% if last_answer.is_correct == 1 or last_answer.is_correct == 1.0 %}
+                        <span class="status-badge completed" style="background:rgba(34,197,94,0.1);color:#22c55e;">
                             <i class="fas fa-check-circle"></i>
-                            Tamamlandı
+                            Doğru
                         </span>
                         {% else %}
+                        <span class="status-badge pending" style="background:rgba(239,68,68,0.1);color:#ef4444;">
+                            <i class="fas fa-times-circle"></i>
+                            Yanlış
+                        </span>
+                        {% endif %}
+                        {% else %}
                         <span class="status-badge pending">
-                            <i class="fas fa-exclamation-triangle "></i>
+                            <i class="fas fa-exclamation-triangle"></i>
                             Boş
                         </span>
                         {% endif %}
