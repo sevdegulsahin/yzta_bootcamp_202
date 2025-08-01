@@ -133,11 +133,6 @@
                     <i class="fas fa-list-ul"></i>
                     Detaylı Cevaplarınız
                 </h3>
-                <div class="section-actions">
-                    <button class="action-btn" onclick="exportResults()"><i class="fas fa-download"></i> Sonuçları
-                        İndir</button>
-                    <button class="action-btn" onclick="shareResults()"><i class="fas fa-share"></i> Paylaş</button>
-                </div>
             </div>
 
             <div class="answers-list">
@@ -216,7 +211,7 @@
             <a href="{{ url_for('interview.my_interviews') }}" class="btn btn-secondary">
                 <i class="fas fa-history"></i> Geçmiş Mülakatlar
             </a>
-            <a href="{{ url_for('main.index') }}" class="btn btn-outline">
+            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
                 <i class="fas fa-home"></i> Ana Sayfa
             </a>
         </div>

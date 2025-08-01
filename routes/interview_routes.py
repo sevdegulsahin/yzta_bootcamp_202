@@ -551,4 +551,54 @@ def assistant_results():
         chat_history=chat_history,
         ai_feedback=ai_feedback
     )
+# --- SİLME FONKSİYONU ---
+@interview_bp.route('/interview/delete/<interview_id>', methods=['POST'])
+def delete_interview(interview_id):
+    """
+    Belirtilen ID'ye sahip mülakatı (soruyu) ve ona bağlı tüm cevapları siler.
+    Güvenlik için sadece oturum açmış kullanıcının kendi mülakatını silebilmesini sağlar.
+    """
+    user_id = session.get('user_id')
+    if not user_id:
+        # Oturum yoksa yetkisiz hatası döndür
+        return jsonify({'status': 'error', 'message': 'Bu işlemi yapmak için giriş yapmalısınız.'}), 401
 
+    logging.info(f"Kullanıcı {user_id}, mülakat {interview_id}'i silme talebinde bulundu.")
+
+    try:
+        # 1. Adım: Mülakatın gerçekten bu kullanıcıya ait olup olmadığını kontrol et.
+        question_to_delete_response = supabase.table("interview_questions") \
+            .select("id") \
+            .eq("id", str(interview_id)) \
+            .eq("user_id", str(user_id)) \
+            .single() \
+            .execute()
+
+        if not (question_to_delete_response.data):
+            logging.warning(f"Yetkisiz silme denemesi: Kullanıcı {user_id}, mülakat {interview_id}")
+            return jsonify({'status': 'error', 'message': 'Mülakat bulunamadı veya silme yetkiniz yok.'}), 404
+
+        # 2. Adım: Mülakata bağlı tüm cevapları sil (Cascading Delete)
+        # Bu adım, veritabanında "orphaned" (sahipsiz) kayıt kalmasını engeller.
+        supabase.table("interview_answers") \
+            .delete() \
+            .eq("question_id", str(interview_id)) \
+            .execute()
+        
+        logging.info(f"Mülakat {interview_id} için bağlı cevaplar silindi.")
+
+        # 3. Adım: Ana mülakat kaydını (soruyu) sil
+        supabase.table("interview_questions") \
+            .delete() \
+            .eq("id", str(interview_id)) \
+            .execute()
+            
+        logging.info(f"Mülakat {interview_id} başarıyla silindi.")
+
+        # Başarılı olursa frontend'e onay mesajı gönder
+        return jsonify({'status': 'success', 'message': 'Mülakat başarıyla silindi.'}), 200
+
+    except Exception as e:
+        logging.error(f"Mülakat silinirken hata oluştu (ID: {interview_id}): {e}", exc_info=True)
+        # Hata olursa işlemi geri al (veritabanı transaction yönetimi varsa) ve hata mesajı gönder
+        return jsonify({'status': 'error', 'message': f'Sunucu hatası: Mülakat silinemedi. Hata: {str(e)}'}), 500

@@ -36,6 +36,69 @@
         }, 5000);
     };
 
+     /**
+     * Exports test results as a JSON file.
+     * Attached to the global namespace to be called from onclick.
+     */
+    Interviewly.exportResults = () => {
+        const pageDataEl = document.getElementById('page-data-export');
+        if (!pageDataEl) {
+            Interviewly.showNotification('Dışa aktarılacak veri bulunamadı.', 'error');
+            return;
+        }
+        
+        try {
+            const results = JSON.parse(pageDataEl.dataset.exportData);
+            results.timestamp = new Date().toISOString();
+            const dataStr = JSON.stringify(results, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `test-results-${results.username}-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            Interviewly.showNotification('Sonuçlar indiriliyor...', 'info');
+        } catch (e) {
+            Interviewly.showNotification('Sonuçları dışa aktarırken bir hata oluştu.', 'error');
+            console.error("Export error:", e);
+        }
+    };
+
+    /**
+     * Shares test results using the Web Share API or copies to clipboard.
+     * Attached to the global namespace to be called from onclick.
+     */
+    Interviewly.shareResults = async () => {
+        const pageDataEl = document.getElementById('page-data-export');
+        if (!pageDataEl) {
+            Interviewly.showNotification('Paylaşılacak veri bulunamadı.', 'error');
+            return;
+        }
+
+        try {
+            const results = JSON.parse(pageDataEl.dataset.exportData);
+            const shareData = {
+                title: 'Interviewly Test Sonuçlarım',
+                text: `${results.username} olarak ${results.category} testini tamamladım! Sonuçlarımı incele.`,
+                url: window.location.href
+            };
+
+            if (navigator.share) {
+                await navigator.share(shareData);
+                Interviewly.showNotification('Sonuçlar paylaşıldı!', 'success');
+            } else {
+                await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
+                Interviewly.showNotification('Sonuç linki panoya kopyalandı!', 'info');
+            }
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                 Interviewly.showNotification('Paylaşım sırasında bir hata oluştu.', 'error');
+                 console.error('Share error:', err);
+            }
+        }
+    };
+
+
     window.Interviewly = Interviewly;
 
     /**
@@ -52,33 +115,18 @@
             });
         }
 
-        // Router for page-specific scripts
-        const pageId = document.body.dataset.pageId;
-        switch (pageId) {
-            case 'auth':
-                initAuthPage();
-                break;
-            case 'create-interview':
-                initCreateInterviewPage();
-                break;
-            case 'edit-profile':
-                initEditProfilePage();
-                break;
-            case 'interview':
-                initInterviewPage();
-                break;
-            case 'my-interviews':
-                initMyInterviewsPage();
-                break;
-            case 'profile':
-                initProfilePage();
-                break;
-            case 'test-results':
-                initTestResultsPage();
-                break;
-        }
-        // This runs outside the router to catch pages without a pageId
-        initInterviewQuestionPage();
+        // --- New Router ---
+        // Detects the current page by a unique class on a main container
+        // and calls the corresponding init function.
+        if (document.querySelector('.auth-page')) initAuthPage();
+        if (document.querySelector('.create-interview-page')) initCreateInterviewPage();
+        if (document.querySelector('.edit-profile-page')) initEditProfilePage();
+        if (document.querySelector('.interview-page')) initInterviewPage();
+        if (document.querySelector('.my-interviews-page')) initMyInterviewsPage();
+        if (document.querySelector('.profile-page')) initProfilePage();
+        if (document.querySelector('.test-results-page')) initTestResultsPage();
+        if (document.querySelector('.question-page')) initInterviewQuestionPage();
+
     });
 
     /**
@@ -284,70 +332,160 @@
      * Initializes logic for the real-time 'Interview' page.
      */
     function initInterviewPage() {
-        const pageDataEl = document.getElementById('page-data');
-        if (!pageDataEl) return;
-
         let startTime = Date.now();
-        let messageCount = parseInt(pageDataEl.dataset.chatHistoryLength, 10) || 0;
+        let messageCount = document.querySelectorAll('#chat-messages .message-wrapper').length;
+        let timerInterval;
+    
+        const timerDisplay = document.getElementById('timer-display');
         const userInput = document.getElementById('user-input');
         const chatContainer = document.querySelector('.chat-container');
-
-        const timerInterval = setInterval(() => {
+        const sendBtn = document.getElementById('send-btn');
+        const chatForm = document.getElementById('chat-form');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const endModal = document.getElementById('endModal');
+    
+        // Timer functions
+        function startTimer() {
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+    
+        function updateTimer() {
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
             const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
             const seconds = (elapsed % 60).toString().padStart(2, '0');
-            const display = `${minutes}:${seconds}`;
-            document.getElementById('timer-display').textContent = display;
-            document.getElementById('elapsed-time').textContent = display;
-        }, 1000);
-
+            if (timerDisplay) timerDisplay.textContent = `${minutes}:${seconds}`;
+        }
+    
+        // UI utility functions
         const autoResize = (textarea) => {
             textarea.style.height = 'auto';
             textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
         };
-
+    
         const updateCharCounter = () => {
             const counter = document.getElementById('char-counter');
+            if (!counter) return;
             const count = userInput.value.length;
             counter.textContent = `${count}/1000`;
             if (count > 900) counter.style.color = '#ef4444';
             else if (count > 800) counter.style.color = '#f59e0b';
             else counter.style.color = 'var(--text-muted)';
         };
-
-        const scrollToBottom = () => chatContainer.scrollTop = chatContainer.scrollHeight;
-
-        userInput.addEventListener('input', () => {
+    
+        const scrollToBottom = () => {
+            if(chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+        };
+    
+        const showTypingIndicator = () => {
+            if(typingIndicator) typingIndicator.style.display = 'flex';
+            scrollToBottom();
+        };
+    
+        const hideTypingIndicator = () => {
+            if(typingIndicator) typingIndicator.style.display = 'none';
+        };
+    
+        const addMessageToUI = (content, role) => {
+            const chatMessages = document.getElementById('chat-messages');
+            if (!chatMessages) return;
+    
+            const messageWrapper = document.createElement('div');
+            messageWrapper.className = `message-wrapper ${role}`;
+    
+            const avatarIcon = role === 'assistant' ? 'fa-robot' : 'fa-user';
+            const senderName = role === 'assistant' ? 'AI Mülakatçı' : 'Siz';
+    
+            messageWrapper.innerHTML = `
+                <div class="message ${role}">
+                    <div class="message-avatar"><i class="fas ${avatarIcon}"></i></div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-sender">${senderName}</span>
+                            <span class="message-time">${++messageCount}</span>
+                        </div>
+                        <div class="message-text">${content}</div>
+                    </div>
+                </div>`;
+            chatMessages.appendChild(messageWrapper);
+            scrollToBottom();
+        };
+    
+        // Form submission handler
+        chatForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+    
+            addMessageToUI(message, 'user');
+            userInput.value = '';
             autoResize(userInput);
             updateCharCounter();
+            showTypingIndicator();
+            sendBtn.disabled = true;
+    
+            // Using Fetch API to send data to the server
+            fetch(chatForm.action, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_input: message })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                hideTypingIndicator();
+                if (data.ai_reply) {
+                    addMessageToUI(data.ai_reply, 'assistant');
+                }
+                sendBtn.disabled = false;
+                userInput.focus();
+            })
+            .catch(error => {
+                console.error('Fetch Hata:', error);
+                hideTypingIndicator();
+                addMessageToUI("Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.", 'assistant');
+                sendBtn.disabled = false;
+            });
         });
-
-        document.getElementById('chat-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            if (!userInput.value.trim()) return;
-            document.getElementById('send-btn').disabled = true;
-            document.getElementById('typing-indicator').style.display = 'flex';
-            scrollToBottom();
-            setTimeout(() => this.submit(), 300);
-        });
-
-        const endModal = document.getElementById('endModal');
-        document.querySelector('.btn-danger').addEventListener('click', () => endModal.classList.add('show'));
-        endModal.querySelector('.btn-secondary').addEventListener('click', () => endModal.classList.remove('show'));
-        endModal.addEventListener('click', (e) => { if (e.target === endModal) endModal.classList.remove('show'); });
-        endModal.querySelector('.btn-danger').addEventListener('click', () => window.location.href = pageDataEl.dataset.resetUrl);
-
-        document.querySelector('.btn-secondary[onclick]').addEventListener('click', (e) => {
-            e.preventDefault();
+    
+        // Modal functions
+        const showEndModal = () => endModal.classList.add('show');
+        const hideEndModal = () => endModal.classList.remove('show');
+    
+        const confirmEndInterview = () => {
+            const resultsUrl = endModal.dataset.resultsUrl;
+            if(resultsUrl) window.location.href = resultsUrl;
+        };
+    
+        const resetInterview = () => {
             if (confirm('Mülakatı yeniden başlatmak istediğinizden emin misiniz?')) {
-                window.location.href = pageDataEl.dataset.resetUrl;
+                const resetUrl = endModal.dataset.resetUrl;
+                if(resetUrl) window.location.href = resetUrl;
             }
-        });
-
+        };
+    
+        // Event Listeners
+        if (userInput) {
+            userInput.addEventListener('input', () => {
+                autoResize(userInput);
+                updateCharCounter();
+            });
+        }
+        
+        document.querySelector('.btn-danger[onclick*="endInterview"]').addEventListener('click', showEndModal);
+        document.querySelector('.btn-secondary[onclick*="resetInterview"]').addEventListener('click', resetInterview);
+        if(endModal) {
+            endModal.querySelector('.btn-secondary').addEventListener('click', hideEndModal);
+            endModal.querySelector('.btn-danger').addEventListener('click', confirmEndInterview);
+            endModal.addEventListener('click', (e) => { if (e.target === endModal) hideEndModal(); });
+        }
+    
+        // Initialization
+        startTimer();
         scrollToBottom();
-        userInput.focus();
+        if(userInput) userInput.focus();
         updateCharCounter();
-        document.getElementById('message-count').textContent = messageCount;
     }
 
     /**
@@ -356,7 +494,7 @@
     function initInterviewQuestionPage() {
         const questionPage = document.querySelector('.question-page');
         if (!questionPage) {
-            return; // Not on the interview question page
+            return; 
         }
 
         const questionNum = questionPage.dataset.questionNum;
@@ -368,7 +506,6 @@
         let startTime = Date.now();
         let timerInterval;
 
-        // Initialize timer
         function startTimer() {
             timerInterval = setInterval(updateTimer, 1000);
         }
@@ -382,7 +519,6 @@
             timerEl.textContent = display;
         }
 
-        // Character and word counter
         function updateCounters() {
             const textarea = document.getElementById('user_input');
             if (!textarea) return;
@@ -401,13 +537,11 @@
             }
         }
 
-        // Auto-resize textarea
         function autoResize(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = Math.min(textarea.scrollHeight, 300) + 'px';
         }
 
-        // Copy question text
         function copyQuestion() {
             const questionText = document.querySelector('.question-text').textContent;
             navigator.clipboard.writeText(questionText.trim()).then(() => {
@@ -418,7 +552,6 @@
             });
         }
 
-        // Toggle fullscreen
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
@@ -428,56 +561,7 @@
                 document.exitFullscreen();
             }
         }
-
-        // Save draft functionality
-        const saveModal = document.getElementById('saveModal');
-
-        function showSaveModal() {
-            const textarea = document.getElementById('user_input');
-            if (textarea.value.trim()) {
-                if (saveModal) saveModal.classList.add('show');
-            } else {
-                Interviewly.showNotification('Kaydedilecek cevap bulunamadı.', 'error');
-            }
-        }
-
-        function closeModal() {
-            if (saveModal) saveModal.classList.remove('show');
-        }
-
-        function confirmSaveDraft() {
-            const textarea = document.getElementById('user_input');
-            const draft = {
-                question: String(questionNum),
-                answer: textarea.value,
-                timestamp: new Date().toISOString()
-            };
-            localStorage.setItem('interview_draft', JSON.stringify(draft));
-            Interviewly.showNotification('Taslak kaydedildi!', 'success');
-            closeModal();
-        }
-
-        // Load draft on page load
-        function loadDraft() {
-            const draftJSON = localStorage.getItem('interview_draft');
-            if (draftJSON) {
-                try {
-                    const draftData = JSON.parse(draftJSON);
-                    if (String(draftData.question) === String(questionNum)) {
-                        const textarea = document.getElementById('user_input');
-                        textarea.value = draftData.answer;
-                        updateCounters();
-                        autoResize(textarea);
-                        Interviewly.showNotification('Kaydedilmiş taslak yüklendi.', 'info');
-                    }
-                } catch (e) {
-                    console.error("Failed to parse draft from localStorage", e);
-                    localStorage.removeItem('interview_draft');
-                }
-            }
-        }
-
-        // --- Start of logic from original DOMContentLoaded ---
+        
         startTimer();
 
         const textarea = document.getElementById('user_input');
@@ -487,24 +571,13 @@
                 autoResize(this);
             });
             textarea.focus();
+            updateCounters();
+            autoResize(textarea);
         }
-
-        loadDraft();
 
         document.getElementById('fullscreenBtn')?.addEventListener('click', toggleFullscreen);
         document.getElementById('copyBtn')?.addEventListener('click', copyQuestion);
-        document.getElementById('saveDraftBtn')?.addEventListener('click', showSaveModal);
-        document.getElementById('cancelSaveBtn')?.addEventListener('click', closeModal);
-        document.getElementById('confirmSaveBtn')?.addEventListener('click', confirmSaveDraft);
         
-        if (saveModal) {
-            saveModal.addEventListener('click', function (e) {
-                if (e.target === this) {
-                    closeModal();
-                }
-            });
-        }
-
         document.addEventListener('keydown', function (e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                 const submitBtn = document.getElementById('submitBtn');
@@ -513,13 +586,6 @@
                     submitBtn.click();
                 }
             }
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                showSaveModal();
-            }
-            if (e.key === 'Escape' && saveModal && saveModal.classList.contains('show')) {
-                closeModal();
-            }
         });
 
         const answerForm = document.getElementById('answerForm');
@@ -527,14 +593,15 @@
             answerForm.addEventListener('submit', function (e) {
                 const textarea = document.getElementById('user_input');
                 const submitBtn = document.getElementById('submitBtn');
-                if (!textarea.value.trim()) {
+                if (textarea && !textarea.value.trim()) {
                     e.preventDefault();
                     Interviewly.showNotification('Lütfen bir cevap yazın.', 'error');
                     return;
                 }
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
-                localStorage.removeItem('interview_draft');
+                if(submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
+                }
             });
         }
     }
@@ -542,48 +609,106 @@
     /**
      * Initializes logic for the 'My Interviews' page.
      */
-    function initMyInterviewsPage() {
-        const searchInput = document.getElementById('searchInput');
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const noResultsEl = document.getElementById('noResults');
+function initMyInterviewsPage() {
+    const searchInput = document.getElementById('searchInput');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const noResultsEl = document.querySelector('.empty-state-container');
+    const interviewsGrid = document.querySelector('.interviews-grid');
+
+    let currentFilter = 'all';
+    let currentSearch = '';
+
+    const applyFilters = () => {
         const cards = document.querySelectorAll('.interview-card');
+        let visibleCount = 0;
+        cards.forEach(card => {
+            const category = card.dataset.category || 'general';
+            const title = card.querySelector('.interview-title').textContent.toLowerCase();
+            const searchMatch = !currentSearch || title.includes(currentSearch);
+            const filterMatch = currentFilter === 'all' || category === currentFilter;
 
-        let currentFilter = 'all';
-        let currentSearch = '';
-
-        const applyFilters = () => {
-            let visibleCount = 0;
-            cards.forEach(card => {
-                const category = card.dataset.category || 'general';
-                const title = card.querySelector('.interview-title').textContent.toLowerCase();
-                const question = card.querySelector('.question-text').textContent.toLowerCase();
-                const searchMatch = !currentSearch || title.includes(currentSearch) || question.includes(currentSearch);
-                const filterMatch = currentFilter === 'all' || category === currentFilter;
-
-                if (searchMatch && filterMatch) {
-                    card.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
+            if (searchMatch && filterMatch) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        if (noResultsEl) {
             noResultsEl.style.display = visibleCount === 0 ? 'block' : 'none';
-        };
+        }
+        if (interviewsGrid) {
+            interviewsGrid.style.display = visibleCount > 0 ? 'grid' : 'none';
+        }
+    };
 
+    if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             currentSearch = e.target.value.toLowerCase();
             applyFilters();
         });
-
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', function () {
-                currentFilter = this.dataset.filter;
-                filterBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                applyFilters();
-            });
-        });
     }
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            currentFilter = this.dataset.filter;
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            applyFilters();
+        });
+    });
+
+    document.querySelectorAll('.btn-delete-interview').forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (confirm('Bu mülakatı kalıcı olarak silmek istediğinizden emin misiniz?')) {
+                const card = this.closest('.interview-card');
+                const interviewId = this.dataset.interviewId;
+
+                fetch(`/interview/delete/${interviewId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                        // CSRF token gerekiyorsa buraya ekleyin:
+                        // 'X-CSRFToken': getCookie('csrf_token')
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            if (card) {
+                                card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                                card.style.opacity = '0';
+                                card.style.transform = 'scale(0.95)';
+                                setTimeout(() => {
+                                    card.remove();
+                                    if (document.querySelectorAll('.interview-card').length === 0) {
+                                        if (interviewsGrid) interviewsGrid.style.display = 'none';
+                                        if (noResultsEl) noResultsEl.style.display = 'block';
+                                    }
+                                    applyFilters();
+                                }, 400);
+
+                                Interviewly.showNotification('Mülakat başarıyla silindi.', 'success');
+                            }
+                        } else {
+                            Interviewly.showNotification(data.message || 'Silme işlemi başarısız.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Silme hatası:', error);
+                        Interviewly.showNotification('Sunucu hatası: Silme işlemi başarısız oldu.', 'error');
+                    });
+            }
+        });
+    });
+
+    applyFilters();
+}
+
+
 
     /**
      * Initializes logic for the 'Profile' page.
@@ -592,33 +717,38 @@
         const pageDataEl = document.getElementById('page-data');
         if (!pageDataEl || typeof Chart === 'undefined') return;
 
-        const weeklyData = JSON.parse(pageDataEl.dataset.weeklyData);
+        try {
+            const weeklyData = JSON.parse(pageDataEl.dataset.weeklyData);
+            const ctx = document.getElementById('performanceChart')?.getContext('2d');
+            if(!ctx) return;
 
-        const ctx = document.getElementById('performanceChart').getContext('2d');
-        const performanceChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: weeklyData.labels,
-                datasets: [{
-                    label: 'Günlük Skor',
-                    data: weeklyData.data,
-                    borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#64748b' } },
-                    x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#64748b' } }
+            const performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: weeklyData.labels,
+                    datasets: [{
+                        label: 'Günlük Skor',
+                        data: weeklyData.data,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#64748b' } },
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#64748b' } }
+                    }
                 }
-            }
-        });
+            });
+        } catch(e) {
+            console.error("Could not parse profile chart data:", e);
+        }
 
         document.querySelectorAll('.quick-action-btn').forEach(btn => {
             if (!btn.href) {
@@ -634,44 +764,48 @@
      * Initializes logic for the 'Test Results' page.
      */
     function initTestResultsPage() {
-        const pageDataEl = document.getElementById('page-data');
-        if (!pageDataEl || typeof Chart === 'undefined') return;
+        const chartDataEl = document.getElementById('page-data-chart');
+        if (!chartDataEl || typeof Chart === 'undefined') return;
+        
+        try {
+            const chartData = JSON.parse(chartDataEl.dataset.chartData);
+            const ctx = document.getElementById('performanceChart')?.getContext('2d');
 
-        const chartData = JSON.parse(pageDataEl.dataset.chartData);
-
-        if (chartData.labels && chartData.data) {
-            const ctx = document.getElementById('performanceChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: chartData.labels,
-                    datasets: [{
-                        data: chartData.data,
-                        backgroundColor: ['#22c55e', '#ef4444', '#6b7280'],
-                        borderColor: ['#16a34a', '#dc2626', '#4b5563'],
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: 'var(--text-primary)', font: { size: 14 } }
+            if (ctx && chartData.labels && chartData.data) {
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            data: chartData.data,
+                            backgroundColor: ['rgba(34, 197, 94, 0.7)', 'rgba(239, 68, 68, 0.7)', 'rgba(107, 114, 128, 0.7)'],
+                            borderColor: ['#16a34a', '#dc2626', '#4b5563'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: 'var(--text-primary)', font: { size: 14 } }
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
+        } catch(e) {
+             console.error("Could not parse or render test results chart:", e);
         }
 
-        document.querySelectorAll('.action-btn').forEach(btn => {
+        document.querySelectorAll('.action-btn[data-action]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const action = e.currentTarget.dataset.action;
                 if (action === 'export') {
-                    Interviewly.showNotification('Sonuçlar indiriliyor...', 'info');
+                   Interviewly.exportResults();
                 } else if (action === 'share') {
-                    Interviewly.showNotification('Paylaşım özelliği yakında gelecek.', 'info');
+                   Interviewly.shareResults();
                 }
             });
         });
