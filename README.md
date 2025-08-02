@@ -175,3 +175,89 @@ Gelişmesi Gerekenler:
 - Veri Setinin Supabase'e Aktarılması: Hazırlanan mülakat veri setinin Supabase veritabanındaki ilgili tablolara yüklenmesi.
 - İlk API Endpoint'inin Geliştirilmesi: Kullanıcı bir pozisyon seçtiğinde, Supabase'den o pozisyona ait rastgele bir soruyu çekecek olan /get-question API endpoint'inin Python ile geliştirilmesi.
 - Arayüz-API Bağlantısı: Statik olarak kodlanan mülakat ekranının, "Mülakatı Başlat" butonuna basıldığında /get-question API'ını çağırarak ilk soruyu dinamik olarak ekranda göstermesinin sağlanması.
+
+# SPRINT 3
+## Sprint Yorumu:
+ Sprint 3, "Interwievly" uygulamasının işlevsel çekirdeğini tamamlamaya ve ürünü kullanıma hazır hale getirmeye odaklandı. Önceki sprintlerde tamamlanan altyapı ve tasarım çalışmaları üzerine inşa ederek, kullanıcı arayüzü kodlaması tamamlandı. Bu sprintin en önemli stratejik kararı, mülakat sorularını dinamik olarak yapay zekaya ürettirmek oldu. Bu sayede, statik bir veri seti yerine her mülakat için benzersiz ve kişiselleştirilmiş sorular sunuldu. Bu sprint sonunda, Interwievly uygulamasının tüm temel özellikleri tamamlanmış ve kullanıcının pozisyon seçimi yapıp dinamik, yapay zeka destekli mülakat akışını deneyimleyebileceği eksiksiz bir ürün ortaya konulmuştur. Bu, projemizin başarıyla tamamlandığını gösteren önemli bir dönüm noktasıdır.
+
+## Puan Tamamlama Mantığı:
+ Sprint Hedefi: Bu sprint'in ana hedefi, Sprint 2'de tasarlanan arayüzlerin ön uç kodlamasını tamamlamak ve doğrudan yapay zeka tarafından dinamik olarak soru üretilmesini sağlayacak API ve entegrasyonu geliştirmekti. Kullanıcının pozisyon seçimine göre yapay zekanın rastgele bir soru üretmesini sağlayacak ilk API endpoint'ini geliştirmek ve ön uç ile bağlantısını kurmak hedeflendi. Tüm bu hedeflerin başarıyla tamamlanmasıyla birlikte uygulamanın MVP (Minimum Viable Product) aşaması tamamlanmıştır.
+
+Puanlama:
+
+Planlanan Puan: 100
+
+Tamamlanan Puan: 100
+
+Açıklama: Sprint 3 için planlanan tüm işler başarıyla tamamlandı. Ön uç kodlamasının tamamlanması, yapay zekadan dinamik olarak soru üretme ve entegrasyonu ile arayüz bağlantısının kurulması gibi kritik tüm maddeler eksiksiz yerine getirilerek uygulama bitirildi. Özellikle mülakat ekranının temel işlevselliği ve ilk sorunun dinamik olarak yüklenmesi başarıyla hayata geçirildi ve stabil çalışır hale getirildi.
+
+## Daily Scrum :
+Konuşmalar Whatsapp üzerinden toplantılar Google meet ve slack üzerinden yapılmıştır.
+
+Whatsapp ve Toplantı Ekran Resimleri:
+[Whatsapp Link](https://drive.google.com/file/d/1s9sORIHn98roiVnA8Mz5lvTEJUzHug6B/view?usp=sharing)
+
+**Sprint board update**: Sprint board screenshotları:
+[Miro Backlog Board](https://miro.com/app/board/uXjVIhcq9zs=/?share_link_id=460621211606)
+
+<img width="1216" height="597" alt="image" src="https://github.com/user-attachments/assets/14e3eefb-7f7c-416a-a01d-7aeb703011e8" />
+
+<img width="1086" height="680" alt="image" src="https://github.com/user-attachments/assets/01c394eb-7373-40df-816a-012c1a3f8651" />
+
+
+
+
+## Ürün Durumu:
+Bu sprint sonunda "Interwievly" uygulamasının temel etkileşimli bileşenleri ve yapay zeka destekli mülakat akışı tamamen tamamlanmıştır.
+
+Temel Ön Uç Sayfaları Kodlandı ve Entegre Edildi: Pozisyon seçme ve mülakat ekranları gibi ana arayüz tasarımları statik HTML/CSS/JS ile kodlanarak ve dinamik API bağlantılarıyla entegre edilerek eksiksiz bir kullanıcı deneyimi sunacak hale getirildi.
+
+Dinamik Soru Üretim Mekanizması Entegre Edildi: Daha önceki planlanan veri seti kullanımı yerine, doğrudan yapay zeka entegrasyonu (LLM) ile kullanıcının seçtiği pozisyona göre anlık ve benzersiz mülakat soruları üretilmesi sağlandı. Bu, uygulamanın esnekliğini ve gerçekçiliğini önemli ölçüde artırdı.
+
+API Geliştirme ve Stabil Çalışıyor: Pozisyon seçimi sonrası yapay zekadan ilk soruyu getiren API endpoint'i geliştirildi ve ön uç ile sorunsuz bir şekilde entegre edildi. Kullanıcı artık seçtiği pozisyona göre dinamik olarak üretilmiş bir soruyu görebilmektedir.
+
+Tasarım Görselleri: 
+
+https://github.com/user-attachments/assets/a8eccd5a-dd26-424c-9ef1-0a5c2f865fad
+
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/03e5a017-fcda-44dc-809d-4072db033487" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/c0b1262d-a0b7-42f2-a087-f724b517a4ff" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/9a94395d-1388-4f8b-9079-ad54b982e367" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/0a1a1002-78cb-4a73-8890-c76efe930d59" />
+
+
+## Sprint Review :
+Bu sprint sonunda aşağıdaki Product Backlog maddeleri (PBI) tamamen tamamlanmış ve ekibe sunulmuştur:
+- Frontend Kodlamasının Tamamlanması: Tasarlanmış arayüzlerin (pozisyon seçme, mülakat ekranı vb.) temel HTML/CSS/JS ile kodlanması ve gerekli dinamik bağlantıların kurulması tamamen bitirildi.
+- Dinamik Soru Üretimi ve Entegrasyonu: Mülakat sorularının sabit bir veri setinden çekilmesi yerine, yapay zeka (LLM) aracılığıyla her seferinde yeni ve özgün soruların üretilmesi sağlandı. Bu kritik değişiklik, mülakat deneyimini daha kişisel ve çeşitli hale getirdi.
+- API Endpoint'inin Geliştirilmesi ve Entegrasyonu: Kullanıcının bir pozisyon seçtiğinde, yapay zekadan o pozisyona ait dinamik olarak üretilmiş bir soruyu çekecek olan API endpoint'i Python ile geliştirildi ve ön uç ile sorunsuz bir şekilde entegre edildi. Bu sayede ilk dinamik mülakat akışı sağlandı.
+- Arayüz-API Bağlantısının Tamamen Kurulması: Mülakat ekranının, "Mülakatı Başlat" butonuna basıldığında API'ı çağırarak ilk yapay zeka tarafından üretilen soruyu dinamik olarak ekranda göstermesi ve mülakat akışının başlaması sağlandı.
+
+Alınan Stratejik Kararlar:
+Sprint 3 boyunca yapılan titiz çalışmalar ve alınan veri seti yerine yapay zeka ile dinamik soru üretme kararı sonucunda, uygulamanın temel işlevselliği kararlaştırılan kapsamda tamamlanmıştır. Uygulamanın MVP aşamasının başarıyla tamamlandığına ve belirlenen hedeflere ulaşıldığına karar verilmiştir.
+  
+## Sprint Review Katılımcıları:
+- Emine Demirbaş (Developer-Aktif)
+- Edanur Terzi (Developer-Aktif)
+- Muhammad Abdulqadir Adem (Developer-Aktif)
+- Sevde Gül Şahin (Product Owner-Aktif)
+- Rümeysa Çelik (Scrum Master-Aktif)
+
+## Sprint Retrospective:
+İyi Gidenler:
+- Ön uç kodlaması ve API entegrasyonu hedeflendiği gibi ilerledi ve tüm işler başarıyla tamamlandı.
+- Yapay zekadan dinamik soru üretme stratejisi, uygulama esnekliği ve kullanıcı deneyimi açısından çok başarılı oldu ve hızlıca entegre edildi.
+- Ekip içi iletişim ve teknik iş birliği oldukça verimliydi; özellikle ön uç ve arka uç entegrasyonunda hızlı ve etkili çözümler üretildi.
+- Hedef kitlemizin net olması, geliştirme odaklanmamızı güçlendirdi ve gereksiz özelliklerden kaçınmamızı sağlayarak projenin zamanında bitirilmesine katkıda bulundu.
+- Proje belirlenen hedeflere ve zaman çizelgesine uygun olarak tamamlandı.
+
+Gelişmesi Gerekenler:
+- Kapsamlı Test Senaryoları: Uygulamanın genel stabilitesi ve kullanıcı deneyimi için daha kapsamlı uçtan uca test senaryolarının oluşturulması ve uygulanması gelecekteki geliştirmeler için faydalı olacaktır. Özellikle dinamik olarak üretilen soruların kalitesini ve çeşitliliğini güvence altına almak için ek testler düşünülebilir.
+- Performans Optimizasyonları (Gelecek İçin): İlerleyen dönemlerde kullanıcı sayısı arttıkça ve yapay zeka çağrıları yoğunlaştıkça API yanıt sürelerinde ve arayüz yüklemelerinde potansiyel optimizasyonlar yapılabilir.
+
+İleriye Dönük Planlar:
+- Sesli Yanıt İşleme ve Değerlendirme: Kullanıcının sesli yanıtlarını işleyerek yapay zeka destekli daha detaylı geri bildirimler sunmak.
+- Gelişmiş Performans Analizi ve Raporlama: Kullanıcıların mülakat performansını detaylı grafikler ve istatistiklerle sunmak.
+- Kullanıcı Kimlik Doğrulama ve Profil Yönetimi: Kullanıcıların kişisel profiller oluşturmasına ve mülakat geçmişlerini takip etmesine olanak tanımak.
+- Ek Mülakat Senaryoları ve Rolleri: Yapay zeka yeteneklerini kullanarak daha fazla pozisyon ve dinamik mülakat senaryosu ekleyerek uygulama içeriğini zenginleştirmek.
+
