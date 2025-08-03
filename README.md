@@ -9,14 +9,14 @@ AI202
 - Sevde Gül Şahin (Product Owner-Aktif)
 - Rümeysa Çelik (Scrum Master-Aktif)
 ## Uygulama İsmi : 
-Interwievly
+Interviewly
 ## Product Backlog URL:
 [Miro Backlog Board](https://miro.com/app/board/uXjVIhcq9zs=/?share_link_id=138027384658)
 - Product backlog 3 sprintten oluşmaktadır. 
 - Product backlog oluşturulurken INVEST metoduna göre oluşturulmuştur.
 ## Ürün Açıklaması:
 > [!NOTE]
-> Interwievly, adayların gerçek hayattaki teknik ve davranışsal mülakatlara hazırlanmasını sağlayan yapay zeka destekli bir web uygulamasıdır. Adaylar, uygulama üzerinde çeşitli alanlardaki mülakat senaryolarını deneyimleyebilir, puan alabilir ve diğer kullanıcılarla kıyaslamalı olarak ilerlemelerini takip edebilirler. Sistem, her kullanıcıya özel olarak yapay zeka tarafından oluşturulan sorular sunar ve mülakat performansını analiz eder.
+> Interviewly, adayların gerçek hayattaki teknik ve davranışsal mülakatlara hazırlanmasını sağlayan yapay zeka destekli bir web uygulamasıdır. Adaylar, uygulama üzerinde çeşitli alanlardaki mülakat senaryolarını deneyimleyebilir, puan alabilir ve diğer kullanıcılarla kıyaslamalı olarak ilerlemelerini takip edebilirler. Sistem, her kullanıcıya özel olarak yapay zeka tarafından oluşturulan sorular sunar ve mülakat performansını analiz eder.
 
 Kullanıcılar, her mülakat sonrası detaylı geri bildirim alarak güçlü ve zayıf yönlerini görebilir; böylece sürekli gelişim sağlayabilir. Uygulama, aynı zamanda rekabetçi bir ortam yaratarak kullanıcıların yüzde kaçlık dilimde olduğunu gösterir.
 ## Ürün Özellikleri :
@@ -37,14 +37,14 @@ Kullanıcılar, her mülakat sonrası detaylı geri bildirim alarak güçlü ve 
 
 Odaklanılan Hedef Kitle: Geleceğin Teknoloji Profesyonelleri
 
-Interwievly, kariyerlerinin başlangıcında olan ve teknoloji sektöründe (yazılım, veri bilimi vb.) yer edinmeyi hedefleyen yeteneklere odaklanmıştır. Öncelikli hedef kitlemiz, teorik bilgilerini mülakat pratiğiyle birleştirerek ilk iş veya staj fırsatını yakalamak isteyen üniversite öğrencileri, yeni mezunlar ve kariyerinin başındaki bireylere hitap ediyor.
+Interviewly, kariyerlerinin başlangıcında olan ve teknoloji sektöründe (yazılım, veri bilimi vb.) yer edinmeyi hedefleyen yeteneklere odaklanmıştır. Öncelikli hedef kitlemiz, teorik bilgilerini mülakat pratiğiyle birleştirerek ilk iş veya staj fırsatını yakalamak isteyen üniversite öğrencileri, yeni mezunlar ve kariyerinin başındaki bireylere hitap ediyor.
 
 Bu kitlenin temel ihtiyaçları ve karşılaştığı zorluklar şunlardır:
 - Teknik Bilgiyi Sergileme: Algoritma, veri yapıları ve temel mühendislik prensipleri gibi konulardaki bilgilerini, mülakat formatında etkili bir şekilde sunma ihtiyacı.
 - Mülakat Deneyimsizliği: Gerçek bir mülakatın stresi ve formatı konusunda pratik deneyim eksikliği.
 - Problem Çözme Becerileri: Sadece doğru cevabı bilmek değil, aynı zamanda çözüm sürecini adım adım ve anlaşılır bir şekilde açıklayabilme gerekliliği.
 - Davranışsal Sorulara Hazırlık: Teknik roller için özel olarak sorulan "Bir projede karşılaştığınız teknik bir zorluğu anlatın" gibi davranışsal sorulara hazırlıksız yakalanma.
-- Interwievly, bu adaylara yapay zeka destekli, gerçekçi ve kişiselleştirilmiş bir deneme ortamı sunarak özgüvenlerini artırmayı ve onları hayallerindeki teknik role hazırlamayı amaçlamaktadır.
+- Interviewly, bu adaylara yapay zeka destekli, gerçekçi ve kişiselleştirilmiş bir deneme ortamı sunarak özgüvenlerini artırmayı ve onları hayallerindeki teknik role hazırlamayı amaçlamaktadır.
   
 # SPRINT 1
 ## Puan Tamamlama Mantığı:
@@ -99,7 +99,7 @@ Gelişmesi Gerekenler:
 # SPRINT 2
 ## Sprint Yorumu:
 
-Sprint 2'ye başlarken, ürünümüz 'Interwievly' için kilit bir stratejik karar alındı ve hedef kitlemiz "teknoloji alanında kariyerine yeni başlayan veya başlamak isteyen adaylar" olarak netleştirildi. Bu sprint'teki tüm çalışmalarımız – veri seti düzenlenmesinden  arayüz tasarımlarına kadar – bu odaklanmış kitleye en yüksek değeri sunma hedefiyle gerçekleştirildi. Sprint sonunda, bu kitleye yönelik ilk temel altyapı ve tasarım varlıkları başarıyla oluşturularak bir sonraki geliştirme aşaması için sağlam bir zemin hazırlandı.
+Sprint 2'ye başlarken, ürünümüz 'Interviewly' için kilit bir stratejik karar alındı ve hedef kitlemiz "teknoloji alanında kariyerine yeni başlayan veya başlamak isteyen adaylar" olarak netleştirildi. Bu sprint'teki tüm çalışmalarımız – veri seti düzenlenmesinden  arayüz tasarımlarına kadar – bu odaklanmış kitleye en yüksek değeri sunma hedefiyle gerçekleştirildi. Sprint sonunda, bu kitleye yönelik ilk temel altyapı ve tasarım varlıkları başarıyla oluşturularak bir sonraki geliştirme aşaması için sağlam bir zemin hazırlandı.
 
 ## Puan Tamamlama Mantığı:
  Sprint Hedefi: Bu sprint'in ana hedefi, uygulamanın temel arayüzlerini tasarlamak, mülakat soruları için kullanılacak veri setini hazırlamak ve projenin backend altyapısı için Supabase bağlantısını kurmaktı. Kısacası, Sprint 3'te başlayacak olan fonksiyonel geliştirmeler için zemin hazırlamaktı.
@@ -178,7 +178,7 @@ Gelişmesi Gerekenler:
 
 # SPRINT 3
 ## Sprint Yorumu:
- Sprint 3, "Interwievly" uygulamasının işlevsel çekirdeğini tamamlamaya ve ürünü kullanıma hazır hale getirmeye odaklandı. Önceki sprintlerde tamamlanan altyapı ve tasarım çalışmaları üzerine inşa ederek, kullanıcı arayüzü kodlaması tamamlandı. Bu sprintin en önemli stratejik kararı, mülakat sorularını dinamik olarak yapay zekaya ürettirmek oldu. Bu sayede, statik bir veri seti yerine her mülakat için benzersiz ve kişiselleştirilmiş sorular sunuldu. Bu sprint sonunda, Interwievly uygulamasının tüm temel özellikleri tamamlanmış ve kullanıcının pozisyon seçimi yapıp dinamik, yapay zeka destekli mülakat akışını deneyimleyebileceği eksiksiz bir ürün ortaya konulmuştur. Bu, projemizin başarıyla tamamlandığını gösteren önemli bir dönüm noktasıdır.
+ Sprint 3, "Interviewly" uygulamasının işlevsel çekirdeğini tamamlamaya ve ürünü kullanıma hazır hale getirmeye odaklandı. Önceki sprintlerde tamamlanan altyapı ve tasarım çalışmaları üzerine inşa ederek, kullanıcı arayüzü kodlaması tamamlandı. Bu sprintin en önemli stratejik kararı, mülakat sorularını dinamik olarak yapay zekaya ürettirmek oldu. Bu sayede, statik bir veri seti yerine her mülakat için benzersiz ve kişiselleştirilmiş sorular sunuldu. Bu sprint sonunda, Interwievly uygulamasının tüm temel özellikleri tamamlanmış ve kullanıcının pozisyon seçimi yapıp dinamik, yapay zeka destekli mülakat akışını deneyimleyebileceği eksiksiz bir ürün ortaya konulmuştur. Bu, projemizin başarıyla tamamlandığını gösteren önemli bir dönüm noktasıdır.
 
 ## Puan Tamamlama Mantığı:
  Sprint Hedefi: Bu sprint'in ana hedefi, Sprint 2'de tasarlanan arayüzlerin ön uç kodlamasını tamamlamak ve doğrudan yapay zeka tarafından dinamik olarak soru üretilmesini sağlayacak API ve entegrasyonu geliştirmekti. Kullanıcının pozisyon seçimine göre yapay zekanın rastgele bir soru üretmesini sağlayacak ilk API endpoint'ini geliştirmek ve ön uç ile bağlantısını kurmak hedeflendi. Tüm bu hedeflerin başarıyla tamamlanmasıyla birlikte uygulamanın MVP (Minimum Viable Product) aşaması tamamlanmıştır.
@@ -210,7 +210,7 @@ Whatsapp ve Toplantı Ekran Resimleri:
 
 
 ## Ürün Durumu:
-Bu sprint sonunda "Interwievly" uygulamasının temel etkileşimli bileşenleri ve yapay zeka destekli mülakat akışı tamamen tamamlanmıştır.
+Bu sprint sonunda "Interviewly" uygulamasının temel etkileşimli bileşenleri ve yapay zeka destekli mülakat akışı tamamen tamamlanmıştır.
 
 Temel Ön Uç Sayfaları Kodlandı ve Entegre Edildi: Pozisyon seçme ve mülakat ekranları gibi ana arayüz tasarımları statik HTML/CSS/JS ile kodlanarak ve dinamik API bağlantılarıyla entegre edilerek eksiksiz bir kullanıcı deneyimi sunacak hale getirildi.
 
