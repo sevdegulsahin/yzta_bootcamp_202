@@ -3,7 +3,8 @@
 AI202 
 
 ## Uygulama Logosu:
-<img width="337" height="93" alt="image" src="https://github.com/user-attachments/assets/8f26e53e-93e0-48b8-b48a-25c2b636314f" />
+
+<img width="290" height="248" alt="image" src="https://github.com/user-attachments/assets/dcf0ed9c-c408-43d8-b771-36273687784e" />
 
 
 ## Takım Üyeleri :
