@@ -4,15 +4,7 @@ AI202
 
 ## Uygulama Logosu:
 
-## Takım Elemanları
 
-| | İsim | Başlık | Sosyaller |
-|---|---|---|---|
-| ![Rümeysa Çelik] ( <img width="1200" height="1599" alt="image" src="https://github.com/user-attachments/assets/0c1aadff-2f3f-49f2-ab8e-53c2488e48a5" /> ) | Rümeysa Çelik | Scrum Mater | [LinkedIn](www.linkedin.com/in/rumeysacelik-) |
-| ![Sevde Gül Şahin](link-to-incila-kirbac-image.jpg) | Sevde Gül Şahin | Product Owner | [LinkedIn](link-to-incila-kirbac-linkedin) |
-| ![Edanur Terzi](link-to-ibrahim-serhat-aktas-image.jpg) | Edanur Terzi | Geliştirici | [LinkedIn](link-to-ibrahim-serhat-aktas-linkedin) |
-| ![Emine Demirbaş](link-to-ipek-nezihe-can-image.jpg) | Emine Demirbaş| Geliştirici | [LinkedIn](link-to-ipek-nezihe-can-linkedin) |
-| ![]Muhammad Abdulqadir Adem(link-to-ipek-nezihe-can-image.jpg) | Muhammad Abdulqadir Adem | Geliştirici | [LinkedIn](link-to-ipek-nezihe-can-linkedin) |
 ## Takım Üyeleri :
 - Emine Demirbaş (Developer-Aktif)
 - Edanur Terzi (Developer-Aktif)
