@@ -185,15 +185,16 @@ Gelişmesi Gerekenler:
  Sprint 3, "Interviewly" uygulamasının işlevsel çekirdeğini tamamlamaya ve ürünü kullanıma hazır hale getirmeye odaklandı. Önceki sprintlerde tamamlanan altyapı ve tasarım çalışmaları üzerine inşa ederek, kullanıcı arayüzü kodlaması tamamlandı. Bu sprintin en önemli stratejik kararı, mülakat sorularını dinamik olarak yapay zekaya ürettirmek oldu. Bu sayede, statik bir veri seti yerine her mülakat için benzersiz ve kişiselleştirilmiş sorular sunuldu. Bu sprint sonunda, Interwievly uygulamasının tüm temel özellikleri tamamlanmış ve kullanıcının pozisyon seçimi yapıp dinamik, yapay zeka destekli mülakat akışını deneyimleyebileceği eksiksiz bir ürün ortaya konulmuştur. Bu, projemizin başarıyla tamamlandığını gösteren önemli bir dönüm noktasıdır.
 
 ## Puan Tamamlama Mantığı:
- Sprint Hedefi: Bu sprint'in ana hedefi, Sprint 2'de tasarlanan arayüzlerin ön uç kodlamasını tamamlamak ve doğrudan yapay zeka tarafından dinamik olarak soru üretilmesini sağlayacak API ve entegrasyonu geliştirmekti. Kullanıcının pozisyon seçimine göre yapay zekanın rastgele bir soru üretmesini sağlayacak ilk API endpoint'ini geliştirmek ve ön uç ile bağlantısını kurmak hedeflendi. Tüm bu hedeflerin başarıyla tamamlanmasıyla birlikte uygulamanın MVP (Minimum Viable Product) aşaması tamamlanmıştır.
+Sprint Hedefi: Bu sprint'in ana hedefi, Sprint 2'de tasarlanan arayüzlerin ön uç kodlamasını tamamlamak ve doğrudan yapay zeka tarafından dinamik olarak soru üretilmesini sağlayacak API ve entegrasyonu geliştirmekti. Kullanıcının pozisyon seçimine göre yapay zekanın rastgele bir soru üretmesini sağlayacak ilk API endpoint'ini geliştirmek ve ön uç ile bağlantısını kurmak hedeflendi. Ayrıca, Sprint 2'den kalan işlerin tamamlanması da bu sprintin hedefine dahil edilmiştir. Tüm bu hedeflerin başarıyla tamamlanmasıyla birlikte uygulamanın MVP (Minimum Viable Product) aşaması tamamlanmıştır.
 
 Puanlama:
 
 Planlanan Puan: 100
 
-Tamamlanan Puan: 100
+Tamamlanan Puan: 110
 
-Açıklama: Sprint 3 için planlanan tüm işler başarıyla tamamlandı. Ön uç kodlamasının tamamlanması, yapay zekadan dinamik olarak soru üretme ve entegrasyonu ile arayüz bağlantısının kurulması gibi kritik tüm maddeler eksiksiz yerine getirilerek uygulama bitirildi. Özellikle mülakat ekranının temel işlevselliği ve ilk sorunun dinamik olarak yüklenmesi başarıyla hayata geçirildi ve stabil çalışır hale getirildi.
+
+Açıklama:Sprint 3 için planlanan tüm işler başarıyla tamamlanmıştır. Ek olarak, Sprint 2'den kalan 10 puanlık görevler de bu sprint içinde tamamlanarak toplamda 110 puanlık bir iş çıktısı elde edilmiştir.
 
 ## Daily Scrum :
 Konuşmalar Whatsapp üzerinden toplantılar Google meet ve slack üzerinden yapılmıştır.
