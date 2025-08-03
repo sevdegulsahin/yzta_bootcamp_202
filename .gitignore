@@ -1,1 +1,19 @@
-.env".env" 
+# Sanal ortam klasörü
+venv/
+
+
+# Derlenmiş Python dosyaları
+__pycache__/
+*.py[cod]
+
+# Render, VSCode veya diğer editörler için
+*.log
+*.sqlite3
+.DS_Store
+.idea/
+.vscode/
+
+# pip veya setuptools çıktıları
+*.egg-info/
+dist/
+build/

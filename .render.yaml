@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: yzta-bootcamp-202 # Uygulamanın Render'daki adı (istediğini yaz)
+    env: python
+    buildCommand: "" # Eğer özel bir build yoksa boş bırak
+    startCommand: gunicorn app:app # <dosya_adi>:<flask_nesnesi>
+    envVars:
+      - key: PORT
