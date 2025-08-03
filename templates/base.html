@@ -25,13 +25,15 @@
     <!-- Kendi stil dosyan -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
     {% block styles %}{% endblock %}
+    <link rel="icon" type="svg" href="{{ url_for('static', filename='images/logo1.svg') }}">
+
 </head>
 
 <body>
     <header class="header-modern sticky-top shadow-sm bg-app-secondary text-app-primary">
         <nav class="navbar navbar-expand-lg navbar-light container">
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Interviewly Logo" width="40"
+                <img src="{{ url_for('static', filename='images/logo1.svg') }}" alt="Interviewly Logo" width="40"
                     height="40" class="me-2" />
                 <span class="fw-bold fs-4 gradient-logo">Interviewly</span>
             </a>
