@@ -195,14 +195,16 @@ Açıklama: Sprint 3 için planlanan tüm işler başarıyla tamamlandı. Ön u�
 Konuşmalar Whatsapp üzerinden toplantılar Google meet ve slack üzerinden yapılmıştır.
 
 Whatsapp ve Toplantı Ekran Resimleri:
-[Whatsapp Link](https://drive.google.com/file/d/1s9sORIHn98roiVnA8Mz5lvTEJUzHug6B/view?usp=sharing)
+[Whatsapp Link](https://drive.google.com/file/d/1yQh--G_pUbMmCI_ouc6ZpXuqQW_nDYao/view?usp=sharing)
 
 **Sprint board update**: Sprint board screenshotları:
 [Miro Backlog Board](https://miro.com/app/board/uXjVIhcq9zs=/?share_link_id=460621211606)
 
-<img width="1216" height="597" alt="image" src="https://github.com/user-attachments/assets/14e3eefb-7f7c-416a-a01d-7aeb703011e8" />
+<img width="1020" height="542" alt="image" src="https://github.com/user-attachments/assets/c89b5787-fd09-454c-9e32-1a1979b292b3" />
 
-<img width="1086" height="680" alt="image" src="https://github.com/user-attachments/assets/01c394eb-7373-40df-816a-012c1a3f8651" />
+<img width="1005" height="674" alt="image" src="https://github.com/user-attachments/assets/881d05eb-370d-4b80-a497-456c2099a770" />
+
+
 
 
 
@@ -218,12 +220,17 @@ API Geliştirme ve Stabil Çalışıyor: Pozisyon seçimi sonrası yapay zekadan
 
 Tasarım Görselleri: 
 
-https://github.com/user-attachments/assets/a8eccd5a-dd26-424c-9ef1-0a5c2f865fad
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/5c7c344e-6ee2-4816-8133-5ecfcea05e5c" />
 
-<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/03e5a017-fcda-44dc-809d-4072db033487" />
-<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/c0b1262d-a0b7-42f2-a087-f724b517a4ff" />
-<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/9a94395d-1388-4f8b-9079-ad54b982e367" />
-<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/0a1a1002-78cb-4a73-8890-c76efe930d59" />
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/c1efb849-dbde-488f-a61b-8042e3709ae0" />
+
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/1b9b0280-6675-445d-abe8-f4d9fa202666" />
+
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/d5cf604c-03c6-4f32-8f48-a321697998b2" />
+
+
+
+
 
 
 ## Sprint Review :
