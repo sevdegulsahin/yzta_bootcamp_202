@@ -1,10 +1,11 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, flash
 from services.openai_service import generate_openai_response, generate_single_openai_question
 from services.supabase_service import save_question_to_supabase, save_answer_to_supabase, supabase
 import logging
 from services.openai_service import evaluate_answer_with_ai
 import uuid
 from datetime import datetime
+import json
 
 interview_bp = Blueprint('interview', __name__)
 
@@ -28,6 +29,24 @@ def interview():
             return jsonify({"error": "Oturum bulunamadı."}), 401
         # Normal bir sayfa isteğiyse, giriş sayfasına yönlendir
         return redirect(url_for('auth.login'))
+    
+    duration_minutes = session.get('selected_duration')
+
+    # Eğer süre seçilmemişse (örn: sayfa yenilendi), kullanıcıyı ayar sayfasına geri yolla.
+    if not duration_minutes:
+        logging.warning("Mülakat sayfasına 'selected_duration' olmadan erişildi. Yönlendiriliyor.")
+        flash("Lütfen mülakat ayarlarını yaparak başlayın.", "error") # Kullanıcıya bilgi ver
+        return redirect(url_for('interview.create_interview'))
+
+    try:
+        # Süreyi saniyeye çevir
+        duration_seconds = int(duration_minutes) * 60
+    except (ValueError, TypeError):
+        # Eğer session'daki değer bozuksa (olmamalı ama önlem amaçlı) hata ver ve yönlendir.
+        logging.error(f"Geçersiz süre değeriyle karşılaşıldı: {duration_minutes}")
+        flash("Geçersiz süre ayarı. Lütfen tekrar deneyin.", "error")
+        return redirect(url_for('interview.create_interview'))
+    
 
     # ----- POST İSTEĞİ İŞLEME (Kullanıcı mesaj gönderdiğinde) -----
     # Bu blok, AJAX (fetch) ile gelen asenkron mesajları yakalar.
@@ -84,7 +103,9 @@ def interview():
         session['current_question_id'] = None 
 
     # Son olarak, sohbet geçmişini içeren HTML sayfasını render et.
-    return render_template('interview.html', chat_history=session.get('chat_history', []))
+    return render_template('interview.html',
+                           chat_history=session.get('chat_history', []),
+                           duration=duration_seconds)
 
 @interview_bp.route('/interview/reset')
 def reset_interview():
@@ -100,7 +121,18 @@ def interview_question_route(category, question_num):
     if not user_id:
         logging.warning("Mülakat sorusu sayfasına erişim denemesi, oturum yok.")
         return redirect(url_for('auth.login'))
-
+    duration_minutes = session.get('selected_duration')
+    if not duration_minutes:
+        logging.warning("Mülakat soru sayfasına 'selected_duration' olmadan erişildi. Yönlendiriliyor.")
+        flash("Lütfen mülakat ayarlarını yaparak başlayın.", "error")
+        return redirect(url_for('interview.create_interview'))
+    reset_timer_flag = session.pop('written_test_timer_reset', False)
+    try:
+        duration_seconds = int(duration_minutes) * 60
+    except (ValueError, TypeError):
+        logging.error(f"Geçersiz süre değeriyle karşılaşıldı: {duration_minutes}")
+        flash("Geçersiz süre ayarı. Lütfen tekrar deneyin.", "error")
+        return redirect(url_for('interview.create_interview'))
     if category not in ALLOWED_CATEGORIES:
         logging.error(f"Geçersiz mülakat kategorisi istendi: {category}")
         return render_template('error.html', message="Geçersiz mülakat kategorisi."), 404
@@ -147,7 +179,9 @@ def interview_question_route(category, question_num):
                                question_num=question_num,
                                total_questions=5, # Bu değeri dinamik hale getirebilirsiniz
                                question_text=ai_question,
-                               category=category)
+                               category=category,
+                               duration=duration_seconds,
+                               reset_timer=reset_timer_flag)
     except Exception as e:
         logging.exception("YZ ile mülakat sorusu üretilemedi veya kaydedilemedi")
         return render_template('error.html', message="Yapay zeka soruyu oluşturamadı veya kaydedemedi.")
@@ -164,11 +198,13 @@ def create_interview():
         interview_type = request.form.get('interview_type')
         technical_area = request.form.get('technical_area')
         difficulty = request.form.get('difficulty')
+        duration_in_minutes = request.form.get('duration')
 
         session['selected_interview_type'] = interview_type
         session['selected_mode'] = mode_choice
         session['selected_technical_area'] = technical_area
         session['selected_difficulty'] = difficulty
+        session['selected_duration'] = duration_in_minutes
 
 
         if not interview_type:
@@ -203,6 +239,7 @@ def create_interview():
             session.pop('current_test_category', None)
             session['selected_written_test_types'] = ['open_ended']
             session['total_written_test_questions'] = 5
+            session['written_test_timer_reset'] = True
 
             if mode_choice == 'general':
                 session['selected_category_for_test'] = 'general'
@@ -494,6 +531,9 @@ def interview_details(question_id):
         logging.exception(f"Mülakat detayları getirilirken veya değerlendirilirken KRİTİK HATA:")
         return render_template('error.html', message="Detaylar getirilirken bir hata oluştu.")
 
+# interview_routes.py dosyanızdaki diğer kodlar aynı kalacak.
+# Sadece aşağıdaki fonksiyonu bulun ve değiştirin.
+
 @interview_bp.route('/assistant_results')
 def assistant_results():
     user_id = session.get('user_id')
@@ -501,48 +541,93 @@ def assistant_results():
         return redirect(url_for('auth.login'))
 
     chat_history = session.get('chat_history', [])
-    if not chat_history or len(chat_history) < 2:
-        return render_template('error.html', message="Değerlendirilecek bir sohbet geçmişi bulunamadı.")
+    if len(chat_history) < 3:
+        flash("Değerlendirilecek bir sohbet geçmişi bulunamadı.", "error")
+        return redirect(url_for('interview.create_interview'))
 
-    from services.openai_service import generate_openai_response, evaluate_answer_with_ai
-
-    summary_prompt = [
-        {"role": "system", "content": "Sen bir mülakat değerlendiricisisin. Aşağıdaki mülakat sohbetini değerlendir, adayın güçlü ve gelişime açık yönlerini özetle, genel bir geri bildirim ver."}
-    ] + chat_history
-
-    ai_feedback = generate_openai_response(summary_prompt)
-
-    # Kullanıcı adını çek
-    username = session.get('user_profile', {}).get('name', 'Kullanıcı')
+    # Kategori 'None' ise 'Genel Yetenek' olarak ayarla
     category = session.get('current_interview_category')
-    if not category:
+    if category is None:
         category = "Genel Yetenek"
+    
+    username = session.get('user_profile', {}).get('name', 'Kullanıcı')
+    ai_feedback = "Değerlendirme oluşturulurken bir hata oluştu." # Varsayılan hata mesajı
 
-    # --- AI değerlendirmesini ve puanını interview_answers tablosuna kaydet ---
-    question_id = session.get('current_question_id')
-    if question_id:
-        # Son cevabı bul (asistan mülakatında genelde tek cevap olur)
-        answer_response = supabase.table("interview_answers") \
-            .select("id, user_answer") \
-            .eq("question_id", str(question_id)) \
-            .eq("user_id", str(user_id)) \
-            .order("answered_at", desc=True) \
-            .limit(1) \
-            .execute()
-        answer_data = answer_response.data[0] if answer_response and answer_response.data else None
+    try:
+        # ADIM 1: "Geçmiş Mülakatlarım" için ana kaydı oluştur.
+        question_text_for_db = f"AI Asistan Mülakatı - {category.replace('_', ' ').title()}"
+        
+        question_response = supabase.table("interview_questions").insert({
+            "user_id": str(user_id),
+            "category": category,
+            "question_text": question_text_for_db,
+            "question_type": "assistant_interview"
+        }).execute()
 
-        if answer_data:
-            answer_id = answer_data["id"]
-            user_answer = answer_data.get("user_answer", "")
-            # AI puanını al
-            score = evaluate_answer_with_ai(
-                session.get('chat_history', [{}])[-2].get('content', ''),  # Son kullanıcı cevabı
-                user_answer
-            )
-            supabase.table("interview_answers") \
-                .update({"ai_evaluation": ai_feedback, "score": score}) \
-                .eq("id", str(answer_id)) \
-                .execute()
+        if not (hasattr(question_response, 'data') and len(question_response.data) > 0):
+            raise Exception(f"Supabase 'interview_questions' tablosuna kayıt yapılamadı.")
+        
+        new_question_id = question_response.data[0]['id']
+        logging.info(f"AI mülakatı için ana kayıt oluşturuldu: ID {new_question_id}")
+
+        # --- DÜZELTİLMİŞ PROMPT VE SAĞLAMLAŞTIRILMIŞ İŞLEME ---
+
+        # ADIM 2: OpenAI'den özeti ve puanı al.
+        # Prompt'taki sabit "85" değeri kaldırıldı ve talimatlar netleştirildi.
+        summary_prompt = [
+            {
+                "role": "system", 
+                "content": "Sen, bir mülakat dökümünü analiz eden uzman bir IK yöneticisisin. Görevin, adayın iletişim becerilerini, cevap kalitesini, güçlü yönlerini ve gelişime açık alanlarını değerlendiren profesyonel bir geri bildirim raporu oluşturmak ve 100 üzerinden genel bir puan vermektir. TÜM ÇIKTIN, BAŞINDA VEYA SONUNDA BAŞKA HİÇBİR METİN OLMADAN SADECE YORUMUN VE PUANININ OLSUN."
+            }
+        ] + chat_history[1:]
+        
+        ai_evaluation_raw = generate_openai_response(summary_prompt)
+        logging.info(f"OpenAI'den ham değerlendirme alındı: {ai_evaluation_raw}")
+        
+        ai_score = None # Puan için varsayılan değer
+        try:
+            # Sadece '{' ile '}' arasındaki kısmı alarak AI'ın eklediği fazlalıkları temizle
+            start_index = ai_evaluation_raw.find('{')
+            end_index = ai_evaluation_raw.rfind('}') + 1
+            if start_index == -1 or end_index == 0:
+                raise json.JSONDecodeError("Yanıt içinde JSON nesnesi bulunamadı.", ai_evaluation_raw, 0)
+            
+            json_part = ai_evaluation_raw[start_index:end_index]
+            evaluation_data = json.loads(json_part)
+            
+            ai_feedback = evaluation_data.get('feedback', "AI'dan geçerli bir geri bildirim metni alınamadı.")
+            ai_score = evaluation_data.get('score')
+
+        except (json.JSONDecodeError, TypeError) as e:
+            logging.warning(f"AI değerlendirmesi JSON olarak işlenemedi: {e}. Ham metin kullanılıyor.")
+            ai_feedback = ai_evaluation_raw # JSON işlenemezse, gelen ham metni geri bildirim olarak kullan
+
+        # --- DÜZELTME BİTTİ ---
+
+        # ADIM 3: Özeti veritabanına kaydet.
+        user_responses_text = "\n\n---\n\n".join([msg['content'] for msg in chat_history if msg['role'] == 'user'])
+        answer_response = supabase.table("interview_answers").insert({
+            "question_id": new_question_id,
+            "user_id": str(user_id),
+            "user_answer": user_responses_text if user_responses_text else "Kullanıcı cevap vermedi.",
+            "ai_response": ai_feedback,
+            "score": ai_score
+        }).execute()
+        
+        if not (hasattr(answer_response, 'data') and len(answer_response.data) > 0):
+             raise Exception(f"Supabase 'interview_answers' tablosuna kayıt yapılamadı.")
+
+        logging.info(f"AI Asistan mülakat özeti başarıyla kaydedildi.")
+
+    except Exception as e:
+        logging.error(f"AI Asistan sonuçları kaydedilirken KRİTİK HATA: {e}", exc_info=True)
+        flash("Mülakat sonuçları veritabanına kaydedilirken bir hata oluştu.", "error")
+        ai_feedback = "Mülakat özeti oluşturulurken veya kaydedilirken bir hata meydana geldi."
+
+    # ADIM 4: Geçici session verilerini temizle.
+    session.pop('chat_history', None)
+    session.pop('current_interview_category', None)
+    session.pop('selected_duration', None)
 
     return render_template(
         'assistant_results.html',

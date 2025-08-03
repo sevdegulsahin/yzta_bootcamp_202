@@ -3,9 +3,12 @@
 {% block title %}{{ category | capitalize }} Mülakat Sorusu #{{ question_num }} - Interviewly{% endblock %}
 
 {% block content %}
-<div class="question-page" data-question-num="{{ question_num }}">
+<div class="question-page" 
+     data-duration="{{ duration }}"
+     data-category="{{ category }}"
+     data-interview-id="{{ session.get('current_interview_id', '') }}"
+     data-reset-timer="{{ reset_timer }}">
     <div class="container">
-        <!-- Progress Header -->
         <div class="progress-header" data-aos="fade-down">
             <div class="progress-info">
                 <h1 class="page-title">
@@ -25,8 +28,8 @@
                         <i class="fas fa-clock"></i>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value" id="timer">00:00</span>
-                        <span class="stat-label">Geçen Süre</span>
+                        <span class="stat-value" id="timer">--:--</span>
+                        <span class="stat-label">Kalan Süre</span>
                     </div>
                 </div>
                 <div class="stat-item">
@@ -41,7 +44,6 @@
             </div>
         </div>
 
-        <!-- Question Card -->
         <div class="question-card" data-aos="fade-up">
             <div class="question-header">
                 <div class="question-meta">
@@ -57,14 +59,11 @@
                     </button>
                 </div>
             </div>
-
             <div class="question-content">
                 <div class="question-text">
                     {{ question_text | safe }}
                 </div>
             </div>
-
-            <!-- Answer Form -->
             <div class="answer-section">
                 <form method="POST" action="{{ url_for('interview.submit_written_answer') }}" class="answer-form" id="answerForm">
                     <div class="form-group">
@@ -81,7 +80,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary" id="submitBtn">
                             <i class="fas fa-paper-plane"></i>
@@ -92,7 +90,6 @@
             </div>
         </div>
 
-        <!-- Navigation -->
         <div class="navigation-section" data-aos="fade-up" data-aos-delay="200">
             <div class="nav-buttons">
                 {% if question_num > 1 %}
@@ -102,14 +99,12 @@
                     Önceki Soru
                 </a>
                 {% endif %}
-
                 <div class="nav-center">
                     <a href="{{ url_for('interview.interview') }}" class="btn btn-secondary">
                         <i class="fas fa-comments"></i>
                         Sohbet Odasına Dön
                     </a>
                 </div>
-
                 {% if question_num < total_questions %} <a
                     href="{{ url_for('interview.interview_question_route', category=category, question_num=question_num + 1) }}"
                     class="btn btn-secondary">
@@ -117,13 +112,12 @@
                     <i class="fas fa-arrow-right"></i>
                     </a>
                     {% else %}
-                    <a href="{{ url_for('interview.interview') }}" class="btn btn-success">
+                    <button type="submit" form="answerForm" class="btn btn-success">
                         <i class="fas fa-check-circle"></i>
                         Mülakatı Tamamla
-                    </a>
+                    </button>
                     {% endif %}
             </div>
-
             <div class="quick-actions">
                 <a href="{{ url_for('interview.create_interview') }}" class="quick-action-btn">
                     <i class="fas fa-plus"></i>
@@ -141,4 +135,95 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const pageData = document.querySelector('.question-page');
+    const timerDisplay = document.getElementById('timer');
+    let timerInterval;
+
+    const totalDurationInSeconds = parseInt(pageData.dataset.duration, 10);
+    const category = pageData.dataset.category;
+    const interviewId = pageData.dataset.interviewId;
+    const shouldResetTimer = pageData.dataset.resetTimer === 'True';
+    
+    let interviewEndTime = localStorage.getItem('interviewEndTime');
+
+    if (shouldResetTimer || !interviewEndTime) {
+        console.log("Zamanlayıcı sıfırlanıyor.");
+        const now = Date.now();
+        interviewEndTime = now + (totalDurationInSeconds * 1000);
+        localStorage.setItem('interviewEndTime', interviewEndTime);
+    }
+    
+    function startPersistentCountdown() {
+        timerInterval = setInterval(() => {
+            const now = Date.now();
+            const remainingSeconds = Math.round((interviewEndTime - now) / 1000);
+
+            if (remainingSeconds < 0) {
+                clearInterval(timerInterval);
+                timerDisplay.textContent = "Süre Doldu!";
+                document.getElementById('user_input').disabled = true;
+                document.getElementById('submitBtn').disabled = true;
+                alert("Mülakat süreniz dolmuştur. Sonuç sayfasına yönlendiriliyorsunuz.");
+
+                // --- ÇÖZÜM BURADA BAŞLIYOR ---
+                const form = document.getElementById('answerForm');
+                const formData = new FormData(form);
+                const url = form.action;
+
+                // O anki cevabı arka planda gönder (kaydetmek için)
+                fetch(url, {
+                    method: 'POST',
+                    body: formData
+                }).finally(() => {
+                    // Cevap kaydedildikten sonra (veya hata olsa bile)
+                    // doğrudan sonuçlar sayfasına yönlendir.
+                    // Bu, "sonraki soru" döngüsünü kırar.
+                    const resultsUrl = `/test_results?category=${category}&interview_id=${interviewId}`;
+                    window.location.href = resultsUrl;
+                });
+                // --- ÇÖZÜM BURADA BİTİYOR ---
+
+                return;
+            }
+
+            const minutes = Math.floor(remainingSeconds / 60);
+            const secs = remainingSeconds % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }, 1000);
+    }
+
+    if (interviewEndTime) {
+        startPersistentCountdown();
+    } else {
+        timerDisplay.textContent = "Hata!";
+        console.error("Mülakat için bitiş zamanı ayarlanamadı.");
+    }
+    
+    const textarea = document.getElementById('user_input');
+    const charCounter = document.getElementById('charCounter');
+    const wordCounter = document.getElementById('wordCounter');
+
+    textarea.addEventListener('input', () => {
+        const text = textarea.value;
+        charCounter.textContent = `${text.length}/2000`;
+        const words = text.trim() ? text.trim().split(/\s+/) : [];
+        wordCounter.textContent = `${words.length} kelime`;
+    });
+
+    const copyBtn = document.getElementById('copyBtn');
+    const questionText = document.querySelector('.question-text').innerText;
+    copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(questionText).then(() => {
+            alert('Soru kopyalandı!');
+        }).catch(err => {
+            console.error('Kopyalama başarısız: ', err);
+        });
+    });
+});
+</script>
 {% endblock %}

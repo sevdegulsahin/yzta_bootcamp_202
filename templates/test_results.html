@@ -5,7 +5,6 @@
 {% block content %}
 <div class="test-results-page">
     <div class="container">
-        <!-- Header Section -->
         <div class="results-header" data-aos="fade-down">
             <div class="header-content">
                 <div class="header-info">
@@ -27,10 +26,8 @@
             </div>
         </div>
 
-        <!-- Results Summary -->
         <div class="results-summary" data-aos="fade-up">
             <div class="summary-grid">
-                <!-- Toplam Soru Kartı -->
                 <div class="summary-card">
                     <div class="card-icon">
                         <i class="fas fa-question-circle"></i>
@@ -42,7 +39,6 @@
                 </div>
 
                 {% if is_open_ended_test %}
-                <!-- Doğru Cevap Kartı -->
                 <div class="summary-card">
                     <div class="card-icon correct">
                         <i class="fas fa-check-circle"></i>
@@ -53,7 +49,6 @@
                     </div>
                 </div>
 
-                <!-- YANLIŞ CEVAP KARTI (GÜVENLİ VE FORMATTER-DOSTU) -->
                 <div class="summary-card">
                     <div class="card-icon incorrect">
                         <i class="fas fa-times-circle"></i>
@@ -68,7 +63,6 @@
                     </div>
                 </div>
 
-                <!-- PUAN KARTI -->
                 <div class="summary-card">
                     <div class="card-icon score"><i class="fas fa-star"></i></div>
                     <div class="card-content">
@@ -77,15 +71,13 @@
                     </div>
                 </div>
 
-                <!-- BAŞARI ORANI KARTI (GÜVENLİ) -->
                 <div class="summary-card">
                     <div class="card-icon percentage">
                         <i class="fas fa-percentage"></i>
                     </div>
                     <div class="card-content">
                         {% if correct_answers_count is number and total_questions_asked > 0 %}
-                        <span class="card-value">{{ ((correct_answers_count / total_questions_asked) * 100) | round(1)
-                            }}%</span>
+                        <span class="card-value">{{ ((correct_answers_count / total_questions_asked) * 100) | round(1) }}%</span>
                         {% else %}
                         <span class="card-value">{{ score }}</span>
                         {% endif %}
@@ -105,8 +97,7 @@
             </div>
         </div>
 
-        <!-- Performance Chart -->
-        {% if is_open_ended_test %}
+        {% if is_open_ended_test and correct_answers_count is number and total_questions_asked > 0 %}
         <div class="performance-section" data-aos="fade-up" data-aos-delay="100">
             <div class="section-header">
                 <h3 class="section-title">
@@ -114,27 +105,19 @@
                 </h3>
             </div>
             <div class="performance-chart">
-                {% if correct_answers_count is number and total_questions_asked > 0 %}
                 <canvas id="performanceChart" width="400" height="200"></canvas>
-                {% else %}
-                <p class="chart-placeholder">
-                    Performans grafiği için yeterli veri bulunmamaktadır.
-                </p>
-                {% endif %}
             </div>
         </div>
         {% endif %}
 
-        <!-- Detailed Answers -->
         {% if detailed_answers %}
         <div class="detailed-answers" data-aos="fade-up" data-aos-delay="200">
-            <div class="section-header">
+             <div class="section-header">
                 <h3 class="section-title">
                     <i class="fas fa-list-ul"></i>
                     Detaylı Cevaplarınız
                 </h3>
             </div>
-
             <div class="answers-list">
                 {% for answer in detailed_answers %}
                 <div class="answer-card" data-aos="fade-up" data-aos-delay="{{ loop.index * 50 }}">
@@ -174,7 +157,6 @@
         </div>
         {% endif %}
 
-        <!-- Recommendations -->
         {% if is_open_ended_test %}
         <div class="recommendations-section" data-aos="fade-up" data-aos-delay="300">
             <div class="section-header">
@@ -203,7 +185,6 @@
         </div>
         {% endif %}
 
-        <!-- Action Buttons -->
         <div class="action-buttons" data-aos="fade-up" data-aos-delay="400">
             <a href="{{ url_for('interview.create_interview') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Yeni Test Oluştur
@@ -219,7 +200,6 @@
 </div>
 {% endblock %}
 
-
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -231,34 +211,24 @@
         const data = {
             labels: ['Doğru', 'Yanlış'],
             datasets: [{
-                // --- KALICI ÇÖZÜM: FORMATTER'IN BOZMAYACAĞI TEMİZ KOD ---
                 data: [{{ correct_answers_count }}, {{ incorrect_answers_count }}],
-            backgroundColor: [
-                'rgba(34, 197, 94, 0.7)',
-                'rgba(239, 68, 68, 0.7)'
-            ],
-            borderColor: [
-                '#16a34a',
-                '#dc2626'
-            ],
-            borderWidth: 2
-    }]
+                backgroundColor: [ 'rgba(34, 197, 94, 0.7)', 'rgba(239, 68, 68, 0.7)' ],
+                borderColor: [ '#16a34a', '#dc2626' ],
+                borderWidth: 2
+            }]
         };
 
-    new Chart(ctx.getContext('2d'), {
-        type: 'doughnut',
-        data: data,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: { color: 'var(--text-primary)', font: { size: 14 } }
+        new Chart(ctx.getContext('2d'), {
+            type: 'doughnut',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: 'var(--text-primary)', font: { size: 14 } } }
                 }
             }
-        }
-    });
+        });
     }
     document.addEventListener('DOMContentLoaded', createPerformanceChart);
     {% endif %}
@@ -300,6 +270,9 @@
         cards.forEach((card, index) => {
             card.style.animationDelay = `${index * 0.1}s`;
         });
+        
+        localStorage.removeItem('interviewEndTime');
+        console.log("Mülakat bitti. Zamanlayıcı hafızadan temizlendi.");
     });
 </script>
 {% endblock %}
